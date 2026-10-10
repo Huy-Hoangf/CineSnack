@@ -1,13 +1,227 @@
 <!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Đặt vé | CineSnack</title>
-</head>
-<body>
-  <h1>Đặt vé</h1>
-  <p>Chọn suất chiếu và ghế ngồi.</p>
-  <a href="index.html">Về trang chủ</a>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0769b1" />
+    <title>Đặt vé | CineSnack</title>
+    <link rel="stylesheet" href="assets/css/shared/base.css" />
+    <link rel="stylesheet" href="assets/css/shared/app.css" />
+    <script src="assets/js/shared/cinema.js" defer></script>
+    <script src="assets/js/shared/ui.js" defer></script>
+    <script src="assets/js/pages/booking.js" defer></script>
+  </head>
+  <body class="app-page">
+    <a class="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
+    <div class="topbar">
+      <div class="container topbar-inner">
+        <span>Một chiếc vé. Cả thế giới điện ảnh.</span
+        ><a href="index.html#ve-cinesnack"
+          >Về CineSnack <span aria-hidden="true">↗</span></a
+        >
+      </div>
+    </div>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="CineSnack — Trang chủ"
+          ><svg viewBox="0 0 40 40" aria-hidden="true">
+            <rect
+              x="3"
+              y="7"
+              width="34"
+              height="26"
+              rx="7"
+              fill="currentColor"
+            />
+            <path d="m17 14 11 6-11 6z" fill="white" />
+            <path
+              d="M8 12v3m0 10v3m24-16v3m0 10v3"
+              stroke="white"
+              stroke-width="2"
+            /></svg
+          ><span
+            >Cine<span class="brand-accent">Snack</span
+            ><small>CINEMA & MORE</small></span
+          ></a
+        >
+        <nav class="main-nav" aria-label="Điều hướng chính">
+          <a href="phim.html">Phim</a
+          ><a href="dat-ve.html" class="nav-active" aria-current="page"
+            >Lịch chiếu</a
+          ><a href="index.html#uu-dai">Ưu đãi</a
+          ><a href="index.html#bap-nuoc">Bắp & nước</a
+          ><a href="index.html#ve-cinesnack">Rạp CineSnack</a>
+        </nav>
+        <a class="button header-button" href="dat-ve.html"
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3"
+            /></svg
+          >Đặt vé ngay</a
+        >
+      </div>
+    </header>
+
+    <main id="noi-dung" class="app-main" tabindex="-1">
+      <noscript
+        ><p class="notice container">
+          Bạn cần bật JavaScript để sử dụng bộ lọc và luồng đặt vé minh họa.
+        </p></noscript
+      >
+      <section class="page-lead">
+        <div class="container">
+          <nav class="breadcrumb" aria-label="Đường dẫn">
+            <a href="index.html">Trang chủ</a><span aria-hidden="true">/</span
+            ><span>Chọn chỗ cho cuộc hẹn</span>
+          </nav>
+          <span class="eyebrow">HẸN NHAU Ở RẠP</span>
+          <h1>Chọn chỗ cho cuộc hẹn</h1>
+          <p>
+            Một chiếc ghế ưng ý. Một bộ phim thật hay. Một buổi xem phim đáng
+            nhớ.
+          </p>
+        </div>
+      </section>
+      <ol class="progress-steps container" aria-label="Tiến trình đặt vé">
+        <li class="current" aria-current="step">
+          <span>1</span>Chọn phim & ghế
+        </li>
+        <li class=""><span>2</span>Thông tin & thanh toán</li>
+        <li class=""><span>3</span>Hoàn tất</li>
+      </ol>
+      <div class="container booking-layout">
+        <div class="booking-content">
+          <section class="panel" aria-labelledby="show-heading">
+            <div class="panel-heading">
+              <span class="section-number">01</span>
+              <div>
+                <h2 id="show-heading">Phim & suất chiếu</h2>
+                <p>Tất cả suất chiếu bên dưới là minh họa.</p>
+              </div>
+            </div>
+            <label for="booking-movie" class="field-label"
+              >Bộ phim của bạn</label
+            ><select id="booking-movie"></select>
+            <fieldset class="choice-fieldset">
+              <legend>Ngày chiếu</legend>
+              <div class="date-options" id="date-options"></div>
+            </fieldset>
+            <fieldset class="choice-fieldset">
+              <legend>
+                Suất chiếu <span class="hint">· Phòng 01 · 2D phụ đề</span>
+              </legend>
+              <div class="time-options" id="time-options"></div>
+            </fieldset>
+            <p class="hint" id="selection-note" role="status">
+              Đổi phim hoặc suất chiếu sẽ xóa các ghế đã chọn.
+            </p>
+          </section>
+          <section class="panel seat-panel" aria-labelledby="seats-heading">
+            <div class="panel-heading">
+              <span class="section-number">02</span>
+              <div>
+                <h2 id="seats-heading">Chọn ghế yêu thích</h2>
+                <p>Tối đa 8 ghế mỗi đơn. Ghế VIP ở hàng D–F.</p>
+              </div>
+            </div>
+            <div
+              class="seat-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Sơ đồ ghế; cuộn ngang nếu cần"
+            >
+              <div class="seat-map">
+                <div class="screen"><span>MÀN HÌNH</span></div>
+                <div id="seat-rows"></div>
+              </div>
+            </div>
+            <p class="hint">
+              Cuộn ngang sơ đồ nếu chưa thấy đủ các ghế trong hàng.
+            </p>
+            <div class="seat-legend">
+              <span><i class="legend-seat"></i>Thường · 75.000 ₫</span
+              ><span><i class="legend-seat vip"></i>VIP · 95.000 ₫</span
+              ><span><i class="legend-seat chosen"></i>Đang chọn</span
+              ><span><i class="legend-seat taken"></i>Đã đặt</span>
+            </div>
+            <p class="error" id="seat-error" role="alert"></p>
+          </section>
+          <section class="panel" id="combos" aria-labelledby="combos-heading">
+            <div class="panel-heading">
+              <span class="section-number">03</span>
+              <div>
+                <h2 id="combos-heading">Thêm chút giòn, thêm chút vui</h2>
+                <p>Combo bắp nước cho bộ phim thêm trọn vẹn.</p>
+              </div>
+            </div>
+            <div id="combo-options" class="combo-options"></div>
+          </section>
+        </div>
+        <aside class="panel order-summary" aria-label="Tóm tắt lựa chọn">
+          <span class="eyebrow">CUỘC HẸN CỦA BẠN</span>
+          <div class="summary-movie">
+            <img
+              id="summary-poster"
+              src="assets/images/movies/dune.jpg"
+              alt=""
+              width="80"
+              height="120"
+            />
+            <div>
+              <span class="pill">2D · Phụ đề</span>
+              <h2 id="summary-title">Dune: Hành tinh cát – Phần hai</h2>
+              <p>CineSnack · Phòng 01</p>
+            </div>
+          </div>
+          <dl class="summary-details">
+            <div>
+              <dt>Suất chiếu</dt>
+              <dd id="summary-when">—</dd>
+            </div>
+            <div>
+              <dt>Ghế ngồi</dt>
+              <dd id="summary-seats">Chưa chọn ghế</dd>
+            </div>
+            <div>
+              <dt>Tiền vé</dt>
+              <dd id="summary-tickets">0 ₫</dd>
+            </div>
+            <div>
+              <dt>Bắp & nước</dt>
+              <dd id="summary-snacks">0 ₫</dd>
+            </div>
+          </dl>
+          <div class="summary-total">
+            <span>Tổng cộng</span
+            ><strong id="summary-total" aria-live="polite" aria-atomic="true"
+              >0 ₫</strong
+            >
+          </div>
+          <button
+            class="button wide"
+            type="button"
+            id="continue-booking"
+            disabled
+          >
+            Tiếp tục thanh toán <span aria-hidden="true">↗</span>
+          </button>
+          <p class="hint" id="continue-hint">Chọn ít nhất 1 ghế để tiếp tục.</p>
+          <p class="error" id="booking-error" role="alert"></p>
+          <p class="summary-note">
+            Đây là đơn minh họa. Ghế chưa được giữ và chưa có giao dịch thanh
+            toán.
+          </p>
+        </aside>
+      </div>
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a class="brand footer-brand" href="index.html"
+          >Cine<span>Snack</span></a
+        >
+        <p>Hẹn nhau ở rạp. Vui trọn từng khoảnh khắc.</p>
+        <a href="admin.html">Quản trị</a><span>© CineSnack 2026</span>
+      </div>
+    </footer>
+  </body>
 </html>
