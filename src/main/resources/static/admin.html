@@ -1,13 +1,379 @@
 <!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Quản trị | CineSnack</title>
-</head>
-<body>
-  <h1>Quản trị</h1>
-  <p>Quản lý phim, suất chiếu và đơn hàng.</p>
-  <a href="index.html">Về trang chủ</a>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quản trị | CineSnack</title>
+    <link rel="stylesheet" href="assets/css/shared/base.css" />
+    <link rel="stylesheet" href="assets/css/shared/app.css" />
+    <link rel="stylesheet" href="assets/css/pages/admin.css" />
+    <script src="assets/js/shared/cinema.js" defer></script>
+    <script src="assets/js/pages/admin.js" defer></script>
+  </head>
+  <body class="app-page admin-page">
+    <a href="#noi-dung" class="skip-link">Bỏ qua điều hướng</a>
+    <aside class="admin-sidebar">
+      <a class="brand" href="index.html" aria-label="CineSnack — Về trang chủ"
+        ><svg viewBox="0 0 40 40" aria-hidden="true">
+          <rect x="3" y="7" width="34" height="26" rx="7" fill="currentColor" />
+          <path d="m17 14 11 6-11 6z" fill="white" /></svg
+        ><span
+          >Cine<span class="brand-accent">Snack</span
+          ><small>QUẢN TRỊ RẠP PHIM</small></span
+        ></a
+      >
+      <div class="workspace-label">
+        <span class="workspace-dot" aria-hidden="true"></span>
+        <div>
+          <strong>Rạp CineSnack</strong
+          ><small>Không gian quản trị · Demo</small>
+        </div>
+      </div>
+      <span class="nav-caption">KHÔNG GIAN LÀM VIỆC</span>
+      <nav class="admin-nav" aria-label="Quản trị">
+        <button
+          type="button"
+          data-view="overview"
+          aria-controls="view-overview"
+          aria-pressed="true"
+          class="admin-nav-button active"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="7" height="7" rx="1" /></svg
+          >Tổng quan</button
+        ><button
+          type="button"
+          data-view="movies"
+          aria-controls="view-movies"
+          aria-pressed="false"
+          class="admin-nav-button"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="16" rx="2" />
+            <path d="M7 4v16M17 4v16M3 9h4m-4 6h4m10-6h4m-4 6h4" /></svg
+          >Quản lý phim</button
+        ><button
+          type="button"
+          data-view="shows"
+          aria-controls="view-shows"
+          aria-pressed="false"
+          class="admin-nav-button"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M7 3v4M17 3v4M3 11h18m-13 4h3m3 0h2" /></svg
+          >Suất chiếu</button
+        ><button
+          type="button"
+          data-view="orders"
+          aria-controls="view-orders"
+          aria-pressed="false"
+          class="admin-nav-button"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3"
+            /></svg
+          >Đơn đặt vé
+        </button>
+      </nav>
+      <div class="sidebar-bottom">
+        <p>Dữ liệu mẫu, không phản ánh hoạt động thực tế của rạp.</p>
+        <a href="index.html">← Về website CineSnack</a>
+      </div>
+    </aside>
+    <div class="admin-workspace">
+      <header class="admin-topbar">
+        <span
+          >Không gian quản trị <b>/</b>
+          <strong id="admin-breadcrumb">Tổng quan</strong></span
+        >
+        <div class="admin-identity">
+          <span class="demo-badge">BẢN DEMO</span
+          ><span class="avatar" aria-hidden="true">CS</span>
+        </div>
+      </header>
+      <main id="noi-dung" class="app-main admin-main" tabindex="-1">
+        <noscript
+          ><p class="notice">
+            Bật JavaScript để xem các bảng dữ liệu minh họa.
+          </p></noscript
+        >
+        <div class="admin-title-row">
+          <div>
+            <span class="eyebrow">CINESNACK STUDIO</span>
+            <h1 id="admin-title">Tổng quan rạp phim</h1>
+            <p id="admin-subtitle">
+              Một góc nhìn rõ ràng cho những trải nghiệm điện ảnh trọn vẹn.
+            </p>
+          </div>
+          <span class="admin-date" id="admin-date"></span>
+        </div>
+        <p class="admin-demo-note">
+          Chế độ minh họa · Không có dữ liệu thật, xác thực quản trị hoặc thao
+          tác cập nhật máy chủ.
+        </p>
+        <section id="view-overview" class="admin-view" aria-label="Tổng quan">
+          <div class="stat-grid" id="stats"></div>
+          <div class="dashboard-grid">
+            <section class="panel revenue-panel">
+              <div class="admin-section-heading">
+                <div>
+                  <h2>Nhịp rạp trong tuần</h2>
+                  <p>Doanh thu minh họa · 7 ngày gần nhất</p>
+                </div>
+                <span class="pill">VNĐ</span>
+              </div>
+              <ol
+                class="revenue-chart"
+                id="revenue-chart"
+                aria-label="Doanh thu minh họa theo ngày"
+              ></ol>
+            </section>
+            <section class="panel spotlight-panel">
+              <span class="eyebrow">BỘ PHIM NỔI BẬT</span>
+              <div class="spotlight-movie">
+                <img
+                  src="assets/images/movies/dune.jpg"
+                  alt="Poster Dune"
+                  width="96"
+                  height="144"
+                />
+                <div>
+                  <span class="pill">Khoa học viễn tưởng</span>
+                  <h2>Dune: Hành tinh cát – Phần hai</h2>
+                  <p>Phim nổi bật trong danh mục minh họa.</p>
+                </div>
+              </div>
+              <div class="spotlight-bottom">
+                <div><strong>166 phút</strong><span>Thời lượng</span></div>
+                <div><strong>T16</strong><span>Phân loại</span></div>
+                <div><strong>2D</strong><span>Định dạng</span></div>
+              </div>
+              <button
+                type="button"
+                class="button secondary wide"
+                data-view="movies"
+              >
+                Xem danh mục phim <span aria-hidden="true">↗</span>
+              </button>
+            </section>
+          </div>
+          <section class="panel admin-table-panel">
+            <div class="admin-section-heading">
+              <div>
+                <h2>Đơn đặt vé gần đây</h2>
+                <p>Một vài cuộc hẹn trong dữ liệu mẫu.</p>
+              </div>
+              <button type="button" class="text-button" data-view="orders">
+                Tất cả đơn vé ↗
+              </button>
+            </div>
+            <div
+              class="table-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Đơn đặt vé gần đây"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mã đơn</th>
+                    <th>Phim</th>
+                    <th>Ghế</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th><span class="sr-only">Chi tiết</span></th>
+                  </tr>
+                </thead>
+                <tbody id="recent-orders"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+        <section
+          id="view-movies"
+          class="admin-view"
+          aria-label="Danh mục phim"
+          hidden
+        >
+          <section class="panel admin-table-panel">
+            <div class="admin-section-heading">
+              <div>
+                <h2>Danh mục phim</h2>
+                <p>Thông tin phim trong bản giao diện mẫu.</p>
+              </div>
+              <span class="pill">6 phim</span>
+            </div>
+            <div class="admin-filter-row">
+              <div class="search-field">
+                <label class="sr-only" for="admin-movie-search">Tìm phim</label
+                ><span aria-hidden="true">⌕</span
+                ><input
+                  type="search"
+                  id="admin-movie-search"
+                  data-search="movies"
+                  placeholder="Tìm tên phim, thể loại…"
+                />
+              </div>
+              <p class="table-count" id="movies-count" role="status"></p>
+            </div>
+            <div
+              class="table-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Danh sách phim"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th>Phim</th>
+                    <th>Thời lượng</th>
+                    <th>Phân loại</th>
+                    <th>Trạng thái</th>
+                    <th>Giao diện</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-movies"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+        <section
+          id="view-shows"
+          class="admin-view"
+          aria-label="Suất chiếu"
+          hidden
+        >
+          <section class="panel admin-table-panel">
+            <div class="admin-section-heading">
+              <div>
+                <h2>Lịch chiếu minh họa</h2>
+                <p>Phòng 01 · 60 ghế · Không phải lịch vận hành thực tế.</p>
+              </div>
+              <span class="pill">Hôm nay</span>
+            </div>
+            <div class="admin-filter-row">
+              <div class="search-field">
+                <label class="sr-only" for="admin-show-search"
+                  >Tìm suất chiếu</label
+                ><span aria-hidden="true">⌕</span
+                ><input
+                  type="search"
+                  id="admin-show-search"
+                  data-search="shows"
+                  placeholder="Tìm phim, giờ chiếu…"
+                />
+              </div>
+              <p class="table-count" id="shows-count" role="status"></p>
+            </div>
+            <div
+              class="table-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Danh sách suất chiếu"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th>Phim</th>
+                    <th>Suất chiếu</th>
+                    <th>Phòng</th>
+                    <th>Ghế đã đặt</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-shows"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+        <section
+          id="view-orders"
+          class="admin-view"
+          aria-label="Đơn đặt vé"
+          hidden
+        >
+          <section class="panel admin-table-panel">
+            <div class="admin-section-heading">
+              <div>
+                <h2>Danh sách đơn vé</h2>
+                <p>Đơn mẫu độc lập với thao tác đặt vé demo ở website.</p>
+              </div>
+              <span class="pill">Dữ liệu mẫu</span>
+            </div>
+            <div class="admin-filter-row">
+              <div class="search-field">
+                <label class="sr-only" for="admin-order-search"
+                  >Tìm mã đơn hoặc phim</label
+                ><span aria-hidden="true">⌕</span
+                ><input
+                  type="search"
+                  id="admin-order-search"
+                  data-search="orders"
+                  placeholder="Tìm mã đơn, tên phim…"
+                />
+              </div>
+              <div>
+                <label class="sr-only" for="order-status"
+                  >Lọc trạng thái đơn</label
+                ><select id="order-status">
+                  <option value="all">Tất cả trạng thái</option>
+                  <option value="paid">Đã thanh toán</option>
+                  <option value="pending">Chờ thanh toán</option>
+                  <option value="cancelled">Đã hủy</option>
+                </select>
+              </div>
+              <p class="table-count" id="orders-count" role="status"></p>
+            </div>
+            <div
+              class="table-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Danh sách đơn đặt vé"
+            >
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mã đơn</th>
+                    <th>Phim</th>
+                    <th>Ghế</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th><span class="sr-only">Chi tiết</span></th>
+                  </tr>
+                </thead>
+                <tbody id="admin-orders"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+        <p class="admin-footer">
+          CineSnack Studio
+          <span>Đồ án website đặt vé & bắp nước · Giao diện minh họa</span>
+        </p>
+        <dialog
+          id="order-dialog"
+          class="admin-dialog"
+          aria-labelledby="order-detail-title"
+        >
+          <form method="dialog">
+            <button class="dialog-close" aria-label="Đóng chi tiết đơn">
+              ×
+            </button>
+          </form>
+          <span class="eyebrow">ĐƠN VÉ MINH HỌA</span>
+          <h2 id="order-detail-title">Chi tiết đơn</h2>
+          <dl class="success-details" id="order-detail"></dl>
+          <p class="notice">
+            Đây là dữ liệu mẫu. Trạng thái thanh toán không đại diện cho giao
+            dịch thật.
+          </p>
+        </dialog>
+      </main>
+    </div>
+  </body>
 </html>

@@ -1,0 +1,188 @@
+/* Movie catalog layout. Shared controls are in app.css. */
+.catalog-section {
+  padding-top: 30px;
+}
+.catalog-tools {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: center;
+}
+.segmented {
+  display: inline-flex;
+  gap: 6px;
+  padding: 5px;
+  background: #e6edf4;
+  border-radius: 8px;
+}
+.segmented button {
+  background: transparent;
+  color: var(--muted);
+  padding: 11px 18px;
+  border-radius: 5px;
+  font-size: 14px;
+  min-height: 44px;
+  font-weight: 700;
+}
+.segmented button.selected {
+  background: #fff;
+  color: var(--blue);
+  box-shadow: 0 2px 5px #173a5410;
+}
+.segmented span {
+  font-size: 11px;
+  margin-left: 5px;
+}
+.search-field {
+  position: relative;
+  width: 300px;
+}
+.search-field > span {
+  position: absolute;
+  left: 14px;
+  top: 6px;
+  font-size: 25px;
+  color: var(--muted);
+}
+.app-main .search-field input {
+  padding-left: 42px !important;
+}
+.result-count {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 23px 0 17px;
+}
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 26px;
+}
+.catalog-grid .movie-card {
+  background: #fff;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+}
+.catalog-grid .poster {
+  border: 0;
+  width: 100%;
+  padding: 0;
+}
+.catalog-grid .movie-meta {
+  font-size: 11px;
+}
+.catalog-grid .movie-card h3 {
+  min-height: 50px;
+  font-size: 16px;
+}
+.movie-title-button {
+  background: transparent;
+  color: var(--ink);
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: 700;
+  text-align: left;
+  padding: 0;
+}
+.movie-title-button:hover {
+  color: var(--blue);
+}
+.catalog-grid .duration {
+  font-size: 12px;
+}
+.catalog-grid .movie-button {
+  min-height: 44px;
+  font-size: 13px;
+}
+.catalog-grid .coming-label {
+  min-height: 44px;
+  font-size: 13px;
+}
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+}
+.empty-state h2 {
+  margin-top: 12px;
+}
+.empty-state p {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 10px 0 24px;
+}
+.empty-symbol {
+  font-size: 44px;
+  color: var(--blue);
+  display: block;
+}
+.cinema-callout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  background: #e7f1fa;
+  padding: 30px;
+  border-radius: 12px;
+  margin-top: 36px;
+}
+.cinema-callout h2 {
+  margin-top: 8px;
+}
+.cinema-callout p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.cinema-callout .button {
+  flex-shrink: 0;
+}
+
+@media (max-width: 1100px) {
+  .catalog-grid {
+    gap: 18px;
+  }
+}
+@media (max-width: 900px) {
+  .catalog-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cinema-callout {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 600px) {
+  .catalog-tools .search-field {
+    width: 100%;
+  }
+  .catalog-tools {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  .segmented {
+    align-self: flex-start;
+  }
+  .segmented button {
+    padding-inline: 15px;
+    font-size: 13px;
+  }
+  .catalog-grid {
+    gap: 20px 12px;
+  }
+  .catalog-grid .movie-card {
+    padding: 8px;
+  }
+  .catalog-grid .movie-card h3 {
+    font-size: 14px;
+    min-height: 62px;
+  }
+  .catalog-grid .movie-meta {
+    font-size: 10px;
+  }
+  .catalog-grid .movie-meta > span:last-child {
+    display: none;
+  }
+  .cinema-callout {
+    padding: 24px 20px;
+  }
+}

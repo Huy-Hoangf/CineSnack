@@ -1,12 +1,159 @@
 <!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Phim | CineSnack</title>
-</head>
-<body>
-  <h1>Phim đang chiếu</h1>
-  <a href="index.html">Về trang chủ</a>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0769b1" />
+    <title>Khám phá phim | CineSnack</title>
+    <link rel="stylesheet" href="assets/css/shared/base.css" />
+    <link rel="stylesheet" href="assets/css/shared/app.css" />
+    <link rel="stylesheet" href="assets/css/pages/catalog.css" />
+    <script src="assets/js/shared/cinema.js" defer></script>
+    <script src="assets/js/shared/ui.js" defer></script>
+    <script src="assets/js/pages/movies.js" defer></script>
+  </head>
+  <body class="app-page">
+    <a class="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
+    <div class="topbar">
+      <div class="container topbar-inner">
+        <span>Một chiếc vé. Cả thế giới điện ảnh.</span
+        ><a href="index.html#ve-cinesnack"
+          >Về CineSnack <span aria-hidden="true">↗</span></a
+        >
+      </div>
+    </div>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="index.html" aria-label="CineSnack — Trang chủ"
+          ><svg viewBox="0 0 40 40" aria-hidden="true">
+            <rect
+              x="3"
+              y="7"
+              width="34"
+              height="26"
+              rx="7"
+              fill="currentColor"
+            />
+            <path d="m17 14 11 6-11 6z" fill="white" />
+            <path
+              d="M8 12v3m0 10v3m24-16v3m0 10v3"
+              stroke="white"
+              stroke-width="2"
+            /></svg
+          ><span
+            >Cine<span class="brand-accent">Snack</span
+            ><small>CINEMA & MORE</small></span
+          ></a
+        >
+        <nav class="main-nav" aria-label="Điều hướng chính">
+          <a href="phim.html" class="nav-active" aria-current="page">Phim</a
+          ><a href="dat-ve.html">Lịch chiếu</a
+          ><a href="index.html#uu-dai">Ưu đãi</a
+          ><a href="index.html#bap-nuoc">Bắp & nước</a
+          ><a href="index.html#ve-cinesnack">Rạp CineSnack</a>
+        </nav>
+        <a class="button header-button" href="dat-ve.html"
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3"
+            /></svg
+          >Đặt vé ngay</a
+        >
+      </div>
+    </header>
+
+    <main id="noi-dung" class="app-main" tabindex="-1">
+      <noscript
+        ><p class="notice container">
+          Bạn cần bật JavaScript để sử dụng bộ lọc và luồng đặt vé minh họa.
+        </p></noscript
+      >
+      <section class="page-lead">
+        <div class="container">
+          <nav class="breadcrumb" aria-label="Đường dẫn">
+            <a href="index.html">Trang chủ</a><span aria-hidden="true">/</span
+            ><span>Khám phá phim</span>
+          </nav>
+          <span class="eyebrow">MÀN ẢNH LỚN ĐANG CHỜ</span>
+          <h1>Khám phá phim</h1>
+          <p>
+            Chọn một câu chuyện. Dành thời gian cho những điều bạn yêu thích.
+          </p>
+        </div>
+      </section>
+      <section class="container catalog-section" aria-label="Danh sách phim">
+        <div class="catalog-tools">
+          <div class="segmented" role="group" aria-label="Trạng thái phim">
+            <button
+              type="button"
+              class="selected"
+              data-status="now"
+              aria-pressed="true"
+            >
+              Đang chiếu <span>04</span></button
+            ><button type="button" data-status="soon" aria-pressed="false">
+              Sắp chiếu <span>02</span>
+            </button>
+          </div>
+          <div class="search-field">
+            <label class="sr-only" for="movie-search"
+              >Tìm tên phim hoặc thể loại</label
+            ><span aria-hidden="true">⌕</span
+            ><input
+              type="search"
+              id="movie-search"
+              placeholder="Tìm tên phim, thể loại…"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <p class="result-count" id="movie-count" role="status"></p>
+        <div class="catalog-grid" id="catalog-grid"></div>
+        <div class="empty-state" id="no-movies" hidden>
+          <span class="empty-symbol" aria-hidden="true">⌕</span>
+          <h2>Chưa tìm thấy bộ phim phù hợp</h2>
+          <p>Thử tên khác hoặc bỏ bớt từ khóa nhé.</p>
+          <button type="button" class="button secondary" id="clear-search">
+            Xóa tìm kiếm
+          </button>
+        </div>
+        <p class="demo-disclaimer">
+          Nội dung và lịch chiếu trên trang là dữ liệu minh họa.
+        </p>
+      </section>
+      <section class="container cinema-callout">
+        <div>
+          <span class="eyebrow">PHIM HAY, GHẾ ĐẸP</span>
+          <h2>Một cuộc hẹn đang chờ bạn.</h2>
+          <p>
+            Chọn suất chiếu yêu thích, phần bắp nước còn lại để CineSnack lo.
+          </p>
+        </div>
+        <a class="button" href="dat-ve.html"
+          >Khám phá lịch chiếu <span aria-hidden="true">↗</span></a
+        >
+      </section>
+      <dialog
+        class="movie-dialog"
+        id="movie-dialog"
+        aria-labelledby="detail-title"
+      >
+        <form method="dialog">
+          <button class="dialog-close" aria-label="Đóng thông tin phim">
+            ×
+          </button>
+        </form>
+        <div id="movie-detail"></div>
+      </dialog>
+    </main>
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <a class="brand footer-brand" href="index.html"
+          >Cine<span>Snack</span></a
+        >
+        <p>Hẹn nhau ở rạp. Vui trọn từng khoảnh khắc.</p>
+        <a href="admin.html">Quản trị</a><span>© CineSnack 2026</span>
+      </div>
+    </footer>
+  </body>
 </html>

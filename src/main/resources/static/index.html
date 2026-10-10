@@ -9,7 +9,7 @@
     />
     <meta name="theme-color" content="#0769b1" />
     <title>CineSnack | Hẹn nhau ở rạp</title>
-    <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="assets/css/shared/base.css" />
   </head>
   <body>
     <a class="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
@@ -64,12 +64,16 @@
         <picture>
           <source
             type="image/webp"
-            srcset="images/dune-hero-480.webp 480w, images/dune-hero-960.webp 960w, images/dune-hero-1600.webp 1600w"
+            srcset="
+              assets/images/banners/dune-hero-480.webp   480w,
+              assets/images/banners/dune-hero-960.webp   960w,
+              assets/images/banners/dune-hero-1600.webp 1600w
+            "
             sizes="100vw"
           />
           <img
             class="hero-image"
-            src="images/dune-hero.jpg"
+            src="assets/images/banners/dune-hero.jpg"
             alt="Các nhân vật trong Dune: Hành tinh cát – Phần hai"
             width="2000"
             height="3000"
@@ -91,7 +95,7 @@
               <span class="hero-age">T16</span><span>166 phút</span
               ><span>Phiêu lưu · Khoa học viễn tưởng</span>
             </div>
-            <a href="dat-ve.html" class="button hero-button"
+            <a href="dat-ve.html?movie=dune" class="button hero-button"
               >Khám phá suất chiếu <span aria-hidden="true">↗</span></a
             >
           </div>
@@ -152,11 +156,11 @@
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html"
+                href="phim.html?movie=dune"
                 aria-label="Xem danh sách phim: Dune: Hành tinh cát – Phần hai"
               >
                 <img
-                  src="images/dune.jpg"
+                  src="assets/images/movies/dune.jpg"
                   alt="Poster phim Dune: Hành tinh cát – Phần hai"
                   width="500"
                   height="750"
@@ -168,20 +172,24 @@
               <div class="movie-meta">
                 <span>Khoa học viễn tưởng, Phiêu lưu</span><span>2024</span>
               </div>
-              <h3><a href="phim.html">Dune: Hành tinh cát – Phần hai</a></h3>
+              <h3>
+                <a href="phim.html?movie=dune"
+                  >Dune: Hành tinh cát – Phần hai</a
+                >
+              </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 166 phút</p>
-              <a class="button movie-button" href="dat-ve.html"
+              <a class="button movie-button" href="dat-ve.html?movie=dune"
                 >Đặt vé <span aria-hidden="true">↗</span></a
               >
             </article>
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html"
+                href="phim.html?movie=inside-out"
                 aria-label="Xem danh sách phim: Những mảnh ghép cảm xúc 2"
               >
                 <img
-                  src="images/inside-out.jpg"
+                  src="assets/images/movies/inside-out.jpg"
                   alt="Poster phim Những mảnh ghép cảm xúc 2"
                   width="500"
                   height="750"
@@ -193,20 +201,24 @@
               <div class="movie-meta">
                 <span>Hoạt hình, Gia đình</span><span>2024</span>
               </div>
-              <h3><a href="phim.html">Những mảnh ghép cảm xúc 2</a></h3>
+              <h3>
+                <a href="phim.html?movie=inside-out"
+                  >Những mảnh ghép cảm xúc 2</a
+                >
+              </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 96 phút</p>
-              <a class="button movie-button" href="dat-ve.html"
+              <a class="button movie-button" href="dat-ve.html?movie=inside-out"
                 >Đặt vé <span aria-hidden="true">↗</span></a
               >
             </article>
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html"
+                href="phim.html?movie=kung-fu-panda"
                 aria-label="Xem danh sách phim: Kung Fu Panda 4"
               >
                 <img
-                  src="images/kung-fu-panda.jpg"
+                  src="assets/images/movies/kung-fu-panda.jpg"
                   alt="Poster phim Kung Fu Panda 4"
                   width="500"
                   height="750"
@@ -218,20 +230,24 @@
               <div class="movie-meta">
                 <span>Hoạt hình, Hành động</span><span>2024</span>
               </div>
-              <h3><a href="phim.html">Kung Fu Panda 4</a></h3>
+              <h3>
+                <a href="phim.html?movie=kung-fu-panda">Kung Fu Panda 4</a>
+              </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 94 phút</p>
-              <a class="button movie-button" href="dat-ve.html"
+              <a
+                class="button movie-button"
+                href="dat-ve.html?movie=kung-fu-panda"
                 >Đặt vé <span aria-hidden="true">↗</span></a
               >
             </article>
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html"
+                href="phim.html?movie=godzilla"
                 aria-label="Xem danh sách phim: Godzilla x Kong: Đế chế mới"
               >
                 <img
-                  src="images/godzilla.jpg"
+                  src="assets/images/movies/godzilla.jpg"
                   alt="Poster phim Godzilla x Kong: Đế chế mới"
                   width="500"
                   height="750"
@@ -243,9 +259,13 @@
               <div class="movie-meta">
                 <span>Hành động, Phiêu lưu</span><span>2024</span>
               </div>
-              <h3><a href="phim.html">Godzilla x Kong: Đế chế mới</a></h3>
+              <h3>
+                <a href="phim.html?movie=godzilla"
+                  >Godzilla x Kong: Đế chế mới</a
+                >
+              </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 115 phút</p>
-              <a class="button movie-button" href="dat-ve.html"
+              <a class="button movie-button" href="dat-ve.html?movie=godzilla"
                 >Đặt vé <span aria-hidden="true">↗</span></a
               >
             </article>
@@ -258,11 +278,11 @@
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html"
+                href="phim.html?movie=spider-man"
                 aria-label="Xem danh sách phim: Người Nhện: Du hành vũ trụ nhện"
               >
                 <img
-                  src="images/spider-man.jpg"
+                  src="assets/images/movies/spider-man.jpg"
                   alt="Poster phim Người Nhện: Du hành vũ trụ nhện"
                   width="500"
                   height="750"
@@ -274,18 +294,22 @@
               <div class="movie-meta">
                 <span>Hoạt hình, Phiêu lưu</span><span>2023</span>
               </div>
-              <h3><a href="phim.html">Người Nhện: Du hành vũ trụ nhện</a></h3>
+              <h3>
+                <a href="phim.html?movie=spider-man"
+                  >Người Nhện: Du hành vũ trụ nhện</a
+                >
+              </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 140 phút</p>
               <span class="coming-label">Chưa mở đặt vé</span>
             </article>
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html"
+                href="phim.html?movie=interstellar"
                 aria-label="Xem danh sách phim: Interstellar: Hố đen tử thần"
               >
                 <img
-                  src="images/interstellar.jpg"
+                  src="assets/images/movies/interstellar.jpg"
                   alt="Poster phim Interstellar: Hố đen tử thần"
                   width="500"
                   height="750"
@@ -297,7 +321,11 @@
               <div class="movie-meta">
                 <span>Khoa học viễn tưởng</span><span>2014</span>
               </div>
-              <h3><a href="phim.html">Interstellar: Hố đen tử thần</a></h3>
+              <h3>
+                <a href="phim.html?movie=interstellar"
+                  >Interstellar: Hố đen tử thần</a
+                >
+              </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 169 phút</p>
               <span class="coming-label">Chưa mở đặt vé</span>
             </article>
