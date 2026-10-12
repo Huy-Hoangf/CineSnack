@@ -152,7 +152,7 @@
       ? list
           .map(
             (m) =>
-              `<tr><td><div class="table-film"><img src="assets/images/movies/${m.image}" alt="" width="38" height="56"><div><strong>${m.title}</strong><small>${m.genre}</small></div></div></td><td>${m.duration} phút</td><td>${m.age}</td><td><span class="status-badge ${m.status}">${m.status === "now" ? "Đang chiếu" : "Sắp chiếu"}</span></td><td><a class="text-button" href="phim.html?movie=${m.id}">Xem phim ↗</a></td></tr>`,
+              `<tr><td><div class="table-film"><img src="../assets/images/movies/${m.image}" alt="" width="38" height="56"><div><strong>${m.title}</strong><small>${m.genre}</small></div></div></td><td>${m.duration} phút</td><td>${m.age}</td><td><span class="status-badge ${m.status}">${m.status === "now" ? "Đang chiếu" : "Sắp chiếu"}</span></td><td><a class="text-button" href="movies.html?movie=${m.id}">Xem phim ↗</a></td></tr>`,
           )
           .join("")
       : '<tr><td colspan="5" class="table-empty">Không tìm thấy phim phù hợp.</td></tr>';

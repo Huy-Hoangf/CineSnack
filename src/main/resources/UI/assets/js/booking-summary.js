@@ -5,7 +5,7 @@ CineSnack.renderSummary = function (cart) {
   const amount = C.totals(cart);
   document.querySelector("#summary-title").textContent = movie.title;
   const poster = document.querySelector("#summary-poster");
-  poster.src = "assets/images/movies/" + movie.image;
+  poster.src = "../assets/images/movies/" + movie.image;
   poster.alt = "Poster " + movie.title;
   document.querySelector("#summary-when").textContent =
     `${cart.time} · ${C.displayDate(cart.date)}`;

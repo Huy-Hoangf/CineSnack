@@ -1,6 +1,6 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
-const C = require("../../src/main/resources/static/assets/js/shared/cinema.js");
+const C = require("../../../src/main/resources/UI/assets/js/cinema.js");
 const now = new Date(2026, 9, 9, 12);
 const cart = () => ({
   movie: "dune",

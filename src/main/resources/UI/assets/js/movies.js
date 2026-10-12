@@ -10,7 +10,7 @@
   function detail(movie) {
     // Movie data is a fixed, local catalog; search text never enters this template.
     document.querySelector("#movie-detail").innerHTML =
-      `<div class="movie-detail-layout"><img src="assets/images/movies/${movie.image}" alt="Poster ${movie.title}" width="200" height="300"><div><span class="pill">${movie.status === "now" ? "Đang chiếu" : "Sắp chiếu"} · ${movie.age}</span><h2 id="detail-title">${movie.title}</h2><div class="detail-facts"><span>${movie.duration} phút</span><span>· ${movie.genre}</span></div><div class="detail-director">Đạo diễn: ${movie.director}</div><p>${movie.description}</p>${movie.status === "now" ? `<a class="button" href="dat-ve.html?movie=${movie.id}">Chọn suất chiếu ↗</a>` : '<p class="notice">Chưa mở đặt vé. Lịch chiếu sẽ được cập nhật sau.</p>'}<p class="hint">Thông tin phim là nội dung minh họa cho giao diện.</p></div></div>`;
+      `<div class="movie-detail-layout"><img src="../assets/images/movies/${movie.image}" alt="Poster ${movie.title}" width="200" height="300"><div><span class="pill">${movie.status === "now" ? "Đang chiếu" : "Sắp chiếu"} · ${movie.age}</span><h2 id="detail-title">${movie.title}</h2><div class="detail-facts"><span>${movie.duration} phút</span><span>· ${movie.genre}</span></div><div class="detail-director">Đạo diễn: ${movie.director}</div><p>${movie.description}</p>${movie.status === "now" ? `<a class="button" href="booking.html?movie=${movie.id}">Chọn suất chiếu ↗</a>` : '<p class="notice">Chưa mở đặt vé. Lịch chiếu sẽ được cập nhật sau.</p>'}<p class="hint">Thông tin phim là nội dung minh họa cho giao diện.</p></div></div>`;
     dialog.showModal();
   }
   function render() {
@@ -31,7 +31,7 @@
     document.querySelector("#catalog-grid").innerHTML = movies
       .map(
         (m) =>
-          `<article class="movie-card"><button type="button" class="poster" data-detail="${m.id}" aria-label="Thông tin phim ${m.title}"><img src="assets/images/movies/${m.image}" alt="Poster ${m.title}" width="500" height="750" loading="lazy"><span class="age ${m.age === "P" ? "all-ages" : ""}">${m.age}</span><span class="format">2D · Phụ đề</span></button><div class="movie-meta"><span>${m.genre}</span><span>${m.year}</span></div><h3><button type="button" class="movie-title-button" data-detail="${m.id}">${m.title}</button></h3><p class="duration">${m.duration} phút</p>${m.status === "now" ? `<a class="button movie-button" href="dat-ve.html?movie=${m.id}" aria-label="Đặt vé ${m.title}">Đặt vé <span aria-hidden="true">↗</span></a>` : '<span class="coming-label">Chưa mở đặt vé</span>'}</article>`,
+          `<article class="movie-card"><button type="button" class="poster" data-detail="${m.id}" aria-label="Thông tin phim ${m.title}"><img src="../assets/images/movies/${m.image}" alt="Poster ${m.title}" width="500" height="750" loading="lazy"><span class="age ${m.age === "P" ? "all-ages" : ""}">${m.age}</span><span class="format">2D · Phụ đề</span></button><div class="movie-meta"><span>${m.genre}</span><span>${m.year}</span></div><h3><button type="button" class="movie-title-button" data-detail="${m.id}">${m.title}</button></h3><p class="duration">${m.duration} phút</p>${m.status === "now" ? `<a class="button movie-button" href="booking.html?movie=${m.id}" aria-label="Đặt vé ${m.title}">Đặt vé <span aria-hidden="true">↗</span></a>` : '<span class="coming-label">Chưa mở đặt vé</span>'}</article>`,
       )
       .join("");
   }

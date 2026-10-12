@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0769b1" />
     <title>Thanh toán | CineSnack</title>
-    <link rel="stylesheet" href="assets/css/shared/base.css" />
-    <link rel="stylesheet" href="assets/css/shared/app.css" />
-    <script src="assets/js/shared/cinema.js" defer></script>
-    <script src="assets/js/shared/ui.js" defer></script>
-    <script src="assets/js/pages/checkout.js" defer></script>
+    <link rel="stylesheet" href="../assets/css/site.css" />
+    <link rel="stylesheet" href="../assets/css/app.css" />
+    <script src="../assets/js/cinema.js" defer></script>
+    <script src="../assets/js/booking-summary.js" defer></script>
+    <script src="../assets/js/checkout.js" defer></script>
   </head>
   <body class="app-page">
     <a class="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
@@ -45,14 +45,14 @@
           ></a
         >
         <nav class="main-nav" aria-label="Điều hướng chính">
-          <a href="phim.html">Phim</a
-          ><a href="dat-ve.html" class="nav-active" aria-current="page"
+          <a href="movies.html">Phim</a
+          ><a href="booking.html" class="nav-active" aria-current="page"
             >Lịch chiếu</a
           ><a href="index.html#uu-dai">Ưu đãi</a
           ><a href="index.html#bap-nuoc">Bắp & nước</a
           ><a href="index.html#ve-cinesnack">Rạp CineSnack</a>
         </nav>
-        <a class="button header-button" href="dat-ve.html"
+        <a class="button header-button" href="booking.html"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3"
@@ -94,7 +94,7 @@
         <p>
           Đơn chưa được tạo hoặc không còn hợp lệ. Hãy chọn lại phim và ghế.
         </p>
-        <a class="button" href="dat-ve.html">Chọn phim & ghế</a>
+        <a class="button" href="booking.html">Chọn phim & ghế</a>
       </div>
       <div class="container booking-layout" id="checkout-content" hidden>
         <form class="booking-content" id="checkout-form">
@@ -212,7 +212,7 @@
           <div class="summary-movie">
             <img
               id="summary-poster"
-              src="assets/images/movies/dune.jpg"
+              src="../assets/images/movies/dune.jpg"
               alt=""
               width="80"
               height="120"
@@ -247,7 +247,7 @@
               >0 ₫</strong
             >
           </div>
-          <a class="text-link edit-booking" href="dat-ve.html" id="edit-booking"
+          <a class="text-link edit-booking" href="booking.html" id="edit-booking"
             >← Chỉnh sửa ghế & combo</a
           >
           <p class="summary-note">
@@ -273,7 +273,7 @@
         </p>
         <dl class="success-details" id="success-details"></dl>
         <div class="success-actions">
-          <a class="button" href="phim.html">Khám phá phim khác</a
+          <a class="button" href="movies.html">Khám phá phim khác</a
           ><a class="button secondary" href="index.html">Về trang chủ</a>
         </div>
       </section>

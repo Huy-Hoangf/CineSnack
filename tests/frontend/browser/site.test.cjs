@@ -1,7 +1,7 @@
 const assert = require("node:assert/strict");
 const { chromium } = require("playwright");
 const base =
-  process.env.BASE_URL || "http://127.0.0.1:5500/src/main/resources/static/";
+  process.env.BASE_URL || "http://127.0.0.1:8080/html/";
 (async () => {
   const browser = await chromium.launch({
     headless: true,
@@ -25,14 +25,14 @@ const base =
       }
     });
     const go = (name) => page.goto(new URL(name, base).href);
-    await go("phim.html?movie=interstellar");
+    await go("movies.html?movie=interstellar");
     await page.keyboard.press("Escape");
     assert.equal(
       await page.locator('[data-status="soon"]').getAttribute("aria-pressed"),
       "true",
     );
     assert.equal(await page.locator(".catalog-grid .movie-card").count(), 2);
-    await go("phim.html");
+    await go("movies.html");
     assert.equal(await page.locator(".catalog-grid .movie-card").count(), 4);
     await page.locator("#movie-search").fill("HANH DONG");
     assert.equal(await page.locator(".catalog-grid .movie-card").count(), 2);
@@ -51,7 +51,7 @@ const base =
     await page.locator('[data-status="soon"]').click();
     assert.equal(await page.locator(".catalog-grid .movie-card").count(), 2);
     assert.equal(await page.locator(".catalog-grid .movie-button").count(), 0);
-    await go("dat-ve.html?movie=inside-out");
+    await go("booking.html?movie=inside-out");
     assert.equal(
       await page.locator("#booking-movie").inputValue(),
       "inside-out",
@@ -78,13 +78,13 @@ const base =
     await page.locator('[data-seat="D1"]').click();
     const total = await page.locator("#summary-total").textContent();
     await page.locator("#continue-booking").click();
-    await page.waitForURL("**/thanh-toan.html");
+    await page.waitForURL("**/checkout.html");
     assert.equal(await page.locator("#summary-total").textContent(), total);
     await page.locator("#edit-booking").click();
     assert.equal(await page.locator('.seat[aria-pressed="true"]').count(), 2);
     assert.equal(await page.locator("#qty-solo").textContent(), "1");
     await page.locator("#continue-booking").click();
-    await page.waitForURL("**/thanh-toan.html");
+    await page.waitForURL("**/checkout.html");
     await page.locator('#checkout-form button[type="submit"]').click();
     assert(await page.locator("#checkout-content").isVisible());
     assert(
@@ -139,13 +139,13 @@ const base =
       await page.setViewportSize({ width, height: 900 });
       for (const file of [
         "index.html",
-        "phim.html",
-        "dat-ve.html",
-        "thanh-toan.html",
+        "movies.html",
+        "booking.html",
+        "checkout.html",
         "admin.html",
       ]) {
         await go(file);
-        if (file === "thanh-toan.html") {
+        if (file === "checkout.html") {
           await page.evaluate(() =>
             sessionStorage.setItem(
               CineSnack.storageKey,
@@ -210,7 +210,7 @@ const base =
         throw new DOMException("Storage blocked", "SecurityError");
       };
     });
-    await blocked.goto(new URL("dat-ve.html", base).href);
+    await blocked.goto(new URL("booking.html", base).href);
     await blocked.locator('[data-seat="A1"]').click();
     await blocked.locator("#continue-booking").click();
     assert(
@@ -218,7 +218,7 @@ const base =
         "lưu lựa chọn",
       ),
     );
-    assert(blocked.url().endsWith("dat-ve.html"));
+    assert(blocked.url().endsWith("booking.html"));
     await blocked.close();
     assert.deepEqual(errors, []);
     assert.deepEqual(

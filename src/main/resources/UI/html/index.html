@@ -9,7 +9,7 @@
     />
     <meta name="theme-color" content="#0769b1" />
     <title>CineSnack | Hẹn nhau ở rạp</title>
-    <link rel="stylesheet" href="assets/css/shared/base.css" />
+    <link rel="stylesheet" href="../assets/css/site.css" />
   </head>
   <body>
     <a class="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
@@ -46,11 +46,11 @@
         >
         <nav class="main-nav" aria-label="Điều hướng chính">
           <a href="#phim" class="nav-active">Phim</a
-          ><a href="dat-ve.html">Lịch chiếu</a><a href="#uu-dai">Ưu đãi</a
+          ><a href="booking.html">Lịch chiếu</a><a href="#uu-dai">Ưu đãi</a
           ><a href="#bap-nuoc">Bắp & nước</a
           ><a href="#ve-cinesnack">Rạp CineSnack</a>
         </nav>
-        <a class="button header-button" href="dat-ve.html"
+        <a class="button header-button" href="booking.html"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3"
@@ -65,15 +65,15 @@
           <source
             type="image/webp"
             srcset="
-              assets/images/banners/dune-hero-480.webp   480w,
-              assets/images/banners/dune-hero-960.webp   960w,
-              assets/images/banners/dune-hero-1600.webp 1600w
+              ../assets/images/banners/dune-hero-480.webp   480w,
+              ../assets/images/banners/dune-hero-960.webp   960w,
+              ../assets/images/banners/dune-hero-1600.webp 1600w
             "
             sizes="100vw"
           />
           <img
             class="hero-image"
-            src="assets/images/banners/dune-hero.jpg"
+            src="../assets/images/banners/dune-hero.jpg"
             alt="Các nhân vật trong Dune: Hành tinh cát – Phần hai"
             width="2000"
             height="3000"
@@ -82,40 +82,22 @@
         </picture>
         <div class="container hero-inner">
           <div class="hero-copy">
-            <span class="eyebrow hero-eyebrow"
-              ><span></span> TÂM ĐIỂM ĐIỆN ẢNH</span
-            >
-            <p class="hero-kicker">ĐẠI CẢNH TRÊN MÀN ẢNH LỚN</p>
-            <h1 id="hero-title">DUNE<span>HÀNH TINH CÁT · PHẦN HAI</span></h1>
+            <p class="hero-kicker">Phim nổi bật</p>
+            <h1 id="hero-title">DUNE<span>Hành tinh cát · Phần hai</span></h1>
             <p class="hero-description">
-              Một hành trình vượt ngoài trí tưởng tượng.<br />Đắm chìm trong thế
-              giới điện ảnh tại CineSnack.
+              Paul Atreides tiếp tục hành trình cùng người Fremen
+              trên hành tinh Arrakis.
             </p>
             <div class="hero-meta">
-              <span class="hero-age">T16</span><span>166 phút</span
-              ><span>Phiêu lưu · Khoa học viễn tưởng</span>
+              <span class="hero-age">T16</span><span>166 phút</span>
+              <span>Phiêu lưu · Khoa học viễn tưởng</span>
             </div>
-            <a href="dat-ve.html?movie=dune" class="button hero-button"
-              >Khám phá suất chiếu <span aria-hidden="true">↗</span></a
-            >
+            <a href="booking.html?movie=dune" class="button hero-button">
+              Chọn suất chiếu
+            </a>
           </div>
-          <span class="hero-caption"
-            >TRẢI NGHIỆM ĐIỆN ẢNH, TRỌN TỪNG KHOẢNH KHẮC</span
-          >
         </div>
       </section>
-      <div class="container visit-strip">
-        <div>
-          <span class="strip-icon" aria-hidden="true">✦</span>
-          <p>
-            <strong>Hẹn nhau ở CineSnack</strong
-            ><span>Phim hay, bắp giòn, trải nghiệm trọn vẹn.</span>
-          </p>
-        </div>
-        <a href="#phim"
-          >Tìm bộ phim của bạn <span aria-hidden="true">↓</span></a
-        >
-      </div>
       <section
         class="container movies-section"
         id="phim"
@@ -123,10 +105,9 @@
       >
         <div class="section-heading">
           <div>
-            <span class="eyebrow">MÀN ẢNH LỚN ĐANG CHỜ</span>
-            <h2 id="movies-title">Hôm nay xem gì?</h2>
+            <h2 id="movies-title">Phim tại CineSnack</h2>
           </div>
-          <a class="text-link" href="phim.html"
+          <a class="text-link" href="movies.html"
             >Tất cả phim <span aria-hidden="true">↗</span></a
           >
         </div>
@@ -156,11 +137,11 @@
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html?movie=dune"
+                href="movies.html?movie=dune"
                 aria-label="Xem danh sách phim: Dune: Hành tinh cát – Phần hai"
               >
                 <img
-                  src="assets/images/movies/dune.jpg"
+                  src="../assets/images/movies/dune.jpg"
                   alt="Poster phim Dune: Hành tinh cát – Phần hai"
                   width="500"
                   height="750"
@@ -173,23 +154,23 @@
                 <span>Khoa học viễn tưởng, Phiêu lưu</span><span>2024</span>
               </div>
               <h3>
-                <a href="phim.html?movie=dune"
+                <a href="movies.html?movie=dune"
                   >Dune: Hành tinh cát – Phần hai</a
                 >
               </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 166 phút</p>
-              <a class="button movie-button" href="dat-ve.html?movie=dune"
+              <a class="button movie-button" href="booking.html?movie=dune"
                 >Đặt vé <span aria-hidden="true">↗</span></a
               >
             </article>
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html?movie=inside-out"
+                href="movies.html?movie=inside-out"
                 aria-label="Xem danh sách phim: Những mảnh ghép cảm xúc 2"
               >
                 <img
-                  src="assets/images/movies/inside-out.jpg"
+                  src="../assets/images/movies/inside-out.jpg"
                   alt="Poster phim Những mảnh ghép cảm xúc 2"
                   width="500"
                   height="750"
@@ -202,23 +183,23 @@
                 <span>Hoạt hình, Gia đình</span><span>2024</span>
               </div>
               <h3>
-                <a href="phim.html?movie=inside-out"
+                <a href="movies.html?movie=inside-out"
                   >Những mảnh ghép cảm xúc 2</a
                 >
               </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 96 phút</p>
-              <a class="button movie-button" href="dat-ve.html?movie=inside-out"
+              <a class="button movie-button" href="booking.html?movie=inside-out"
                 >Đặt vé <span aria-hidden="true">↗</span></a
               >
             </article>
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html?movie=kung-fu-panda"
+                href="movies.html?movie=kung-fu-panda"
                 aria-label="Xem danh sách phim: Kung Fu Panda 4"
               >
                 <img
-                  src="assets/images/movies/kung-fu-panda.jpg"
+                  src="../assets/images/movies/kung-fu-panda.jpg"
                   alt="Poster phim Kung Fu Panda 4"
                   width="500"
                   height="750"
@@ -231,23 +212,23 @@
                 <span>Hoạt hình, Hành động</span><span>2024</span>
               </div>
               <h3>
-                <a href="phim.html?movie=kung-fu-panda">Kung Fu Panda 4</a>
+                <a href="movies.html?movie=kung-fu-panda">Kung Fu Panda 4</a>
               </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 94 phút</p>
               <a
                 class="button movie-button"
-                href="dat-ve.html?movie=kung-fu-panda"
+                href="booking.html?movie=kung-fu-panda"
                 >Đặt vé <span aria-hidden="true">↗</span></a
               >
             </article>
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html?movie=godzilla"
+                href="movies.html?movie=godzilla"
                 aria-label="Xem danh sách phim: Godzilla x Kong: Đế chế mới"
               >
                 <img
-                  src="assets/images/movies/godzilla.jpg"
+                  src="../assets/images/movies/godzilla.jpg"
                   alt="Poster phim Godzilla x Kong: Đế chế mới"
                   width="500"
                   height="750"
@@ -260,12 +241,12 @@
                 <span>Hành động, Phiêu lưu</span><span>2024</span>
               </div>
               <h3>
-                <a href="phim.html?movie=godzilla"
+                <a href="movies.html?movie=godzilla"
                   >Godzilla x Kong: Đế chế mới</a
                 >
               </h3>
               <p class="duration"><span aria-hidden="true">◷</span> 115 phút</p>
-              <a class="button movie-button" href="dat-ve.html?movie=godzilla"
+              <a class="button movie-button" href="booking.html?movie=godzilla"
                 >Đặt vé <span aria-hidden="true">↗</span></a
               >
             </article>
@@ -278,11 +259,11 @@
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html?movie=spider-man"
+                href="movies.html?movie=spider-man"
                 aria-label="Xem danh sách phim: Người Nhện: Du hành vũ trụ nhện"
               >
                 <img
-                  src="assets/images/movies/spider-man.jpg"
+                  src="../assets/images/movies/spider-man.jpg"
                   alt="Poster phim Người Nhện: Du hành vũ trụ nhện"
                   width="500"
                   height="750"
@@ -295,7 +276,7 @@
                 <span>Hoạt hình, Phiêu lưu</span><span>2023</span>
               </div>
               <h3>
-                <a href="phim.html?movie=spider-man"
+                <a href="movies.html?movie=spider-man"
                   >Người Nhện: Du hành vũ trụ nhện</a
                 >
               </h3>
@@ -305,11 +286,11 @@
             <article class="movie-card">
               <a
                 class="poster"
-                href="phim.html?movie=interstellar"
+                href="movies.html?movie=interstellar"
                 aria-label="Xem danh sách phim: Interstellar: Hố đen tử thần"
               >
                 <img
-                  src="assets/images/movies/interstellar.jpg"
+                  src="../assets/images/movies/interstellar.jpg"
                   alt="Poster phim Interstellar: Hố đen tử thần"
                   width="500"
                   height="750"
@@ -322,7 +303,7 @@
                 <span>Khoa học viễn tưởng</span><span>2014</span>
               </div>
               <h3>
-                <a href="phim.html?movie=interstellar"
+                <a href="movies.html?movie=interstellar"
                   >Interstellar: Hố đen tử thần</a
                 >
               </h3>
@@ -344,46 +325,28 @@
         <div class="container">
           <div class="section-heading">
             <div>
-              <span class="eyebrow">THÊM NIỀM VUI, THÊM ƯU ĐÃI</span>
-              <h2 id="offers-title">Đi xem phim, nhận thêm vui</h2>
+              <h2 id="offers-title">Bắp nước &amp; đặt vé</h2>
             </div>
-            <span class="section-aside"
-              >Dành cho những cuộc hẹn thật đáng nhớ.</span
-            >
           </div>
           <div class="offers-grid">
             <article class="offer offer-snack" id="bap-nuoc">
               <div class="offer-copy">
                 <span class="offer-tag">BẮP & NƯỚC</span>
-                <h3>Phim hay hơn<br />khi có bạn. Và bắp!</h3>
-                <p>Combo bắp nước cho cuộc hẹn thêm trọn vẹn.</p>
-                <a href="dat-ve.html" class="offer-link"
+                <h3>Combo bắp &amp; nước</h3>
+                <p>Chọn combo bắp nước trong bước đặt vé.</p>
+                <a href="booking.html" class="offer-link"
                   >Chọn phim, thêm combo <span aria-hidden="true">↗</span></a
                 >
-              </div>
-              <div class="snack-art" aria-hidden="true">
-                <div class="drink">
-                  <span>Cine<br />Snack</span>
-                </div>
-                <div class="popcorn">
-                  <div class="kernels"></div>
-                  <span>CINE<br />SNACK</span>
-                </div>
-                <span class="snack-star">✦</span>
               </div>
             </article>
             <article class="offer offer-cinema">
               <div class="offer-copy">
-                <span class="offer-tag">HẸN HÒ ĐIỆN ẢNH</span>
-                <h3>Tắt deadline.<br />Bật màn ảnh lớn.</h3>
-                <p>Dành một khoảng thời gian cho bộ phim bạn yêu thích.</p>
+                <span class="offer-tag">ĐẶT VÉ</span>
+                <h3>Chọn phim và suất chiếu</h3>
+                <p>Xem danh sách phim và chọn suất chiếu phù hợp.</p>
                 <a href="#phim" class="offer-link"
-                  >Khám phá phim ngay <span aria-hidden="true">↗</span></a
+                  >Xem phim đang chiếu <span aria-hidden="true">↗</span></a
                 >
-              </div>
-              <div class="ticket-art" aria-hidden="true">
-                <span>CINESNACK</span><strong>MOVIE<br />TIME</strong>
-                <div>ADMIT ONE <b>✦</b></div>
               </div>
             </article>
           </div>
@@ -391,13 +354,11 @@
       </section>
       <section class="container about-section" id="ve-cinesnack">
         <div>
-          <span class="eyebrow">RẠP NHỎ, TRẢI NGHIỆM LỚN</span>
-          <h2>Mỗi bộ phim là một cuộc hẹn.</h2>
+          <h2>Về CineSnack</h2>
         </div>
         <p>
-          CineSnack mang đến không gian để bạn cùng những người thân yêu tận
-          hưởng điện ảnh. Chọn một bộ phim, thêm chút bắp nước và để những
-          khoảnh khắc đáng nhớ bắt đầu.
+          Tại CineSnack, bạn có thể xem thông tin phim, chọn suất chiếu,
+          đặt ghế và thêm combo bắp nước trong cùng một lượt đặt vé.
         </p>
       </section>
     </main>
