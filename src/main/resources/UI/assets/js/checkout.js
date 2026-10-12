@@ -14,7 +14,7 @@
   document.querySelector("#checkout-content").hidden = false;
   C.renderSummary(cart);
   document.querySelector("#edit-booking").href =
-    "dat-ve.html?movie=" + cart.movie;
+    "booking.html?movie=" + cart.movie;
   const form = document.querySelector("#checkout-form");
   const name = document.querySelector("#customer-name");
   name.addEventListener("input", () => name.setCustomValidity(""));

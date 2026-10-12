@@ -10,24 +10,27 @@
 }
 .segmented {
   display: inline-flex;
-  gap: 6px;
-  padding: 5px;
-  background: #e6edf4;
-  border-radius: 8px;
+  gap: 20px;
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  border-bottom: 1px solid var(--line);
 }
 .segmented button {
   background: transparent;
   color: var(--muted);
-  padding: 11px 18px;
-  border-radius: 5px;
+  padding: 12px 0;
+  border-radius: 0;
+  border-bottom: 3px solid transparent;
   font-size: 14px;
   min-height: 44px;
   font-weight: 700;
 }
 .segmented button.selected {
-  background: #fff;
+  background: transparent;
   color: var(--blue);
-  box-shadow: 0 2px 5px #173a5410;
+  border-bottom-color: var(--blue);
+  box-shadow: none;
 }
 .segmented span {
   font-size: 11px;
@@ -58,10 +61,10 @@
   gap: 26px;
 }
 .catalog-grid .movie-card {
-  background: #fff;
-  padding: 12px;
-  border: 1px solid var(--line);
-  border-radius: 11px;
+  background: transparent;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
 }
 .catalog-grid .poster {
   border: 0;
@@ -120,9 +123,10 @@
   justify-content: space-between;
   align-items: center;
   gap: 30px;
-  background: #e7f1fa;
+  background: #fff;
   padding: 30px;
-  border-radius: 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
   margin-top: 36px;
 }
 .cinema-callout h2 {
@@ -163,14 +167,11 @@
     align-self: flex-start;
   }
   .segmented button {
-    padding-inline: 15px;
+    padding-inline: 0;
     font-size: 13px;
   }
   .catalog-grid {
     gap: 20px 12px;
-  }
-  .catalog-grid .movie-card {
-    padding: 8px;
   }
   .catalog-grid .movie-card h3 {
     font-size: 14px;

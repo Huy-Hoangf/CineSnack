@@ -129,7 +129,7 @@
     }
     try {
       sessionStorage.setItem(C.storageKey, JSON.stringify(cart));
-      location.href = "thanh-toan.html";
+      location.href = "checkout.html";
     } catch {
       document.querySelector("#booking-error").textContent =
         "Trình duyệt không cho phép lưu lựa chọn trong phiên. Hãy bật lưu trữ của trang rồi thử lại.";

@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0769b1" />
     <title>Khám phá phim | CineSnack</title>
-    <link rel="stylesheet" href="assets/css/shared/base.css" />
-    <link rel="stylesheet" href="assets/css/shared/app.css" />
-    <link rel="stylesheet" href="assets/css/pages/catalog.css" />
-    <script src="assets/js/shared/cinema.js" defer></script>
-    <script src="assets/js/shared/ui.js" defer></script>
-    <script src="assets/js/pages/movies.js" defer></script>
+    <link rel="stylesheet" href="../assets/css/site.css" />
+    <link rel="stylesheet" href="../assets/css/app.css" />
+    <link rel="stylesheet" href="../assets/css/movies.css" />
+    <script src="../assets/js/cinema.js" defer></script>
+    <script src="../assets/js/booking-summary.js" defer></script>
+    <script src="../assets/js/movies.js" defer></script>
   </head>
   <body class="app-page">
     <a class="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
@@ -46,13 +46,13 @@
           ></a
         >
         <nav class="main-nav" aria-label="Điều hướng chính">
-          <a href="phim.html" class="nav-active" aria-current="page">Phim</a
-          ><a href="dat-ve.html">Lịch chiếu</a
+          <a href="movies.html" class="nav-active" aria-current="page">Phim</a
+          ><a href="booking.html">Lịch chiếu</a
           ><a href="index.html#uu-dai">Ưu đãi</a
           ><a href="index.html#bap-nuoc">Bắp & nước</a
           ><a href="index.html#ve-cinesnack">Rạp CineSnack</a>
         </nav>
-        <a class="button header-button" href="dat-ve.html"
+        <a class="button header-button" href="booking.html"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3"
@@ -74,10 +74,9 @@
             <a href="index.html">Trang chủ</a><span aria-hidden="true">/</span
             ><span>Khám phá phim</span>
           </nav>
-          <span class="eyebrow">MÀN ẢNH LỚN ĐANG CHỜ</span>
           <h1>Khám phá phim</h1>
           <p>
-            Chọn một câu chuyện. Dành thời gian cho những điều bạn yêu thích.
+            Xem thông tin phim, tìm theo tên hoặc thể loại và chọn suất chiếu.
           </p>
         </div>
       </section>
@@ -123,14 +122,13 @@
       </section>
       <section class="container cinema-callout">
         <div>
-          <span class="eyebrow">PHIM HAY, GHẾ ĐẸP</span>
-          <h2>Một cuộc hẹn đang chờ bạn.</h2>
+          <h2>Chọn phim và suất chiếu</h2>
           <p>
-            Chọn suất chiếu yêu thích, phần bắp nước còn lại để CineSnack lo.
+            Chọn ghế và thêm combo bắp nước khi đặt vé.
           </p>
         </div>
-        <a class="button" href="dat-ve.html"
-          >Khám phá lịch chiếu <span aria-hidden="true">↗</span></a
+        <a class="button" href="booking.html"
+          >Xem lịch chiếu <span aria-hidden="true">↗</span></a
         >
       </section>
       <dialog
