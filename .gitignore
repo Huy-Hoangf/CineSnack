@@ -6,3 +6,6 @@
 *.log
 .env
 *.local.properties
+
+# Keep each developer's database credentials local.
+/src/main/java/com/cinesnack/config/DatabaseConnection.java

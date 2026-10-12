@@ -50,11 +50,19 @@ test("only now-showing movies and known slots can be booked", () => {
     assert.equal(C.validCart({ ...cart(), ...patch }, now), false);
 });
 test("reject excessive or malformed snack quantities and oversized seat selection", () => {
-  for (const solo of [-1, 9, 1.5, "1", Infinity])
+  assert.equal(
+    C.validCart({ ...cart(), combos: { solo: 10, duo: 10 } }, now),
+    true,
+  );
+  for (const solo of [-1, 11, 1.5, "1", Infinity])
     assert.equal(
       C.validCart({ ...cart(), combos: { solo, duo: 0 } }, now),
       false,
     );
+  assert.equal(
+    C.validCart({ ...cart(), combos: { solo: 0, duo: 11 } }, now),
+    false,
+  );
   const unavailable = C.occupied("dune", "2026-10-09", "19:30");
   const available = [..."AB"].flatMap((row) =>
     Array.from({ length: 10 }, (_, i) => row + (i + 1)).filter(
@@ -62,11 +70,11 @@ test("reject excessive or malformed snack quantities and oversized seat selectio
     ),
   );
   assert.equal(
-    C.validCart({ ...cart(), seats: available.slice(0, 8) }, now),
+    C.validCart({ ...cart(), seats: available.slice(0, 10) }, now),
     true,
   );
   assert.equal(
-    C.validCart({ ...cart(), seats: available.slice(0, 9) }, now),
+    C.validCart({ ...cart(), seats: available.slice(0, 11) }, now),
     false,
   );
 });

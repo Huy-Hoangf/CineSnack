@@ -70,9 +70,9 @@ const base =
     assert(await page.locator("#continue-booking").isDisabled());
     assert.equal(await page.locator('.seat[aria-pressed="true"]').count(), 0);
     const seats = page.locator(".seat:not(:disabled)");
-    for (let i = 0; i < 9; i++) await seats.nth(i).click();
-    assert.equal(await page.locator('.seat[aria-pressed="true"]').count(), 8);
-    assert((await page.locator("#seat-error").textContent()).includes("8"));
+    for (let i = 0; i < 11; i++) await seats.nth(i).click();
+    assert.equal(await page.locator('.seat[aria-pressed="true"]').count(), 10);
+    assert((await page.locator("#seat-error").textContent()).includes("10"));
     await page.locator("#booking-movie").selectOption("dune");
     await page.locator('[data-seat="A1"]').click();
     await page.locator('[data-seat="D1"]').click();
