@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class CsrfController {
+
     @GetMapping("/api/csrf")
-    public CsrfToken maCsrf(CsrfToken maCsrf) { return maCsrf; }
+    public CsrfToken maCsrf(CsrfToken maCsrf) {
+        return maCsrf;
+    }
 }

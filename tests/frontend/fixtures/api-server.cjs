@@ -38,12 +38,8 @@ function taoMayChu() {
       roomId: 1,
       status: "HOAT_DONG",
     })),
-    combos: [
-      { id: 21, name: "Combo Một Mình Vui", price: 59000, status: "HOAT_DONG" },
-    ],
-    products: [
-      { id: 31, name: "Nước ngọt", price: 30000, status: "HOAT_DONG" },
-    ],
+    combos: [{ id: 21, name: "Combo Một Mình Vui", price: 59000, status: "HOAT_DONG" }],
+    products: [{ id: 31, name: "Nước ngọt", price: 30000, status: "HOAT_DONG" }],
   };
   const taiKhoan = [
     {
@@ -78,10 +74,7 @@ function taoMayChu() {
   }
   function xuLyHetHan() {
     for (const ct of orders.values()) {
-      if (
-        ct.order.status === "CHO_THANH_TOAN" &&
-        Date.parse(ct.order.expiresAt) <= hienTai
-      )
+      if (ct.order.status === "CHO_THANH_TOAN" && Date.parse(ct.order.expiresAt) <= hienTai)
         doiTrangThai(ct, "HET_HAN");
     }
   }
@@ -89,8 +82,7 @@ function taoMayChu() {
     return [...orders.values()].some((ct) =>
       ct.tickets.some(
         (ve) =>
-          ve.seatId === id &&
-          ["CHO_THANH_TOAN", "DA_THANH_TOAN", "DA_SOAT"].includes(ve.status),
+          ve.seatId === id && ["CHO_THANH_TOAN", "DA_THANH_TOAN", "DA_SOAT"].includes(ve.status),
       ),
     );
   }
@@ -112,14 +104,9 @@ function taoMayChu() {
     }
     if (!body.seatIds.length && !body.snacks.length && !body.combos.length)
       loi(400, "Đơn hàng đang trống.");
-    if (
-      body.seatIds.length
-        ? !Number.isInteger(body.showTimeId)
-        : body.showTimeId != null
-    )
+    if (body.seatIds.length ? !Number.isInteger(body.showTimeId) : body.showTimeId != null)
       loi(400, "Suất và ghế phải được chọn cùng nhau.");
-    if (new Set(body.seatIds).size !== body.seatIds.length)
-      loi(400, "Ghế bị trùng.");
+    if (new Set(body.seatIds).size !== body.seatIds.length) loi(400, "Ghế bị trùng.");
     if (body.seatIds.length) {
       if (
         body.showTimeId !== catalog.showTime.id ||
@@ -129,11 +116,7 @@ function taoMayChu() {
         loi(409, "Suất chiếu đã bắt đầu hoặc không nhận đặt vé.");
       for (const id of body.seatIds) {
         const ghe = catalog.seats.find((g) => g.id === id);
-        if (
-          !ghe ||
-          ghe.roomId !== catalog.showTime.roomId ||
-          ghe.status !== "HOAT_DONG"
-        )
+        if (!ghe || ghe.roomId !== catalog.showTime.roomId || ghe.status !== "HOAT_DONG")
           loi(400, "Ghế không hợp lệ hoặc sai phòng.");
         if (gheDaGiu(id)) loi(409, "Ghế đã được người khác giữ hoặc mua.");
       }
@@ -157,8 +140,7 @@ function taoMayChu() {
           loi(400, "Sản phẩm/combo hoặc số lượng không hợp lệ.");
         dsId.add(chon[idKey]);
         const hang = dsCatalog.find((g) => g.id === chon[idKey]);
-        if (!hang || hang.status !== "HOAT_DONG")
-          loi(409, "Sản phẩm hoặc combo không còn bán.");
+        if (!hang || hang.status !== "HOAT_DONG") loi(409, "Sản phẩm hoặc combo không còn bán.");
         dsDong.push({
           productId: key === "snacks" ? hang.id : null,
           comboId: key === "combos" ? hang.id : null,
@@ -190,9 +172,7 @@ function taoMayChu() {
         expiresAt: new Date(
           Math.min(
             hienTai + 15 * 60000,
-            body.seatIds.length
-              ? Date.parse(catalog.showTime.startsAt)
-              : Infinity,
+            body.seatIds.length ? Date.parse(catalog.showTime.startsAt) : Infinity,
           ),
         ).toISOString(),
       },
@@ -235,16 +215,11 @@ function taoMayChu() {
   }
   function traTien(ct, body) {
     const tienDua = body?.amountReceived;
-    if (
-      !Number.isSafeInteger(tienDua) ||
-      tienDua < ct.order.total ||
-      tienDua > 999999999999
-    )
+    if (!Number.isSafeInteger(tienDua) || tienDua < ct.order.total || tienDua > 999999999999)
       loi(400, "Số tiền khách đưa phải là số nguyên và đủ tổng tiền.");
     if (ct.order.status === "DA_THANH_TOAN")
       return { payment: ct.payments[0], change: tienDua - ct.order.total };
-    if (ct.order.status !== "CHO_THANH_TOAN")
-      loi(409, "Đơn không còn được thanh toán.");
+    if (ct.order.status !== "CHO_THANH_TOAN") loi(409, "Đơn không còn được thanh toán.");
     const banCu = structuredClone(ct);
     try {
       const payment = {
@@ -259,8 +234,7 @@ function taoMayChu() {
       };
       ct.payments.push(payment);
       doiTrangThai(ct, "DA_THANH_TOAN");
-      for (const hd of ct.invoices)
-        hd.issuedAt = new Date(hienTai).toISOString();
+      for (const hd of ct.invoices) hd.issuedAt = new Date(hienTai).toISOString();
       if (loiHoaDon) {
         loiHoaDon = false;
         throw new Error("Lỗi phát hành được tiêm trong kiểm thử.");
@@ -285,10 +259,7 @@ function taoMayChu() {
         const goc = path.resolve(__dirname, "../../../src/main/resources/UI");
         const file = path.resolve(
           goc,
-          "." +
-            (url.pathname === "/"
-              ? "/html/index.html"
-              : decodeURIComponent(url.pathname)),
+          "." + (url.pathname === "/" ? "/html/index.html" : decodeURIComponent(url.pathname)),
         );
         if (!file.startsWith(goc + path.sep) || req.method !== "GET")
           return gui(404, { message: "Không tìm thấy." });
@@ -301,34 +272,25 @@ function taoMayChu() {
           ".png": "image/png",
           ".webp": "image/webp",
         }[path.extname(file)];
-        if (!mime || !fs.existsSync(file))
-          return gui(404, { message: "Không tìm thấy." });
+        if (!mime || !fs.existsSync(file)) return gui(404, { message: "Không tìm thấy." });
         res.writeHead(200, {
           "Content-Type": mime + "; charset=utf-8",
           "Cache-Control": "no-store",
         });
         return res.end(fs.readFileSync(file));
       }
-      const idPhien = /(?:^|;\s*)SIMSESSION=([a-f0-9]+)/.exec(
-        req.headers.cookie || "",
-      )?.[1];
+      const idPhien = /(?:^|;\s*)SIMSESSION=([a-f0-9]+)/.exec(req.headers.cookie || "")?.[1];
       let session = phien.get(idPhien);
       if (url.pathname === "/api/csrf" && req.method === "GET") {
         if (!session) {
           const id = tokenMoi();
           session = { token: tokenMoi(), user: null };
           phien.set(id, session);
-          res.setHeader(
-            "Set-Cookie",
-            `SIMSESSION=${id}; HttpOnly; SameSite=Strict; Path=/`,
-          );
+          res.setHeader("Set-Cookie", `SIMSESSION=${id}; HttpOnly; SameSite=Strict; Path=/`);
         }
         return gui(200, { headerName: "X-CSRF-TOKEN", token: session.token });
       }
-      if (
-        req.method === "POST" &&
-        (!session || req.headers["x-csrf-token"] !== session.token)
-      )
+      if (req.method === "POST" && (!session || req.headers["x-csrf-token"] !== session.token))
         loi(403, "Thiếu hoặc sai token CSRF.");
       let body;
       if (req.method === "POST") {
@@ -338,9 +300,7 @@ function taoMayChu() {
           if (Buffer.byteLength(noiDung) > 16384) loi(413, "Dữ liệu quá lớn.");
         }
         try {
-          body = req.headers["content-type"]?.startsWith(
-            "application/x-www-form-urlencoded",
-          )
+          body = req.headers["content-type"]?.startsWith("application/x-www-form-urlencoded")
             ? Object.fromEntries(new URLSearchParams(noiDung))
             : JSON.parse(noiDung || "{}");
         } catch {
@@ -354,10 +314,7 @@ function taoMayChu() {
         phien.delete(idPhien);
         const id = tokenMoi();
         phien.set(id, { token: tokenMoi(), user });
-        res.setHeader(
-          "Set-Cookie",
-          `SIMSESSION=${id}; HttpOnly; SameSite=Strict; Path=/`,
-        );
+        res.setHeader("Set-Cookie", `SIMSESSION=${id}; HttpOnly; SameSite=Strict; Path=/`);
         return gui(204);
       }
       xuLyHetHan();
@@ -386,9 +343,7 @@ function taoMayChu() {
             catalog.seats.map((g) => ({
               ...g,
               price: catalog.showTime.price,
-              available:
-                !gheDaGiu(g.id) &&
-                Date.parse(catalog.showTime.startsAt) > hienTai,
+              available: !gheDaGiu(g.id) && Date.parse(catalog.showTime.startsAt) > hienTai,
             })),
           );
         if (url.pathname === "/api/snacks")
@@ -399,14 +354,10 @@ function taoMayChu() {
       }
       const user = session?.user;
       if (!user) loi(401, "Bạn cần đăng nhập.");
-      if (url.pathname === "/api/auth/me" && req.method === "GET")
-        return gui(200, user);
+      if (url.pathname === "/api/auth/me" && req.method === "GET") return gui(200, user);
       if (url.pathname === "/api/auth/logout" && req.method === "POST") {
         phien.delete(idPhien);
-        res.setHeader(
-          "Set-Cookie",
-          "SIMSESSION=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0",
-        );
+        res.setHeader("Set-Cookie", "SIMSESSION=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0");
         return gui(204);
       }
       const laNhanVien = ["NHAN_VIEN", "QUAN_TRI"].includes(user.role);
@@ -415,9 +366,7 @@ function taoMayChu() {
         if (req.method === "GET")
           return gui(
             200,
-            [...orders.values()]
-              .filter((ct) => ct.order.userId === user.id)
-              .map((ct) => ct.order),
+            [...orders.values()].filter((ct) => ct.order.userId === user.id).map((ct) => ct.order),
           );
       }
       if (url.pathname === "/api/admin/orders" && req.method === "GET") {
@@ -427,10 +376,9 @@ function taoMayChu() {
           [...orders.values()].map((ct) => ct.order),
         );
       }
-      const match =
-        /^\/api\/orders\/([A-Za-z0-9]+)(?:\/(cancel|invoices|payments\/cash))?$/.exec(
-          url.pathname,
-        );
+      const match = /^\/api\/orders\/([A-Za-z0-9]+)(?:\/(cancel|invoices|payments\/cash))?$/.exec(
+        url.pathname,
+      );
       if (!match) loi(404, "Không tìm thấy API.");
       const ct = orders.get(match[1]);
       if (!ct) loi(404, "Không tìm thấy đơn.");
@@ -443,13 +391,11 @@ function taoMayChu() {
           snacks: ct.snacks,
         });
       if (match[2] === "invoices" && req.method === "GET") {
-        if (ct.order.status !== "DA_THANH_TOAN")
-          loi(404, "Đơn chưa có hóa đơn đã thanh toán.");
+        if (ct.order.status !== "DA_THANH_TOAN") loi(404, "Đơn chưa có hóa đơn đã thanh toán.");
         return gui(200, ct.invoices);
       }
       if (match[2] === "cancel" && req.method === "POST") {
-        if (ct.order.status === "DA_THANH_TOAN")
-          loi(409, "Không hủy đơn đã thanh toán.");
+        if (ct.order.status === "DA_THANH_TOAN") loi(409, "Không hủy đơn đã thanh toán.");
         if (ct.order.status === "CHO_THANH_TOAN") doiTrangThai(ct, "HUY");
         return gui(200, ct.order);
       }
@@ -481,12 +427,7 @@ function taoMayChu() {
 module.exports = { taoMayChu };
 if (require.main === module) {
   const moPhong = taoMayChu();
-  moPhong.server.listen(
-    Number(process.env.SIM_PORT || 18766),
-    "127.0.0.1",
-    () =>
-      console.log(
-        `CineSnack FE fixture: http://127.0.0.1:${moPhong.server.address().port}`,
-      ),
+  moPhong.server.listen(Number(process.env.SIM_PORT || 18766), "127.0.0.1", () =>
+    console.log(`CineSnack FE fixture: http://127.0.0.1:${moPhong.server.address().port}`),
   );
 }

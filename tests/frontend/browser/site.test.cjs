@@ -17,10 +17,7 @@ thu("Chỉnh sửa giỏ giữ ID và số lượng, lấy lại giá mới từ
   await p.locator("#sua-dat-ve").click();
   await p.waitForURL("**/booking.html?phim=1");
   await p.locator('[data-ghe-id="11"]').waitFor();
-  kt.equal(
-    await p.locator('[data-ghe-id="11"]').getAttribute("aria-pressed"),
-    "true",
-  );
+  kt.equal(await p.locator('[data-ghe-id="11"]').getAttribute("aria-pressed"), "true");
   kt.equal(await p.locator("#luong-combos-21").textContent(), "1");
   kt.equal(
     await p.locator("#tom-tat-tong").textContent(),
@@ -28,56 +25,51 @@ thu("Chỉnh sửa giỏ giữ ID và số lượng, lấy lại giá mới từ
   );
   kt.deepEqual(m.loi, []);
 });
-thu(
-  "Đổi đơn trong lúc refresh: phản hồi cũ không ghi đè đơn mới",
-  async (t) => {
-    const m = await chuanBi(t),
-      p = await m.trangMoi();
-    await m.dangNhap(p, "khach@example.test", "orders.html");
-    const token = await (
-      await p.request.get(new URL("/api/csrf", m.goc).href)
-    ).json();
-    const tao = async (id) =>
-      (
-        await (
-          await p.request.post(new URL("/api/orders", m.goc).href, {
-            headers: { [token.headerName]: token.token },
-            data: {
-              email: "khach@example.test",
-              showTimeId: 101,
-              seatIds: [id],
-              snacks: [],
-              combos: [],
-            },
-          })
-        ).json()
-      ).code;
-    const a = await tao(11),
-      b = await tao(12);
-    await p.goto(m.goc + "orders.html?code=" + a);
-    await p.locator("#ma-don").filter({ hasText: a }).waitFor();
-    let release, daNhan;
-    const nhan = new Promise((r) => {
-      daNhan = r;
+thu("Đổi đơn trong lúc refresh: phản hồi cũ không ghi đè đơn mới", async (t) => {
+  const m = await chuanBi(t),
+    p = await m.trangMoi();
+  await m.dangNhap(p, "khach@example.test", "orders.html");
+  const token = await (await p.request.get(new URL("/api/csrf", m.goc).href)).json();
+  const tao = async (id) =>
+    (
+      await (
+        await p.request.post(new URL("/api/orders", m.goc).href, {
+          headers: { [token.headerName]: token.token },
+          data: {
+            email: "khach@example.test",
+            showTimeId: 101,
+            seatIds: [id],
+            snacks: [],
+            combos: [],
+          },
+        })
+      ).json()
+    ).code;
+  const a = await tao(11),
+    b = await tao(12);
+  await p.goto(m.goc + "orders.html?code=" + a);
+  await p.locator("#ma-don").filter({ hasText: a }).waitFor();
+  let release, daNhan;
+  const nhan = new Promise((r) => {
+    daNhan = r;
+  });
+  await p.route("**/api/orders/" + a, async (route) => {
+    const response = await route.fetch();
+    daNhan();
+    await new Promise((r) => {
+      release = r;
     });
-    await p.route("**/api/orders/" + a, async (route) => {
-      const response = await route.fetch();
-      daNhan();
-      await new Promise((r) => {
-        release = r;
-      });
-      await route.fulfill({ response });
-    });
-    await p.locator("#tai-lai-don").click();
-    await nhan;
-    await p.locator("#danh-sach-don button").filter({ hasText: b }).click();
-    await p.locator("#ma-don").filter({ hasText: b }).waitFor();
-    release();
-    await p.waitForTimeout(200);
-    kt.equal(await p.locator("#ma-don").textContent(), b);
-    kt.deepEqual(m.loi, []);
-  },
-);
+    await route.fulfill({ response });
+  });
+  await p.locator("#tai-lai-don").click();
+  await nhan;
+  await p.locator("#danh-sach-don button").filter({ hasText: b }).click();
+  await p.locator("#ma-don").filter({ hasText: b }).waitFor();
+  release();
+  await p.waitForTimeout(200);
+  kt.equal(await p.locator("#ma-don").textContent(), b);
+  kt.deepEqual(m.loi, []);
+});
 thu(
   "FE thật: tạo đơn bằng ID API, nhân viên cash, khách xem hai hóa đơn; responsive",
   async (t) => {
@@ -96,20 +88,14 @@ thu(
     let post = 0,
       body;
     khach.on("request", (r) => {
-      if (
-        r.method() === "POST" &&
-        new URL(r.url()).pathname === "/api/orders"
-      ) {
+      if (r.method() === "POST" && new URL(r.url()).pathname === "/api/orders") {
         post++;
         body = r.postDataJSON();
       }
     });
     await khach.locator("#thanh-toan-bieu-mau button[type=submit]").dblclick();
     await khach.waitForURL("**/orders.html?code=*");
-    await khach
-      .locator("#trang-thai-don")
-      .filter({ hasText: "Chờ thanh toán" })
-      .waitFor();
+    await khach.locator("#trang-thai-don").filter({ hasText: "Chờ thanh toán" }).waitFor();
     const code = await khach.locator("#ma-don").textContent();
     kt.equal(post, 1);
     kt.deepEqual(body.seatIds, [11, 12]);
@@ -121,10 +107,7 @@ thu(
     await nv.locator(`[data-don="${code}"]`).first().click();
     await nv.locator("#tien-khach-dua").fill("250000");
     await nv.locator("#nhan-tien").click();
-    await nv
-      .locator("#trang-thai-don")
-      .filter({ hasText: "Đã thanh toán" })
-      .waitFor();
+    await nv.locator("#trang-thai-don").filter({ hasText: "Đã thanh toán" }).waitFor();
     await nv.locator("#tien-thua").filter({ hasText: "31.000" }).waitFor();
     await khach.locator("#tai-lai-don").click();
     await khach.locator("#hoa-don article").nth(1).waitFor();
@@ -141,9 +124,7 @@ thu(
     for (const width of [375, 768, 1280]) {
       await khach.setViewportSize({ width, height: 900 });
       kt.equal(
-        await khach.evaluate(
-          () => document.documentElement.scrollWidth <= innerWidth,
-        ),
+        await khach.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
         true,
       );
     }
@@ -155,28 +136,22 @@ thu(
     kt.deepEqual(m.loi, []);
   },
 );
-thu(
-  "FE thật: API catalog lỗi không fallback; khách chưa đăng nhập không tạo đơn",
-  async (t) => {
-    const m = await chuanBi(t),
-      page = await m.trangMoi();
-    await page.route("**/api/movies*", (r) =>
-      r.fulfill({
-        status: 503,
-        contentType: "application/json",
-        body: JSON.stringify({ message: "Catalog chưa kết nối" }),
-      }),
-    );
-    await m.mo(page, "booking.html");
-    await page
-      .locator("#dat-ve-loi")
-      .filter({ hasText: "Catalog chưa kết nối" })
-      .waitFor();
-    kt.equal(await page.locator("#tiep-dat-ve").isEnabled(), false);
-    kt.equal(await page.locator("[data-ghe-id]").count(), 0);
-    kt.deepEqual(m.loi, []);
-  },
-);
+thu("FE thật: API catalog lỗi không fallback; khách chưa đăng nhập không tạo đơn", async (t) => {
+  const m = await chuanBi(t),
+    page = await m.trangMoi();
+  await page.route("**/api/movies*", (r) =>
+    r.fulfill({
+      status: 503,
+      contentType: "application/json",
+      body: JSON.stringify({ message: "Catalog chưa kết nối" }),
+    }),
+  );
+  await m.mo(page, "booking.html");
+  await page.locator("#dat-ve-loi").filter({ hasText: "Catalog chưa kết nối" }).waitFor();
+  kt.equal(await page.locator("#tiep-dat-ve").isEnabled(), false);
+  kt.equal(await page.locator("[data-ghe-id]").count(), 0);
+  kt.deepEqual(m.loi, []);
+});
 thu("FE thật: xung đột ghế 409 giữ giỏ và không báo thành công", async (t) => {
   const m = await chuanBi(t),
     page = await m.trangMoi();
@@ -195,15 +170,9 @@ thu("FE thật: xung đột ghế 409 giữ giỏ và không báo thành công",
   );
   await page.locator("#mau-dong-y").check();
   await page.locator("#thanh-toan-bieu-mau button[type=submit]").click();
-  await page
-    .locator("#thanh-toan-loi")
-    .filter({ hasText: "Ghế đã được giữ" })
-    .waitFor();
+  await page.locator("#thanh-toan-loi").filter({ hasText: "Ghế đã được giữ" }).waitFor();
   kt.ok(page.url().endsWith("checkout.html"));
-  kt.equal(
-    await page.locator("#thanh-toan-bieu-mau button[type=submit]").isEnabled(),
-    true,
-  );
+  kt.equal(await page.locator("#thanh-toan-bieu-mau button[type=submit]").isEnabled(), true);
   await page.reload();
   await page.locator("#thanh-toan-noi-dung").waitFor({ state: "visible" });
   kt.equal(await page.locator("#tom-tat-ghe").textContent(), "A1");

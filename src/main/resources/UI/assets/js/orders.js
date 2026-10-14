@@ -18,19 +18,11 @@ window.CineSnackOrders = (() => {
     if (cls) n.className = cls;
     return n;
   };
-  async function hienChiTiet(
-    box,
-    code,
-    user,
-    thayDoi = async () => {},
-    hopLe = () => true,
-  ) {
+  async function hienChiTiet(box, code, user, thayDoi = async () => {}, hopLe = () => true) {
     if (!hopLe()) return;
     const lan = lanMoi(box);
     let dangThuTien = false;
-    const data = await CineSnackApi.goi(
-      "/api/orders/" + encodeURIComponent(code),
-    );
+    const data = await CineSnackApi.goi("/api/orders/" + encodeURIComponent(code));
     const d = data.order,
       root = e("div", undefined, "order-detail"),
       dl = e("dl");
@@ -39,10 +31,7 @@ window.CineSnackOrders = (() => {
       ["Trạng thái", nhan[d.status] || d.status, "trang-thai-don"],
       ["Tổng tiền", CineSnack.dinhDangTien(d.total), "tong-tien-don"],
       ["Email", d.email],
-      [
-        "Hết hạn giữ chỗ",
-        d.expiresAt ? CineSnack.dinhDangSuat(d.expiresAt) : "—",
-      ],
+      ["Hết hạn giữ chỗ", d.expiresAt ? CineSnack.dinhDangSuat(d.expiresAt) : "—"],
     ]) {
       const row = e("div"),
         dd = e("dd", value);
@@ -61,10 +50,7 @@ window.CineSnackOrders = (() => {
       );
     for (const s of data.snacks)
       list.append(
-        e(
-          "li",
-          `${s.quantity} × ${s.name} · ${CineSnack.dinhDangTien(s.quantity * s.unitPrice)}`,
-        ),
+        e("li", `${s.quantity} × ${s.name} · ${CineSnack.dinhDangTien(s.quantity * s.unitPrice)}`),
       );
     root.append(list);
     const message = e("p", "", "loi");
@@ -100,20 +86,16 @@ window.CineSnackOrders = (() => {
     cancel.disabled = d.status !== "CHO_THANH_TOAN";
     cancel.addEventListener("click", () =>
       run(cancel, async () => {
-        await CineSnackApi.goi(
-          `/api/orders/${encodeURIComponent(code)}/cancel`,
-          { method: "POST" },
-        );
+        await CineSnackApi.goi(`/api/orders/${encodeURIComponent(code)}/cancel`, {
+          method: "POST",
+        });
         await hienChiTiet(box, code, user, thayDoi, hopLe);
         await thayDoi();
       }),
     );
     actions.append(refresh, cancel);
     root.append(actions, message);
-    if (
-      ["NHAN_VIEN", "QUAN_TRI"].includes(user.role) &&
-      d.status === "CHO_THANH_TOAN"
-    ) {
+    if (["NHAN_VIEN", "QUAN_TRI"].includes(user.role) && d.status === "CHO_THANH_TOAN") {
       const form = e("form", undefined, "cash-form");
       form.id = "cash-form";
       const label = e("label", "Số tiền khách đưa (VND)");
@@ -159,8 +141,7 @@ window.CineSnackOrders = (() => {
           form.hidden = true;
           const p = e(
             "p",
-            "Tiền thừa phải trả khách: " +
-              CineSnack.dinhDangTien(receipt.change),
+            "Tiền thừa phải trả khách: " + CineSnack.dinhDangTien(receipt.change),
             "thong-bao",
           );
           p.id = "tien-thua";
@@ -180,9 +161,7 @@ window.CineSnackOrders = (() => {
     root.append(e("h3", "Hóa đơn đã thanh toán"), invoices);
     if (d.status === "DA_THANH_TOAN") {
       try {
-        const ds = await CineSnackApi.goi(
-          `/api/orders/${encodeURIComponent(code)}/invoices`,
-        );
+        const ds = await CineSnackApi.goi(`/api/orders/${encodeURIComponent(code)}/invoices`);
         for (const h of ds) {
           const card = e("article", undefined, "invoice");
           card.append(
@@ -202,17 +181,10 @@ window.CineSnackOrders = (() => {
         }
       } catch (error) {
         invoices.append(
-          e(
-            "p",
-            "Đơn đã thanh toán. Chưa tải được hóa đơn: " + error.message,
-            "loi",
-          ),
+          e("p", "Đơn đã thanh toán. Chưa tải được hóa đơn: " + error.message, "loi"),
         );
       }
-    } else
-      invoices.append(
-        e("p", "Đơn chưa thanh toán, chưa có hóa đơn được phát hành."),
-      );
+    } else invoices.append(e("p", "Đơn chưa thanh toán, chưa có hóa đơn được phát hành."));
     if (hopLe() && lanTaiChiTiet.get(box) === lan) box.replaceChildren(root);
     return d;
   }
@@ -240,12 +212,7 @@ window.CineSnackOrders = (() => {
         taiDanhSach,
         () => n === lan,
       );
-      if (n === lan)
-        history.replaceState(
-          null,
-          "",
-          "orders.html?code=" + encodeURIComponent(code),
-        );
+      if (n === lan) history.replaceState(null, "", "orders.html?code=" + encodeURIComponent(code));
     } catch (e) {
       if (n === lan) loi(e);
     }
@@ -255,8 +222,7 @@ window.CineSnackOrders = (() => {
     const ds = await CineSnackApi.goi(`/api/orders?page=${trang}&size=20`);
     if (n !== lanDanhSach) return;
     list.replaceChildren();
-    if (!ds.length)
-      list.append(CineSnackOrders.e("li", "Chưa có đơn trên trang này."));
+    if (!ds.length) list.append(CineSnackOrders.e("li", "Chưa có đơn trên trang này."));
     for (const d of ds) {
       const li = document.createElement("li"),
         b = CineSnackOrders.e(
@@ -290,8 +256,7 @@ window.CineSnackOrders = (() => {
     if (!user) {
       o("orders-login").hidden = false;
       o("orders-login").href =
-        "authentication.html?next=" +
-        encodeURIComponent("orders.html" + location.search);
+        "authentication.html?next=" + encodeURIComponent("orders.html" + location.search);
       return;
     }
     o("orders-content").hidden = false;

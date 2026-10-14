@@ -55,10 +55,7 @@
   }
   function tinhTien(g) {
     const tienVe = g.ghe.reduce((a, v) => a + v.price, 0);
-    const tienBap = [...g.snacks, ...g.combos].reduce(
-      (a, v) => a + v.unitPrice * v.quantity,
-      0,
-    );
+    const tienBap = [...g.snacks, ...g.combos].reduce((a, v) => a + v.unitPrice * v.quantity, 0);
     return { tienVe, tienBap, tong: tienVe + tienBap };
   }
   function gioHopLe(g, now = new Date()) {
@@ -85,13 +82,7 @@
     } else if (g.maSuatChieu !== null) return false;
     if (
       new Set(g.ghe.map((v) => v?.id)).size !== g.ghe.length ||
-      g.ghe.some(
-        (v) =>
-          !v ||
-          !idHopLe(v.id) ||
-          typeof v.code !== "string" ||
-          !giaHopLe(v.price),
-      )
+      g.ghe.some((v) => !v || !idHopLe(v.id) || typeof v.code !== "string" || !giaHopLe(v.price))
     )
       return false;
     for (const [list, key] of [
@@ -140,12 +131,7 @@
     if (url) {
       try {
         const u = new URL(url, location.href);
-        if (
-          ["http:", "https:"].includes(u.protocol) &&
-          !u.username &&
-          !u.password
-        )
-          return u.href;
+        if (["http:", "https:"].includes(u.protocol) && !u.username && !u.password) return u.href;
       } catch {}
     }
     return "../assets/images/poster-placeholder.svg";

@@ -23,8 +23,7 @@
     user = await CineSnackApi.taiKhoan();
     if (user) email.value = user.email;
     else {
-      loi.textContent =
-        "Đăng nhập để tạo đơn. Lựa chọn của bạn được giữ trong phiên.";
+      loi.textContent = "Đăng nhập để tạo đơn. Lựa chọn của bạn được giữ trong phiên.";
       document.querySelector("#checkout-login").hidden = false;
     }
     nut.disabled = false;
@@ -45,8 +44,7 @@
       return;
     }
     if (!CineSnack.gioHopLe(g)) {
-      loi.textContent =
-        "Suất chiếu đã bắt đầu hoặc giỏ không hợp lệ. Vui lòng chọn lại.";
+      loi.textContent = "Suất chiếu đã bắt đầu hoặc giỏ không hợp lệ. Vui lòng chọn lại.";
       return;
     }
     gui = true;
@@ -65,8 +63,7 @@
       location.href = "orders.html?code=" + encodeURIComponent(d.code);
     } catch (error) {
       khongRo = !error.status;
-      loi.textContent =
-        error.message + " Bạn có thể kiểm tra Đơn của tôi trước khi thử lại.";
+      loi.textContent = error.message + " Bạn có thể kiểm tra Đơn của tôi trước khi thử lại.";
     } finally {
       gui = false;
       nut.disabled = khongRo;

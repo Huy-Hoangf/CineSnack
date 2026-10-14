@@ -19,9 +19,7 @@
   const luu = CineSnack.layGio();
   const params = new URLSearchParams(location.search);
   const maYeuCau = Number(params.get("phim"));
-  const khoiPhuc =
-    CineSnack.gioHopLe(luu) &&
-    (!params.has("phim") || maYeuCau === luu.phim?.id);
+  const khoiPhuc = CineSnack.gioHopLe(luu) && (!params.has("phim") || maYeuCau === luu.phim?.id);
   const loi = (text) => {
     o("dat-ve-loi").textContent = text;
   };
@@ -94,8 +92,7 @@
         );
         b.addEventListener("click", () => {
           loi("");
-          if (g.ghe.some((x) => x.id === v.id))
-            g.ghe = g.ghe.filter((x) => x.id !== v.id);
+          if (g.ghe.some((x) => x.id === v.id)) g.ghe = g.ghe.filter((x) => x.id !== v.id);
           else {
             if (g.ghe.length >= 10) {
               o("ghe-loi").textContent = "Tối đa 10 ghế mỗi đơn.";
@@ -103,19 +100,14 @@
             }
             g.ghe.push(v);
           }
-          b.setAttribute(
-            "aria-pressed",
-            String(g.ghe.some((x) => x.id === v.id)),
-          );
+          b.setAttribute("aria-pressed", String(g.ghe.some((x) => x.id === v.id)));
           capNhat();
         });
         hang.get(ma).append(b);
       }
     } catch (e) {
       if (lan === lanTai) {
-        hienTrangThaiGhe(
-          "Không tải được ghế. Vui lòng chọn lại suất chiếu để thử lại.",
-        );
+        hienTrangThaiGhe("Không tải được ghế. Vui lòng chọn lại suất chiếu để thử lại.");
         loi(e.message);
       }
     } finally {
@@ -153,9 +145,7 @@
     o("chon-gio").replaceChildren();
     o("hang-ghe").replaceChildren();
     o("ghe-loi").textContent = "";
-    hienTrangThaiGhe(
-      g.phim ? "Đang tải suất chiếu…" : "Chỉ mua bắp nước: không cần chọn ghế.",
-    );
+    hienTrangThaiGhe(g.phim ? "Đang tải suất chiếu…" : "Chỉ mua bắp nước: không cần chọn ghế.");
     loi("");
     if (!g.phim) {
       dangTai = false;
@@ -171,9 +161,7 @@
       const ngayChon = daChon ? CineSnack.ngaySuat(daChon.startsAt) : ngay[0];
       for (const n of ngay)
         o("chon-ngay").append(
-          radio(n, "ngay", CineSnack.dinhDangNgay(n), n === ngayChon, () =>
-            hienGio(n),
-          ),
+          radio(n, "ngay", CineSnack.dinhDangNgay(n), n === ngayChon, () => hienGio(n)),
         );
       if (ngay.length) await hienGio(ngayChon, maUuTien);
       else {
@@ -185,9 +173,7 @@
     } catch (e) {
       if (lan === lanTai) {
         dangTai = false;
-        hienTrangThaiGhe(
-          "Không tải được suất chiếu. Vui lòng chọn lại phim để thử lại.",
-        );
+        hienTrangThaiGhe("Không tải được suất chiếu. Vui lòng chọn lại phim để thử lại.");
         loi(e.message);
         capNhat();
       }
@@ -265,9 +251,7 @@
       sessionStorage.setItem(CineSnack.khoaGio, JSON.stringify(g));
       location.href = "checkout.html";
     } catch {
-      loi(
-        "Trình duyệt không cho phép lưu giỏ. Bật lưu trữ của trang để tiếp tục.",
-      );
+      loi("Trình duyệt không cho phép lưu giỏ. Bật lưu trữ của trang để tiếp tục.");
     }
   });
   capNhat();
@@ -291,9 +275,7 @@
     }
     const ma = khoiPhuc ? luu.phim?.id : maYeuCau;
     o("chon-phim").value = String(
-      phim.find((p) => p.id === ma)?.id ||
-        (!ma && !khoiPhuc ? phim[0]?.id : "") ||
-        "",
+      phim.find((p) => p.id === ma)?.id || (!ma && !khoiPhuc ? phim[0]?.id : "") || "",
     );
     if (khoiPhuc) {
       for (const [key, idKey, ds] of [
@@ -318,9 +300,7 @@
     hienFood();
     await doiPhim(khoiPhuc ? luu.maSuatChieu : null);
     if (khoiPhuc && g.maSuatChieu === luu.maSuatChieu) {
-      g.ghe = ghe.filter(
-        (v) => v.available && luu.ghe.some((old) => old.id === v.id),
-      );
+      g.ghe = ghe.filter((v) => v.available && luu.ghe.some((old) => old.id === v.id));
       document
         .querySelectorAll("[data-ghe-id]")
         .forEach((n) =>

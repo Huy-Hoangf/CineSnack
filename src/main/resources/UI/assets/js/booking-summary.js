@@ -1,8 +1,7 @@
 "use strict";
 CineSnack.hienTomTat = function (g) {
   const tien = CineSnack.tinhTien(g);
-  document.querySelector("#tom-tat-tieu-de").textContent =
-    g.phim?.name || "Đơn bắp nước";
+  document.querySelector("#tom-tat-tieu-de").textContent = g.phim?.name || "Đơn bắp nước";
   const anh = document.querySelector("#tom-tat-anh");
   anh.src = CineSnack.poster(g.phim?.posterUrl);
   anh.alt = g.phim?.name ? "Poster " + g.phim.name : "CineSnack";
@@ -17,6 +16,5 @@ CineSnack.hienTomTat = function (g) {
     ["tienBap", "tienBap"],
     ["tong", "tong"],
   ])
-    document.querySelector("#tom-tat-" + id).textContent =
-      CineSnack.dinhDangTien(tien[key]);
+    document.querySelector("#tom-tat-" + id).textContent = CineSnack.dinhDangTien(tien[key]);
 };

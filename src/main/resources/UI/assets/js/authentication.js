@@ -18,9 +18,7 @@
     });
     popup.addEventListener("close", ghiNhan);
     popup.addEventListener("cancel", ghiNhan);
-    popup
-      .querySelectorAll("a")
-      .forEach((a) => a.addEventListener("click", ghiNhan));
+    popup.querySelectorAll("a").forEach((a) => a.addEventListener("click", ghiNhan));
   }
   let user;
   try {
@@ -62,8 +60,7 @@
   if (popup && !user) {
     let dismiss = false;
     try {
-      dismiss =
-        sessionStorage.getItem("cinesnack-welcome-dismissed") === "true";
+      dismiss = sessionStorage.getItem("cinesnack-welcome-dismissed") === "true";
     } catch {}
     if (!dismiss) popup.showModal();
   }
@@ -80,9 +77,7 @@
     const next = params.get("next") || "orders.html";
     const url = new URL(next, location.href);
     return url.origin === location.origin &&
-      /^\/html\/(booking|checkout|orders|admin|movies|index)\.html$/.test(
-        url.pathname,
-      )
+      /^\/html\/(booking|checkout|orders|admin|movies|index)\.html$/.test(url.pathname)
       ? url.pathname + url.search
       : "orders.html";
   }
@@ -101,9 +96,7 @@
       location.href = duongDanSauLogin();
     } catch (error) {
       message.textContent =
-        error.status === 401
-          ? "Email hoặc mật khẩu không đúng."
-          : error.message;
+        error.status === 401 ? "Email hoặc mật khẩu không đúng." : error.message;
       message.focus();
     } finally {
       nut.disabled = false;

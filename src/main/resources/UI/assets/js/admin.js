@@ -75,9 +75,7 @@
   }
   async function taiDon() {
     const n = ++lanDanhSach;
-    const moi = await CineSnackApi.goi(
-      `/api/admin/orders?page=${trang}&size=20`,
-    );
+    const moi = await CineSnackApi.goi(`/api/admin/orders?page=${trang}&size=20`);
     if (n !== lanDanhSach) return;
     ds = moi;
     locDon();
@@ -87,17 +85,12 @@
     o("thong-ke").replaceChildren();
     for (const [name, value] of [
       ["Đơn trên trang", ds.length],
-      [
-        "Chờ thanh toán",
-        ds.filter((d) => d.status === "CHO_THANH_TOAN").length,
-      ],
+      ["Chờ thanh toán", ds.filter((d) => d.status === "CHO_THANH_TOAN").length],
       ["Đã thanh toán", ds.filter((d) => d.status === "DA_THANH_TOAN").length],
       [
         "Tổng đơn đã trả trên trang",
         CineSnack.dinhDangTien(
-          ds
-            .filter((d) => d.status === "DA_THANH_TOAN")
-            .reduce((a, d) => a + d.total, 0),
+          ds.filter((d) => d.status === "DA_THANH_TOAN").reduce((a, d) => a + d.total, 0),
         ),
       ],
     ]) {
@@ -109,9 +102,7 @@
   function hienPhim() {
     o("quan-tri-phim").replaceChildren();
     const tu = CineSnack.boDau(o("quan-tri-phim-tim").value);
-    const list = phim.filter((p) =>
-      CineSnack.boDau(p.name + " " + p.genre).includes(tu),
-    );
+    const list = phim.filter((p) => CineSnack.boDau(p.name + " " + p.genre).includes(tu));
     for (const p of list) {
       const tr = dong([p.name, p.duration + " phút", p.ageRating, p.status]);
       const td = e("td"),
@@ -126,9 +117,7 @@
   function hienSuat() {
     o("quan-tri-suat").replaceChildren();
     const tu = CineSnack.boDau(o("quan-tri-suat-tim").value);
-    const list = suat.filter((s) =>
-      CineSnack.boDau(s.movieName + " " + s.roomName).includes(tu),
-    );
+    const list = suat.filter((s) => CineSnack.boDau(s.movieName + " " + s.roomName).includes(tu));
     for (const s of list) {
       const tr = dong([
         s.movieName,
@@ -188,9 +177,7 @@
       return;
     }
     o("admin-email").textContent = user.email;
-    o("quan-tri-ngay").textContent = CineSnack.dinhDangNgay(
-      new Date().toISOString(),
-    );
+    o("quan-tri-ngay").textContent = CineSnack.dinhDangNgay(new Date().toISOString());
     await taiDon();
     [phim, suat] = await Promise.all([
       CineSnackApi.goi("/api/movies?size=100"),

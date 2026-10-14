@@ -1,8 +1,6 @@
 "use strict";
 (async () => {
-  document
-    .querySelectorAll("[data-trang-thai] span")
-    .forEach((s) => s.remove());
+  document.querySelectorAll("[data-trang-thai] span").forEach((s) => s.remove());
   const q = (s) => document.querySelector(s);
   let trang = 0,
     status = "DANG_CHIEU",
@@ -20,10 +18,7 @@
     box.replaceChildren();
     const h = text("h2", p.name);
     h.id = "chi-tiet-tieu-de";
-    box.append(
-      h,
-      text("p", p.genre + " · " + p.duration + " phút · " + p.ageRating),
-    );
+    box.append(h, text("p", p.genre + " · " + p.duration + " phút · " + p.ageRating));
     if (p.status === "DANG_CHIEU") {
       const a = text("a", "Chọn suất chiếu", "nut");
       a.href = "booking.html?phim=" + p.id;
@@ -133,9 +128,7 @@
         trang = 0;
         document.querySelectorAll("[data-trang-thai]").forEach((b) => {
           const active =
-            (b.dataset.trangThai === "sap-chieu"
-              ? "SAP_CHIEU"
-              : "DANG_CHIEU") === status;
+            (b.dataset.trangThai === "sap-chieu" ? "SAP_CHIEU" : "DANG_CHIEU") === status;
           b.classList.toggle("da-chon", active);
           b.setAttribute("aria-pressed", String(active));
         });

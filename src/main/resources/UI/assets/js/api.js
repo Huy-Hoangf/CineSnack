@@ -18,9 +18,7 @@ window.CineSnackApi = (() => {
       headers[token.headerName] = token.token;
     }
     if (body !== undefined)
-      headers["Content-Type"] = form
-        ? "application/x-www-form-urlencoded"
-        : "application/json";
+      headers["Content-Type"] = form ? "application/x-www-form-urlencoded" : "application/json";
     let ph;
     try {
       ph = await fetch(url, {
@@ -28,16 +26,10 @@ window.CineSnackApi = (() => {
         headers,
         credentials: "same-origin",
         body:
-          body === undefined
-            ? undefined
-            : form
-              ? new URLSearchParams(body)
-              : JSON.stringify(body),
+          body === undefined ? undefined : form ? new URLSearchParams(body) : JSON.stringify(body),
       });
     } catch {
-      throw new Error(
-        "Mất kết nối. Nếu đang tạo đơn, hãy kiểm tra Đơn của tôi trước khi đặt lại.",
-      );
+      throw new Error("Mất kết nối. Nếu đang tạo đơn, hãy kiểm tra Đơn của tôi trước khi đặt lại.");
     }
     const data = ph.status === 204 ? null : await ph.json().catch(() => null);
     if (!ph.ok) {
@@ -49,9 +41,7 @@ window.CineSnackApi = (() => {
       };
       throw Object.assign(
         new Error(
-          data?.message ||
-            macDinh[ph.status] ||
-            "Không thể xử lý yêu cầu. Vui lòng thử lại.",
+          data?.message || macDinh[ph.status] || "Không thể xử lý yêu cầu. Vui lòng thử lại.",
         ),
         { status: ph.status },
       );

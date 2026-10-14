@@ -1,0 +1,32 @@
+package com.cinesnack.config;
+
+import com.zaxxer.hikari.HikariDataSource;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class DatabaseConnection {
+
+    private static final String URL =
+        "jdbc:sqlserver://localhost:1433;databaseName=CineSnack;encrypt=true;trustServerCertificate=true";
+    private static final String USERNAME = "your_username_here";
+    private static final String PASSWORD = "your_password_here";
+
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+    }
+
+    @Bean
+    @ConfigurationProperties("spring.datasource.hikari")
+    public HikariDataSource dataSource() {
+        HikariDataSource source = new HikariDataSource();
+        source.setJdbcUrl(URL);
+        source.setUsername(USERNAME);
+        source.setPassword(PASSWORD);
+        return source;
+    }
+}

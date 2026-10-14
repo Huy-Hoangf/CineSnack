@@ -9,9 +9,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserService {
+
     private final UserRepository khoNguoiDung;
 
-    public UserService(UserRepository khoNguoiDung) { this.khoNguoiDung = khoNguoiDung; }
+    public UserService(UserRepository khoNguoiDung) {
+        this.khoNguoiDung = khoNguoiDung;
+    }
 
     public User layTaiKhoanHoatDong(String thuDienTu) {
         User nguoiDung = khoNguoiDung.timTheoThuDienTu(thuDienTu);
@@ -22,9 +25,17 @@ public class UserService {
     }
 
     public void kiemTraQuyenTruyCapDon(User nguoiDung, Order donHang) {
-        if (donHang == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Không tìm thấy đơn hàng");
-        if (!nguoiDung.laNhanVien() && !Long.valueOf(nguoiDung.maSo()).equals(donHang.maNguoiDung())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Bạn không có quyền truy cập đơn hàng này");
+        if (donHang == null) throw new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Không tìm thấy đơn hàng"
+        );
+        if (
+            !nguoiDung.laNhanVien() && !Long.valueOf(nguoiDung.maSo()).equals(donHang.maNguoiDung())
+        ) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Bạn không có quyền truy cập đơn hàng này"
+            );
         }
     }
 }

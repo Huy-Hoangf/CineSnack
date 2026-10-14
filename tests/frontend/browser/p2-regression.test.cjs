@@ -7,9 +7,7 @@ test("Refresh cũ cùng đơn không ghi đè biên nhận thu tiền", async (t
     khach = await m.trangMoi(),
     staff = await m.trangMoi();
   await m.dangNhap(khach, "khach@example.test", "orders.html");
-  const csrf = await (
-    await khach.request.get(new URL("/api/csrf", m.goc).href)
-  ).json();
+  const csrf = await (await khach.request.get(new URL("/api/csrf", m.goc).href)).json();
   const created = await khach.request.post(new URL("/api/orders", m.goc).href, {
     headers: { [csrf.headerName]: csrf.token },
     data: {
@@ -53,10 +51,7 @@ test("Refresh cũ cùng đơn không ghi đè biên nhận thu tiền", async (t
   release();
   await done;
   await staff.waitForTimeout(150);
-  assert.match(
-    await staff.locator("#trang-thai-don").textContent(),
-    /Đã thanh toán/,
-  );
+  assert.match(await staff.locator("#trang-thai-don").textContent(), /Đã thanh toán/);
   assert.equal(await staff.locator("#nhan-tien").isVisible(), false);
   assert.match(await staff.locator("#tien-thua").textContent(), /20.000/);
   assert.equal(m.orders.get(order.code).payments.length, 1);
@@ -72,14 +67,9 @@ test("Phim sắp chiếu từ trang chủ mở đúng ID và tab", async (t) => 
   await p.locator(".chieu-nhan").click();
   await p.locator(".chieu-luoi a.anh").click();
   await p.locator("#hop-phim[open]").waitFor({ timeout: 5000 });
+  assert.equal(await p.locator("#chi-tiet-tieu-de").textContent(), m.catalog.movie.name);
   assert.equal(
-    await p.locator("#chi-tiet-tieu-de").textContent(),
-    m.catalog.movie.name,
-  );
-  assert.equal(
-    await p
-      .locator('[data-trang-thai="sap-chieu"]')
-      .getAttribute("aria-pressed"),
+    await p.locator('[data-trang-thai="sap-chieu"]').getAttribute("aria-pressed"),
     "true",
   );
   assert.deepEqual(m.loi, []);
@@ -90,9 +80,7 @@ test("Thu tiền thành công giữ trạng thái/tiền thừa khi tải hóa �
     khach = await m.trangMoi(),
     staff = await m.trangMoi();
   await m.dangNhap(khach, "khach@example.test", "orders.html");
-  const csrf = await (
-    await khach.request.get(new URL("/api/csrf", m.goc).href)
-  ).json();
+  const csrf = await (await khach.request.get(new URL("/api/csrf", m.goc).href)).json();
   const created = await khach.request.post(new URL("/api/orders", m.goc).href, {
     headers: { [csrf.headerName]: csrf.token },
     data: {
@@ -119,9 +107,6 @@ test("Thu tiền thành công giữ trạng thái/tiền thừa khi tải hóa �
   await staff.locator("#tien-thua").filter({ hasText: "20.000" }).waitFor();
   assert.equal(await staff.locator("#nhan-tien").isVisible(), false);
   assert.equal(m.orders.get(order.code).order.status, "DA_THANH_TOAN");
-  assert.match(
-    await staff.locator("#hoa-don").textContent(),
-    /Chưa tải được hóa đơn/,
-  );
+  assert.match(await staff.locator("#hoa-don").textContent(), /Chưa tải được hóa đơn/);
   assert.deepEqual(m.loi, []);
 });
