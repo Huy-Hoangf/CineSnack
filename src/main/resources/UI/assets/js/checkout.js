@@ -1,82 +1,76 @@
 "use strict";
-(function () {
-  const C = CineSnack;
-  let cart;
-  try {
-    cart = JSON.parse(sessionStorage.getItem(C.storageKey));
-  } catch {
-    cart = null;
-  }
-  if (!C.validCart(cart)) {
-    document.querySelector("#empty-checkout").hidden = false;
+(async () => {
+  const g = CineSnack.layGio(),
+    loi = document.querySelector("#thanh-toan-loi");
+  if (!CineSnack.gioHopLe(g)) {
+    document.querySelector("#trong-thanh-toan").hidden = false;
     return;
   }
-  document.querySelector("#checkout-content").hidden = false;
-  C.renderSummary(cart);
-  document.querySelector("#edit-booking").href =
-    "booking.html?movie=" + cart.movie;
-  const form = document.querySelector("#checkout-form");
-  const name = document.querySelector("#customer-name");
-  name.addEventListener("input", () => name.setCustomValidity(""));
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    if (name.value.trim().length < 2) {
-      name.setCustomValidity("Vui lòng nhập họ tên có ít nhất 2 ký tự.");
-      name.reportValidity();
+  document.querySelector("#thanh-toan-noi-dung").hidden = false;
+  CineSnack.hienTomTat(g);
+  document.querySelector("#sua-dat-ve").href = g.phim
+    ? "booking.html?phim=" + g.phim.id
+    : "booking.html";
+  const form = document.querySelector("#thanh-toan-bieu-mau"),
+    nut = form.querySelector("button[type=submit]"),
+    email = document.querySelector("#khach-email");
+  let user,
+    gui = false,
+    maDaTao,
+    khongRo = false;
+  nut.disabled = true;
+  try {
+    user = await CineSnackApi.taiKhoan();
+    if (user) email.value = user.email;
+    else {
+      loi.textContent =
+        "Đăng nhập để tạo đơn. Lựa chọn của bạn được giữ trong phiên.";
+      document.querySelector("#checkout-login").hidden = false;
+    }
+    nut.disabled = false;
+  } catch (e) {
+    loi.textContent = e.message;
+    nut.disabled = true;
+  }
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (gui) return;
+    if (maDaTao) {
+      location.href = "orders.html?code=" + encodeURIComponent(maDaTao);
       return;
     }
-    if (!C.validCart(cart)) {
-      document.querySelector("#checkout-error").textContent =
-        "Suất chiếu trong đơn không còn hợp lệ. Quay lại để chọn suất mới.";
+    if (!user) {
+      document.querySelector("#checkout-login").hidden = false;
+      loi.textContent = "Bạn cần đăng nhập trước khi tạo đơn.";
       return;
     }
+    if (!CineSnack.gioHopLe(g)) {
+      loi.textContent =
+        "Suất chiếu đã bắt đầu hoặc giỏ không hợp lệ. Vui lòng chọn lại.";
+      return;
+    }
+    gui = true;
+    nut.disabled = true;
+    nut.setAttribute("aria-busy", "true");
+    loi.textContent = "Đang tạo đơn…";
     try {
-      sessionStorage.removeItem(C.storageKey);
-    } catch {
-      document.querySelector("#checkout-error").textContent =
-        "Không thể kết thúc phiên demo. Hãy cho phép lưu trữ rồi thử lại.";
-      return;
+      const d = await CineSnackApi.goi("/api/orders", {
+        method: "POST",
+        body: CineSnack.taoYeuCau(g, email.value.trim()),
+      });
+      maDaTao = d.code;
+      try {
+        sessionStorage.removeItem(CineSnack.khoaGio);
+      } catch {}
+      location.href = "orders.html?code=" + encodeURIComponent(d.code);
+    } catch (error) {
+      khongRo = !error.status;
+      loi.textContent =
+        error.message + " Bạn có thể kiểm tra Đơn của tôi trước khi thử lại.";
+    } finally {
+      gui = false;
+      nut.disabled = khongRo;
+      nut.removeAttribute("aria-busy");
     }
-    const movie = C.movies.find((m) => m.id === cart.movie);
-    const method = {
-      qr: "Chuyển khoản / QR",
-      wallet: "Ví điện tử",
-      counter: "Tại quầy",
-    }[form.elements.payment.value];
-    const details = [
-      ["Phim", movie.title],
-      ["Suất chiếu", cart.time + " · " + C.displayDate(cart.date)],
-      ["Ghế", cart.seats.join(", ")],
-      [
-        "Bắp & nước",
-        C.combos
-          .filter((c) => cart.combos[c.id])
-          .map((c) => cart.combos[c.id] + " × " + c.name)
-          .join(", ") || "Không chọn",
-      ],
-      ["Phương thức", method + " (demo)"],
-      ["Tổng minh họa", C.money(C.totals(cart).total)],
-    ];
-    const container = document.querySelector("#success-details");
-    details.forEach(([label, value]) => {
-      const row = document.createElement("div"),
-        dt = document.createElement("dt"),
-        dd = document.createElement("dd");
-      dt.textContent = label;
-      dd.textContent = value;
-      row.append(dt, dd);
-      container.append(row);
-    });
-    form.reset();
-    document.querySelector("#checkout-content").hidden = true;
-    document.querySelectorAll(".progress-steps li").forEach((li, i) => {
-      li.classList.toggle("current", i === 2);
-      li.classList.toggle("complete", i < 2);
-      li.removeAttribute("aria-current");
-      if (i === 2) li.setAttribute("aria-current", "step");
-    });
-    const success = document.querySelector("#checkout-success");
-    success.hidden = false;
-    success.focus();
   });
 })();

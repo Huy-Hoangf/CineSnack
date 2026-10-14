@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class CineSnackApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(CineSnackApplication.class, args);
+    public static void main(String[] thamSo) {
+        SpringApplication.run(CineSnackApplication.class, thamSo);
     }
 }

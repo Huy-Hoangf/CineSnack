@@ -1,24 +1,24 @@
-/* Movie catalog layout. Shared controls are in app.css. */
-.catalog-section {
+/* Bố cục danh mục phim. Các thành phần chung nằm trong app.css. */
+.danh-muc-muc {
   padding-top: 30px;
 }
-.catalog-tools {
+.danh-muc-cong-cu {
   display: flex;
   justify-content: space-between;
   gap: 20px;
   align-items: center;
 }
-.segmented {
+.chia-nhom {
   display: inline-flex;
   gap: 20px;
   padding: 0;
   background: transparent;
   border-radius: 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--vien);
 }
-.segmented button {
+.chia-nhom button {
   background: transparent;
-  color: var(--muted);
+  color: var(--chu-phu);
   padding: 12px 0;
   border-radius: 0;
   border-bottom: 3px solid transparent;
@@ -26,164 +26,164 @@
   min-height: 44px;
   font-weight: 700;
 }
-.segmented button.selected {
+.chia-nhom button.da-chon {
   background: transparent;
-  color: var(--blue);
-  border-bottom-color: var(--blue);
+  color: var(--xanh);
+  border-bottom-color: var(--xanh);
   box-shadow: none;
 }
-.segmented span {
+.chia-nhom span {
   font-size: 11px;
   margin-left: 5px;
 }
-.search-field {
+.tim-o {
   position: relative;
   width: 300px;
 }
-.search-field > span {
+.tim-o > span {
   position: absolute;
   left: 14px;
   top: 6px;
   font-size: 25px;
-  color: var(--muted);
+  color: var(--chu-phu);
 }
-.app-main .search-field input {
+.ung-dung-chinh .tim-o input {
   padding-left: 42px !important;
 }
-.result-count {
-  color: var(--muted);
+.ket-qua-so {
+  color: var(--chu-phu);
   font-size: 12px;
   margin: 23px 0 17px;
 }
-.catalog-grid {
+.luoi-phim {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 26px;
 }
-.catalog-grid .movie-card {
+.luoi-phim .the-phim {
   background: transparent;
   padding: 0;
   border: 0;
   border-radius: 0;
 }
-.catalog-grid .poster {
+.luoi-phim .anh {
   border: 0;
   width: 100%;
   padding: 0;
 }
-.catalog-grid .movie-meta {
+.luoi-phim .phim-thong-tin {
   font-size: 11px;
 }
-.catalog-grid .movie-card h3 {
+.luoi-phim .the-phim h3 {
   min-height: 50px;
   font-size: 16px;
 }
-.movie-title-button {
+.phim-tieu-de-nut {
   background: transparent;
-  color: var(--ink);
+  color: var(--chu);
   font-size: inherit;
   line-height: inherit;
   font-weight: 700;
   text-align: left;
   padding: 0;
 }
-.movie-title-button:hover {
-  color: var(--blue);
+.phim-tieu-de-nut:hover {
+  color: var(--xanh);
 }
-.catalog-grid .duration {
+.luoi-phim .thoi-luong {
   font-size: 12px;
 }
-.catalog-grid .movie-button {
+.luoi-phim .phim-nut {
   min-height: 44px;
   font-size: 13px;
 }
-.catalog-grid .coming-label {
+.luoi-phim .sap-nhan {
   min-height: 44px;
   font-size: 13px;
 }
-.empty-state {
+.trong-trang-thai {
   text-align: center;
   padding: 48px 24px;
 }
-.empty-state h2 {
+.trong-trang-thai h2 {
   margin-top: 12px;
 }
-.empty-state p {
-  color: var(--muted);
+.trong-trang-thai p {
+  color: var(--chu-phu);
   font-size: 14px;
   margin: 10px 0 24px;
 }
-.empty-symbol {
+.trong-bieu-tuong {
   font-size: 44px;
-  color: var(--blue);
+  color: var(--xanh);
   display: block;
 }
-.cinema-callout {
+.rap-loi-moi {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 30px;
   background: #fff;
   padding: 30px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--vien);
   border-radius: 4px;
   margin-top: 36px;
 }
-.cinema-callout h2 {
+.rap-loi-moi h2 {
   margin-top: 8px;
 }
-.cinema-callout p {
+.rap-loi-moi p {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--chu-phu);
   margin-top: 10px;
 }
-.cinema-callout .button {
+.rap-loi-moi .nut {
   flex-shrink: 0;
 }
 
 @media (max-width: 1100px) {
-  .catalog-grid {
+  .luoi-phim {
     gap: 18px;
   }
 }
 @media (max-width: 900px) {
-  .catalog-grid {
+  .luoi-phim {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .cinema-callout {
+  .rap-loi-moi {
     flex-wrap: wrap;
   }
 }
 @media (max-width: 600px) {
-  .catalog-tools .search-field {
+  .danh-muc-cong-cu .tim-o {
     width: 100%;
   }
-  .catalog-tools {
+  .danh-muc-cong-cu {
     flex-direction: column;
     align-items: stretch;
     gap: 16px;
   }
-  .segmented {
+  .chia-nhom {
     align-self: flex-start;
   }
-  .segmented button {
+  .chia-nhom button {
     padding-inline: 0;
     font-size: 13px;
   }
-  .catalog-grid {
+  .luoi-phim {
     gap: 20px 12px;
   }
-  .catalog-grid .movie-card h3 {
+  .luoi-phim .the-phim h3 {
     font-size: 14px;
     min-height: 62px;
   }
-  .catalog-grid .movie-meta {
+  .luoi-phim .phim-thong-tin {
     font-size: 10px;
   }
-  .catalog-grid .movie-meta > span:last-child {
+  .luoi-phim .phim-thong-tin > span:last-child {
     display: none;
   }
-  .cinema-callout {
+  .rap-loi-moi {
     padding: 24px 20px;
   }
 }

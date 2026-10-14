@@ -1,23 +1,22 @@
 "use strict";
-CineSnack.renderSummary = function (cart) {
-  const C = CineSnack;
-  const movie = C.movies.find((m) => m.id === cart.movie);
-  const amount = C.totals(cart);
-  document.querySelector("#summary-title").textContent = movie.title;
-  const poster = document.querySelector("#summary-poster");
-  poster.src = "../assets/images/movies/" + movie.image;
-  poster.alt = "Poster " + movie.title;
-  document.querySelector("#summary-when").textContent =
-    `${cart.time} · ${C.displayDate(cart.date)}`;
-  document.querySelector("#summary-seats").textContent =
-    [...cart.seats]
-      .sort(
-        (a, b) =>
-          a[0].localeCompare(b[0]) || Number(a.slice(1)) - Number(b.slice(1)),
-      )
-      .join(", ") || "Chưa chọn ghế";
-  for (const key of ["tickets", "snacks", "total"])
-    document.querySelector("#summary-" + key).textContent = C.money(
-      amount[key],
-    );
+CineSnack.hienTomTat = function (g) {
+  const tien = CineSnack.tinhTien(g);
+  document.querySelector("#tom-tat-tieu-de").textContent =
+    g.phim?.name || "Đơn bắp nước";
+  const anh = document.querySelector("#tom-tat-anh");
+  anh.src = CineSnack.poster(g.phim?.posterUrl);
+  anh.alt = g.phim?.name ? "Poster " + g.phim.name : "CineSnack";
+  document.querySelector("#tom-tat-suat").textContent = g.suat
+    ? CineSnack.dinhDangSuat(g.suat.startsAt) + " · " + g.suat.roomName
+    : "Không đặt vé";
+  document.querySelector("#tom-tat-ghe").textContent = g.ghe.length
+    ? g.ghe.map((v) => v.code).join(", ")
+    : "Chưa chọn ghế";
+  for (const [key, id] of [
+    ["tienVe", "tienVe"],
+    ["tienBap", "tienBap"],
+    ["tong", "tong"],
+  ])
+    document.querySelector("#tom-tat-" + id).textContent =
+      CineSnack.dinhDangTien(tien[key]);
 };

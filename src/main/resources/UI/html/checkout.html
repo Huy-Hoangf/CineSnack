@@ -7,23 +7,29 @@
     <title>Thanh toán | CineSnack</title>
     <link rel="stylesheet" href="../assets/css/site.css" />
     <link rel="stylesheet" href="../assets/css/app.css" />
+    <script src="../assets/js/api.js" defer></script>
     <script src="../assets/js/cinema.js" defer></script>
     <script src="../assets/js/booking-summary.js" defer></script>
     <script src="../assets/js/checkout.js" defer></script>
+    <link rel="stylesheet" href="../assets/css/authentication.css" />
+    <script src="../assets/js/authentication.js" defer></script>
   </head>
-  <body class="app-page">
-    <a class="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
-    <div class="topbar">
-      <div class="container topbar-inner">
+  <body class="ung-dung-trang account-enabled">
+    <a class="bo-qua-lien-ket" href="#noi-dung">Bỏ qua điều hướng</a>
+    <div class="thanh-tren">
+      <div class="bao thanh-tren-trong">
         <span>Một chiếc vé. Cả thế giới điện ảnh.</span
         ><a href="index.html#ve-cinesnack"
           >Về CineSnack <span aria-hidden="true">↗</span></a
         >
       </div>
     </div>
-    <header class="site-header">
-      <div class="container header-inner">
-        <a class="brand" href="index.html" aria-label="CineSnack — Trang chủ"
+    <header class="web-dau">
+      <div class="bao dau-trong">
+        <a
+          class="thuong-hieu"
+          href="index.html"
+          aria-label="CineSnack — Trang chủ"
           ><svg viewBox="0 0 40 40" aria-hidden="true">
             <rect
               x="3"
@@ -40,19 +46,28 @@
               stroke-width="2"
             /></svg
           ><span
-            >Cine<span class="brand-accent">Snack</span
+            >Cine<span class="thuong-hieu-nhan">Snack</span
             ><small>CINEMA & MORE</small></span
           ></a
         >
-        <nav class="main-nav" aria-label="Điều hướng chính">
+        <nav class="chinh-dieu-huong" aria-label="Điều hướng chính">
           <a href="movies.html">Phim</a
-          ><a href="booking.html" class="nav-active" aria-current="page"
+          ><a
+            href="booking.html"
+            class="dieu-huong-dang-chon"
+            aria-current="page"
             >Lịch chiếu</a
           ><a href="index.html#uu-dai">Ưu đãi</a
           ><a href="index.html#bap-nuoc">Bắp & nước</a
           ><a href="index.html#ve-cinesnack">Rạp CineSnack</a>
         </nav>
-        <a class="button header-button" href="booking.html"
+        <div class="account-actions">
+          <a class="account-login" href="authentication.html?mode=login"
+            >Đăng nhập</a
+          >
+          <a class="nut" href="orders.html">Đơn của tôi</a>
+        </div>
+        <a class="nut dau-nut" href="booking.html"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3"
@@ -62,230 +77,163 @@
       </div>
     </header>
 
-    <main id="noi-dung" class="app-main" tabindex="-1">
+    <main id="noi-dung" class="ung-dung-chinh" tabindex="-1">
       <noscript
-        ><p class="notice container">
-          Bạn cần bật JavaScript để sử dụng bộ lọc và luồng đặt vé minh họa.
+        ><p class="thong-bao bao">
+          Bạn cần bật JavaScript để xem phim và đặt vé.
         </p></noscript
       >
-      <section class="page-lead">
-        <div class="container">
-          <nav class="breadcrumb" aria-label="Đường dẫn">
+      <section class="trang-mo-dau">
+        <div class="bao">
+          <nav class="duong-dan" aria-label="Đường dẫn">
             <a href="index.html">Trang chủ</a><span aria-hidden="true">/</span
             ><span>Hoàn tất cuộc hẹn</span>
           </nav>
-          <span class="eyebrow">SẮP ĐẾN GIỜ XEM PHIM</span>
+          <span class="nhan-dau">SẮP ĐẾN GIỜ XEM PHIM</span>
           <h1>Hoàn tất cuộc hẹn</h1>
           <p>
             Kiểm tra lựa chọn và thông tin liên hệ của bạn trước khi xác nhận.
           </p>
         </div>
       </section>
-      <ol class="progress-steps container" aria-label="Tiến trình đặt vé">
-        <li class="complete"><span>1</span>Chọn phim & ghế</li>
-        <li class="current" aria-current="step">
+      <ol class="tien-trinh-buoc bao" aria-label="Tiến trình đặt vé">
+        <li class="xong"><span>1</span>Chọn phim & ghế</li>
+        <li class="hien-tai" aria-current="step">
           <span>2</span>Thông tin & thanh toán
         </li>
         <li class=""><span>3</span>Hoàn tất</li>
       </ol>
-      <div class="container empty-state panel" id="empty-checkout" hidden>
-        <span class="empty-symbol" aria-hidden="true">◇</span>
+      <div class="bao trong-trang-thai khung" id="trong-thanh-toan" hidden>
+        <span class="trong-bieu-tuong" aria-hidden="true">◇</span>
         <h2>Bạn chưa có đơn đặt vé</h2>
         <p>
           Đơn chưa được tạo hoặc không còn hợp lệ. Hãy chọn lại phim và ghế.
         </p>
-        <a class="button" href="booking.html">Chọn phim & ghế</a>
+        <a class="nut" href="booking.html">Chọn phim & ghế</a>
       </div>
-      <div class="container booking-layout" id="checkout-content" hidden>
-        <form class="booking-content" id="checkout-form">
-          <section class="panel">
-            <div class="panel-heading">
-              <span class="section-number">01</span>
-              <div>
-                <h2>Thông tin người đặt</h2>
-                <p>Dùng thông tin mẫu khi trải nghiệm bản demo.</p>
-              </div>
-            </div>
-            <label class="field-label" for="customer-name"
-              >Họ và tên <span aria-hidden="true">*</span></label
-            ><input
-              id="customer-name"
-              name="name"
-              autocomplete="name"
+      <div class="bao dat-ve-bo-cuc" id="thanh-toan-noi-dung" hidden>
+        <form class="dat-ve-noi-dung" id="thanh-toan-bieu-mau">
+          <section class="khung">
+            <h2>Thông tin đơn hàng</h2>
+            <label class="o-nhan" for="khach-email"
+              >Email nhận thông tin đơn</label
+            >
+            <input
+              id="khach-email"
+              type="email"
+              name="email"
+              maxlength="150"
+              autocomplete="email"
               required
-              minlength="2"
-              maxlength="80"
-              placeholder="Nguyễn Minh Anh"
             />
-            <div class="form-row">
-              <div>
-                <label class="field-label" for="customer-email"
-                  >Email <span aria-hidden="true">*</span></label
-                ><input
-                  id="customer-email"
-                  name="email"
-                  type="email"
-                  autocomplete="email"
-                  maxlength="120"
-                  required
-                  placeholder="ban@example.com"
-                />
-              </div>
-              <div>
-                <label class="field-label" for="customer-phone"
-                  >Số điện thoại <span aria-hidden="true">*</span></label
-                ><input
-                  id="customer-phone"
-                  name="phone"
-                  type="tel"
-                  inputmode="tel"
-                  autocomplete="tel"
-                  required
-                  pattern="(?:0[0-9]{9}|\+84[0-9]{9})"
-                  title="Nhập 10 chữ số bắt đầu bằng 0 hoặc +84 và 9 chữ số."
-                  placeholder="0901234567"
-                />
-              </div>
-            </div>
-            <p class="hint">
-              Thông tin chỉ dùng trong lần mô phỏng này, không gửi lên máy chủ.
+            <p class="goi-y">Email được lưu cùng đơn hàng để tra cứu.</p>
+          </section>
+          <section class="khung">
+            <h2>Thanh toán tại quầy</h2>
+            <p>
+              Đơn giữ chỗ tối đa 15 phút, không vượt giờ bắt đầu suất chiếu.
+              Nhân viên xác nhận sau khi nhận đủ tiền.
             </p>
           </section>
-          <section class="panel">
-            <div class="panel-heading">
-              <span class="section-number">02</span>
-              <div>
-                <h2>Phương thức thanh toán</h2>
-                <p>Chọn cách bạn muốn trải nghiệm trong bản demo.</p>
-              </div>
-            </div>
-            <fieldset class="payment-options">
-              <legend class="sr-only">Chọn phương thức thanh toán</legend>
-              <label class="payment-option"
-                ><input type="radio" name="payment" value="qr" checked /><span
-                  class="payment-icon"
-                  aria-hidden="true"
-                  >▦</span
-                ><span
-                  ><strong>Chuyển khoản / QR</strong
-                  ><small>Mô phỏng · Không tạo mã chuyển tiền</small></span
-                ></label
-              ><label class="payment-option"
-                ><input type="radio" name="payment" value="wallet" /><span
-                  class="payment-icon"
-                  aria-hidden="true"
-                  >◈</span
-                ><span
-                  ><strong>Ví điện tử</strong
-                  ><small>Mô phỏng · Không kết nối ví</small></span
-                ></label
-              ><label class="payment-option"
-                ><input type="radio" name="payment" value="counter" /><span
-                  class="payment-icon"
-                  aria-hidden="true"
-                  >◇</span
-                ><span
-                  ><strong>Thanh toán tại quầy</strong
-                  ><small>Mô phỏng · Không giữ ghế thật</small></span
-                ></label
-              >
-            </fieldset>
-          </section>
-          <section class="panel confirmation-panel">
-            <p class="notice">
-              Chế độ minh họa: xác nhận bên dưới không thu tiền, không giữ ghế
-              và không phát hành vé thật.
-            </p>
-            <label class="checkbox-label"
-              ><input type="checkbox" id="demo-consent" required /><span
-                >Tôi hiểu đây là trải nghiệm đặt vé minh họa.</span
+          <section class="khung xac-nhan-khung">
+            <label class="nhan-dong-y"
+              ><input type="checkbox" id="mau-dong-y" required /><span
+                >Tôi đồng ý tạo đơn và thanh toán trước thời hạn giữ chỗ.</span
               ></label
             >
-            <p id="checkout-error" class="error" role="alert"></p>
-            <button type="submit" class="button wide">
-              Xác nhận đặt vé demo <span aria-hidden="true">↗</span>
+            <p id="thanh-toan-loi" class="loi" role="alert"></p>
+            <a
+              id="checkout-login"
+              class="nut phu"
+              href="authentication.html?next=checkout.html"
+              hidden
+              >Đăng nhập để tiếp tục</a
+            >
+            <button type="submit" class="nut rong">
+              Tạo đơn chờ thanh toán
             </button>
+            <a class="chu-lien-ket" href="orders.html">Đơn của tôi</a>
           </section>
         </form>
-        <aside class="panel order-summary" aria-label="Tóm tắt lựa chọn">
-          <span class="eyebrow">CUỘC HẸN CỦA BẠN</span>
-          <div class="summary-movie">
+        <aside class="khung don-tom-tat" aria-label="Tóm tắt lựa chọn">
+          <span class="nhan-dau">CUỘC HẸN CỦA BẠN</span>
+          <div class="tom-tat-phim">
             <img
-              id="summary-poster"
+              id="tom-tat-anh"
               src="../assets/images/movies/dune.jpg"
               alt=""
               width="80"
               height="120"
             />
             <div>
-              <span class="pill">2D · Phụ đề</span>
-              <h2 id="summary-title">Dune: Hành tinh cát – Phần hai</h2>
-              <p>CineSnack · Phòng 01</p>
+              <span class="nhan-tron">2D · Phụ đề</span>
+              <h2 id="tom-tat-tieu-de">Dune: Hành tinh cát – Phần hai</h2>
+              <p>CineSnack · Phòng theo suất chiếu</p>
             </div>
           </div>
-          <dl class="summary-details">
+          <dl class="tom-tat-chi-tiet">
             <div>
               <dt>Suất chiếu</dt>
-              <dd id="summary-when">—</dd>
+              <dd id="tom-tat-suat">—</dd>
             </div>
             <div>
               <dt>Ghế ngồi</dt>
-              <dd id="summary-seats">Chưa chọn ghế</dd>
+              <dd id="tom-tat-ghe">Chưa chọn ghế</dd>
             </div>
             <div>
               <dt>Tiền vé</dt>
-              <dd id="summary-tickets">0 ₫</dd>
+              <dd id="tom-tat-tienVe">0 ₫</dd>
             </div>
             <div>
               <dt>Bắp & nước</dt>
-              <dd id="summary-snacks">0 ₫</dd>
+              <dd id="tom-tat-tienBap">0 ₫</dd>
             </div>
           </dl>
-          <div class="summary-total">
+          <div class="tom-tat-tong">
             <span>Tổng cộng</span
-            ><strong id="summary-total" aria-live="polite" aria-atomic="true"
+            ><strong id="tom-tat-tong" aria-live="polite" aria-atomic="true"
               >0 ₫</strong
             >
           </div>
-          <a class="text-link edit-booking" href="booking.html" id="edit-booking"
+          <a class="chu-lien-ket sua-dat-ve" href="booking.html" id="sua-dat-ve"
             >← Chỉnh sửa ghế & combo</a
           >
-          <p class="summary-note">
-            Đây là đơn minh họa. Ghế chưa được giữ và chưa có giao dịch thanh
-            toán.
+          <p class="tom-tat-ghi-chu">
+            Lựa chọn chưa được giữ chỗ. Ghế chỉ được giữ sau khi tạo đơn thành
+            công.
           </p>
         </aside>
       </div>
-      <section
-        class="container panel success-panel"
-        id="checkout-success"
-        hidden
-        aria-labelledby="success-title"
-        tabindex="-1"
-      >
-        <span class="success-check" aria-hidden="true">✓</span
-        ><span class="eyebrow">MỘT CUỘC HẸN ĐÃ SẴN SÀNG</span>
-        <h2 id="success-title">Hoàn tất trải nghiệm đặt vé!</h2>
-        <p>Đơn minh họa của bạn đã được xác nhận trên giao diện.</p>
-        <p class="notice">
-          Bạn chưa thanh toán và chưa có vé thật. Không dùng màn hình này để vào
-          rạp.
-        </p>
-        <dl class="success-details" id="success-details"></dl>
-        <div class="success-actions">
-          <a class="button" href="movies.html">Khám phá phim khác</a
-          ><a class="button secondary" href="index.html">Về trang chủ</a>
-        </div>
-      </section>
     </main>
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <a class="brand footer-brand" href="index.html"
+    <footer class="web-chan">
+      <div class="bao chan-trong">
+        <a class="thuong-hieu chan-thuong-hieu" href="index.html"
           >Cine<span>Snack</span></a
         >
         <p>Hẹn nhau ở rạp. Vui trọn từng khoảnh khắc.</p>
         <a href="admin.html">Quản trị</a><span>© CineSnack 2026</span>
       </div>
     </footer>
+    <dialog
+      id="lua-chon-tai-khoan"
+      class="welcome-dialog"
+      aria-labelledby="tieu-de-chao"
+      aria-describedby="mo-ta-chao"
+    >
+      <p class="welcome-brand">CineSnack</p>
+      <h2 id="tieu-de-chao">Hẹn nhau ở rạp!</h2>
+      <p id="mo-ta-chao">
+        Đăng nhập để đặt vé hoặc tiếp tục xem phim với tư cách khách.
+      </p>
+      <div class="welcome-actions">
+        <a class="nut" href="authentication.html?mode=login" autofocus
+          >Đăng nhập</a
+        >
+        <a class="account-login" href="orders.html">Đơn của tôi</a>
+        <button id="tiep-tuc-khach" class="guest-button" type="button">
+          Tiếp tục với tư cách khách (Guest)
+        </button>
+      </div>
+    </dialog>
   </body>
 </html>

@@ -6,12 +6,12 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=CineSnack;encrypt=true;trustServerCertificate=true";
-    private static final String USERNAME = "your username here";
-    private static final String PASSWORD = "your password here";
+    private static final String DIA_CHI = "jdbc:sqlserver://localhost:1433;databaseName=CineSnack;encrypt=true;trustServerCertificate=true";
+    private static final String TAI_KHOAN = "your username here";
+    private static final String MAT_KHAU = "your password here";
 
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USERNAME, PASSWORD);
+    public static Connection moKetNoi() throws SQLException {
+        return DriverManager.getConnection(DIA_CHI, TAI_KHOAN, MAT_KHAU);
     }
 }
 */
