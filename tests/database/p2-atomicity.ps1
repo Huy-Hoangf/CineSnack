@@ -10,7 +10,8 @@ function Invoke-Sql([string]$Sql) {
         $taskCommand.CommandTimeout = 30
         $taskCommand.CommandText = $Sql
         return $taskCommand.ExecuteScalar()
-    } finally { $taskCommand.Dispose() }
+    }
+    finally { $taskCommand.Dispose() }
 }
 function Get-Snapshot {
     return Invoke-Sql @'
@@ -39,9 +40,10 @@ try {
     $taskCommit = "    COMMIT;`nEND TRY"
     $taskCommitAt = $taskSql.LastIndexOf($taskCommit)
     if ($taskCommitAt -lt 0) { throw 'Không tìm thấy commit bao ngoài' }
-    $taskFault = $taskSql.Substring(0,$taskCommitAt) + "    THROW 51000, N'Kiểm thử rollback toàn script', 1;`n" + $taskSql.Substring($taskCommitAt)
+    $taskFault = $taskSql.Substring(0, $taskCommitAt) + "    THROW 51000, N'Kiểm thử rollback toàn script', 1;`n" + $taskSql.Substring($taskCommitAt)
     try { [void](Invoke-Sql $taskFault); throw 'Fault không chặn script' }
     catch [System.Data.SqlClient.SqlException] { if ($_.Exception.Number -ne 51000) { throw } }
     if ((Get-Snapshot) -ne $taskBefore) { throw 'Lỗi giữa script không rollback toàn bộ' }
     Write-Output 'PASS: preflight dừng trước thay đổi; lỗi sau seed rollback dữ liệu/schema; chỉ dùng CineSnack.'
-} finally { $taskConnection.Dispose() }
+}
+finally { $taskConnection.Dispose() }

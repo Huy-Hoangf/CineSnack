@@ -6,8 +6,7 @@ async function chuanBi(t) {
   const browser = await chromium.launch({
     headless: true,
     executablePath:
-      process.env.TRINH_DUYET ||
-      "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+      process.env.TRINH_DUYET || "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
   });
   t.after(async () => {
     await browser.close();
@@ -33,9 +32,7 @@ async function chuanBi(t) {
     await page.locator("#email").fill(email);
     await page.locator("#mat-khau").fill("MoPhong123!");
     await page.locator("#gui-tai-khoan").click();
-    await page.waitForURL(
-      (url) => !url.pathname.endsWith("authentication.html"),
-    );
+    await page.waitForURL((url) => !url.pathname.endsWith("authentication.html"));
   }
   return { ...fixture, browser, goc, loi, trangMoi, mo, dangNhap };
 }

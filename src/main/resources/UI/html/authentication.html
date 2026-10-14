@@ -14,15 +14,8 @@
     <a class="bo-qua-lien-ket" href="#noi-dung">Bỏ qua điều hướng</a>
     <header class="web-dau">
       <div class="bao dau-trong">
-        <a
-          class="thuong-hieu"
-          href="index.html"
-          aria-label="CineSnack — Trang chủ"
-        >
-          <span
-            >Cine<span class="thuong-hieu-nhan">Snack</span
-            ><small>CINEMA & MORE</small></span
-          >
+        <a class="thuong-hieu" href="index.html" aria-label="CineSnack — Trang chủ">
+          <span>Cine<span class="thuong-hieu-nhan">Snack</span><small>CINEMA & MORE</small></span>
         </a>
         <a class="chu-lien-ket" href="index.html">Về trang chủ</a>
       </div>
@@ -31,25 +24,16 @@
       <section class="authentication-card" aria-labelledby="tieu-de-tai-khoan">
         <!-- Chọn đăng nhập hoặc đăng ký. -->
         <nav class="authentication-tabs" aria-label="Tài khoản">
-          <a
-            class="account-login"
-            href="authentication.html?mode=login"
-            data-che-do="login"
+          <a class="account-login" href="authentication.html?mode=login" data-che-do="login"
             >Đăng nhập</a
           >
-          <a class="account-login" href="orders.html" data-che-do="register"
-            >Đơn của tôi</a
-          >
+          <a class="account-login" href="orders.html" data-che-do="register">Đơn của tôi</a>
         </nav>
         <h1 id="tieu-de-tai-khoan">Đăng nhập</h1>
         <p id="mo-ta-tai-khoan" class="authentication-description">
           Chào mừng bạn trở lại với CineSnack.
         </p>
-        <noscript
-          ><p>
-            Bạn cần bật JavaScript để sử dụng giao diện tài khoản.
-          </p></noscript
-        >
+        <noscript><p>Bạn cần bật JavaScript để sử dụng giao diện tài khoản.</p></noscript>
         <!-- Form dùng chung; JavaScript điều chỉnh các trường theo chế độ. -->
         <form id="bieu-mau-tai-khoan" class="authentication-form" method="post">
           <div class="authentication-field" data-dang-ky hidden>
@@ -84,9 +68,7 @@
               required
               aria-describedby="goi-y-mat-khau"
             />
-            <p id="goi-y-mat-khau" class="authentication-hint" hidden>
-              Sử dụng ít nhất 8 ký tự.
-            </p>
+            <p id="goi-y-mat-khau" class="authentication-hint" hidden>Sử dụng ít nhất 8 ký tự.</p>
           </div>
           <div class="authentication-field" data-dang-ky hidden>
             <label for="xac-nhan-mat-khau">Xác nhận mật khẩu</label>
@@ -98,20 +80,12 @@
               disabled
             />
           </div>
-          <button id="gui-tai-khoan" class="nut" type="submit">
-            Đăng nhập
-          </button>
-          <p
-            id="thong-bao-tai-khoan"
-            class="authentication-status"
-            role="status"
-            tabindex="-1"
-          ></p>
+          <button id="gui-tai-khoan" class="nut" type="submit">Đăng nhập</button>
+          <p id="thong-bao-tai-khoan" class="authentication-status" role="status" tabindex="-1"></p>
         </form>
         <!-- Thông báo trạng thái hiện tại và lựa chọn Guest. -->
         <p class="authentication-note">
-          Đăng nhập bằng tài khoản đã được cấp. Đăng ký tài khoản mới chưa được
-          cung cấp.
+          Đăng nhập bằng tài khoản đã được cấp. Đăng ký tài khoản mới chưa được cung cấp.
         </p>
         <a class="guest-button" href="index.html" data-tiep-tuc-khach
           >Tiếp tục với tư cách khách (Guest)</a

@@ -8,9 +8,7 @@
     if (!box) continue;
     box.replaceChildren();
     try {
-      const ds = await CineSnackApi.goi(
-        "/api/movies?status=" + status + "&size=8",
-      );
+      const ds = await CineSnackApi.goi("/api/movies?status=" + status + "&size=8");
       const count = document.querySelector(
         status === "DANG_CHIEU" ? ".dang-nhan span" : ".chieu-nhan span",
       );
@@ -38,10 +36,7 @@
         genre.textContent = p.genre;
         const book = document.createElement("a");
         book.className = "nut";
-        book.href =
-          (status === "DANG_CHIEU"
-            ? "booking.html?phim="
-            : "movies.html?phim=") + p.id;
+        book.href = (status === "DANG_CHIEU" ? "booking.html?phim=" : "movies.html?phim=") + p.id;
         book.textContent = status === "DANG_CHIEU" ? "Đặt vé" : "Xem phim";
         card.append(a, genre, h, book);
         box.append(card);

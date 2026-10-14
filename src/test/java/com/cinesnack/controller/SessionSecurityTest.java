@@ -1,5 +1,12 @@
 package com.cinesnack.controller;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.cinesnack.config.ApiSecurityConfig;
 import com.cinesnack.entity.User;
 import com.cinesnack.repository.UserRepository;
@@ -17,103 +24,162 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 @SpringJUnitConfig(SessionSecurityTest.Config.class)
 @WebAppConfiguration
 class SessionSecurityTest {
+
     @Configuration
     @EnableWebMvc
     @EnableWebSecurity
-    @Import({ApiSecurityConfig.class, CsrfController.class, ApiExceptionHandler.class})
-    @ComponentScan(basePackages = "com.cinesnack.controller", useDefaultFilters = false,
-            includeFilters = @ComponentScan.Filter(type = FilterType.REGEX,
-                    pattern = "com\\.cinesnack\\.controller\\.UserController"))
+    @Import({ ApiSecurityConfig.class, CsrfController.class, ApiExceptionHandler.class })
+    @ComponentScan(
+        basePackages = "com.cinesnack.controller",
+        useDefaultFilters = false,
+        includeFilters = @ComponentScan.Filter(
+            type = FilterType.REGEX,
+            pattern = "com\\.cinesnack\\.controller\\.UserController"
+        )
+    )
     static class Config {
-        @Bean UserRepository khoNguoiDung() { return mock(UserRepository.class); }
-        @Bean UserService dichVuNguoiDung() { return mock(UserService.class); }
+
+        @Bean
+        UserRepository khoNguoiDung() {
+            return mock(UserRepository.class);
+        }
+
+        @Bean
+        UserService dichVuNguoiDung() {
+            return mock(UserService.class);
+        }
     }
 
-    @Autowired WebApplicationContext nguCanh;
-    @Autowired UserRepository khoNguoiDung;
-    @Autowired UserService dichVuNguoiDung;
-    @Autowired PasswordEncoder boMaHoa;
+    @Autowired
+    WebApplicationContext nguCanh;
+
+    @Autowired
+    UserRepository khoNguoiDung;
+
+    @Autowired
+    UserService dichVuNguoiDung;
+
+    @Autowired
+    PasswordEncoder boMaHoa;
+
     private MockMvc http;
 
     @BeforeEach
     void chuanBi() {
         reset(khoNguoiDung, dichVuNguoiDung);
-        var khach = new User(7, "customer@example.com", boMaHoa.encode("test-only-password"),
-                "KHACH_HANG", "HOAT_DONG");
+        var khach = new User(
+            7,
+            "customer@example.com",
+            boMaHoa.encode("test-only-password"),
+            "KHACH_HANG",
+            "HOAT_DONG"
+        );
         when(khoNguoiDung.timTheoThuDienTu(khach.thuDienTu())).thenReturn(khach);
         when(dichVuNguoiDung.layTaiKhoanHoatDong(khach.thuDienTu())).thenReturn(khach);
-        http = org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(nguCanh)
-                .apply(springSecurity()).build();
+        http = org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(
+            nguCanh
+        )
+            .apply(springSecurity())
+            .build();
     }
 
     @Test
     void dangNhapLuuSessionVaTraThongTinKhongLoMatKhau() throws Exception {
-        var ketQua = http.perform(post("/api/auth/login").with(csrf())
-                        .param("username", "customer@example.com").param("password", "test-only-password"))
-                .andExpect(status().isNoContent()).andReturn();
+        var ketQua = http
+            .perform(
+                post("/api/auth/login")
+                    .with(csrf())
+                    .param("username", "customer@example.com")
+                    .param("password", "test-only-password")
+            )
+            .andExpect(status().isNoContent())
+            .andReturn();
         var session = (MockHttpSession) ketQua.getRequest().getSession(false);
         assertNotNull(session, "Login must create a session usable by subsequent browser requests");
 
         http.perform(get("/api/auth/me").session(session))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(7))
-                .andExpect(jsonPath("$.email").value("customer@example.com"))
-                .andExpect(jsonPath("$.role").value("KHACH_HANG"))
-                .andExpect(jsonPath("$.passwordHash").doesNotExist())
-                .andExpect(jsonPath("$.matKhauHash").doesNotExist());
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(7))
+            .andExpect(jsonPath("$.email").value("customer@example.com"))
+            .andExpect(jsonPath("$.role").value("KHACH_HANG"))
+            .andExpect(jsonPath("$.passwordHash").doesNotExist())
+            .andExpect(jsonPath("$.matKhauHash").doesNotExist());
     }
 
     @Test
     void matKhauSaiKhongTaoSessionDangNhap() throws Exception {
-        http.perform(post("/api/auth/login").with(csrf())
-                        .param("username", "customer@example.com").param("password", "wrong"))
-                .andExpect(status().isUnauthorized());
+        http.perform(
+            post("/api/auth/login")
+                .with(csrf())
+                .param("username", "customer@example.com")
+                .param("password", "wrong")
+        ).andExpect(status().isUnauthorized());
     }
 
     @Test
     void dangNhapCanCsrf() throws Exception {
-        http.perform(post("/api/auth/login")
-                        .param("username", "customer@example.com").param("password", "test-only-password"))
-                .andExpect(status().isForbidden());
+        http.perform(
+            post("/api/auth/login")
+                .param("username", "customer@example.com")
+                .param("password", "test-only-password")
+        ).andExpect(status().isForbidden());
     }
 
     @Test
     void tokenCsrfCuSauLoginKhongDungDuocVaTokenMoiDungDuoc() throws Exception {
         var truoc = http.perform(get("/api/csrf")).andExpect(status().isOk()).andReturn();
         var phienCu = (MockHttpSession) truoc.getRequest().getSession(false);
-        String tokenCu = com.jayway.jsonpath.JsonPath.read(truoc.getResponse().getContentAsString(), "$.token");
-        var login = http.perform(post("/api/auth/login").session(phienCu)
-                .header("X-CSRF-TOKEN", tokenCu).param("username", "customer@example.com")
-                .param("password", "test-only-password")).andExpect(status().isNoContent()).andReturn();
+        String tokenCu = com.jayway.jsonpath.JsonPath.read(
+            truoc.getResponse().getContentAsString(),
+            "$.token"
+        );
+        var login = http
+            .perform(
+                post("/api/auth/login")
+                    .session(phienCu)
+                    .header("X-CSRF-TOKEN", tokenCu)
+                    .param("username", "customer@example.com")
+                    .param("password", "test-only-password")
+            )
+            .andExpect(status().isNoContent())
+            .andReturn();
         var phienMoi = (MockHttpSession) login.getRequest().getSession(false);
-        http.perform(post("/api/auth/logout").session(phienMoi).header("X-CSRF-TOKEN",tokenCu))
-                .andExpect(status().isForbidden());
-        var sau = http.perform(get("/api/csrf").session(phienMoi)).andExpect(status().isOk()).andReturn();
-        String tokenMoi = com.jayway.jsonpath.JsonPath.read(sau.getResponse().getContentAsString(), "$.token");
-        http.perform(post("/api/auth/logout").session(phienMoi).header("X-CSRF-TOKEN",tokenMoi))
-                .andExpect(status().isNoContent());
+        http.perform(
+            post("/api/auth/logout").session(phienMoi).header("X-CSRF-TOKEN", tokenCu)
+        ).andExpect(status().isForbidden());
+        var sau = http
+            .perform(get("/api/csrf").session(phienMoi))
+            .andExpect(status().isOk())
+            .andReturn();
+        String tokenMoi = com.jayway.jsonpath.JsonPath.read(
+            sau.getResponse().getContentAsString(),
+            "$.token"
+        );
+        http.perform(
+            post("/api/auth/logout").session(phienMoi).header("X-CSRF-TOKEN", tokenMoi)
+        ).andExpect(status().isNoContent());
     }
 
     @Test
     void dangXuatHuySessionVaKhongConXemDuocTaiKhoan() throws Exception {
-        var ketQua = http.perform(post("/api/auth/login").with(csrf())
-                        .param("username", "customer@example.com").param("password", "test-only-password"))
-                .andExpect(status().isNoContent()).andReturn();
+        var ketQua = http
+            .perform(
+                post("/api/auth/login")
+                    .with(csrf())
+                    .param("username", "customer@example.com")
+                    .param("password", "test-only-password")
+            )
+            .andExpect(status().isNoContent())
+            .andReturn();
         var session = (MockHttpSession) ketQua.getRequest().getSession(false);
         assertNotNull(session);
 
-        http.perform(post("/api/auth/logout").session(session).with(csrf()))
-                .andExpect(status().isNoContent());
+        http.perform(post("/api/auth/logout").session(session).with(csrf())).andExpect(
+            status().isNoContent()
+        );
         assertTrue(session.isInvalid(), "Logout must invalidate the authenticated session");
         http.perform(get("/api/auth/me")).andExpect(status().isUnauthorized());
     }

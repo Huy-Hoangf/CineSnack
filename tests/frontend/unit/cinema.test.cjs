@@ -6,11 +6,7 @@ thu("Tìm kiếm bỏ qua dấu, chữ hoa và khoảng trắng", () => {
   kt.equal(rap.boDau("Đế chế"), "de che");
 });
 thu("Ngày theo lịch địa phương và qua cuối tháng", () => {
-  kt.deepEqual(rap.layNgay(new Date(2026, 0, 31, 12)), [
-    "2026-01-31",
-    "2026-02-01",
-    "2026-02-02",
-  ]);
+  kt.deepEqual(rap.layNgay(new Date(2026, 0, 31, 12)), ["2026-01-31", "2026-02-01", "2026-02-02"]);
 });
 thu("Giới hạn 10 ghế, không có giá VIP tự đặt", () => {
   const luc = new Date("2026-10-14T12:00:00+07:00");

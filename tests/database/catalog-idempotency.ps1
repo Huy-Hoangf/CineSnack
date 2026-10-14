@@ -9,7 +9,8 @@ function Invoke-Sql([string]$Sql) {
         $taskCommand.CommandTimeout = 30
         $taskCommand.CommandText = $Sql
         return $taskCommand.ExecuteScalar()
-    } finally { $taskCommand.Dispose() }
+    }
+    finally { $taskCommand.Dispose() }
 }
 
 function Invoke-File([string]$Name) {
@@ -51,7 +52,9 @@ try {
         if ((Invoke-Sql "SELECT gia_ban FROM COMBO WHERE ten_combo=N'Combo Một Mình Vui'") -ne 123456) {
             throw 'Seed ghi đè giá combo đã chỉnh'
         }
-    } finally { [void](Invoke-Sql 'IF @@TRANCOUNT>0 ROLLBACK;') }
+    }
+    finally { [void](Invoke-Sql 'IF @@TRANCOUNT>0 ROLLBACK;') }
     if ((Get-Snapshot) -ne $taskBefore) { throw 'Dữ liệu không được khôi phục sau kiểm thử giá' }
     Write-Output 'PASS: chạy lại không mất/trùng dữ liệu; seed giữ giá đã chỉnh; thử giá đã rollback.'
-} finally { $taskConnection.Dispose() }
+}
+finally { $taskConnection.Dispose() }

@@ -1,11 +1,12 @@
 package com.cinesnack.support;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public final class Sql {
+
     private Sql() {}
 
     public static long themVaLayMa(JdbcTemplate truyVan, String cauLenh, Object... thamSo) {

@@ -21,19 +21,16 @@ thu("Giỏ ID thật được chấp nhận và tính 219000", () => {
 thu("Chặn suất đã bắt đầu, kể cả cùng ngày và đúng ranh giới", () => {
   kt.equal(rap.gioHopLe(gio(), new Date("2026-10-14T13:00:00+07:00")), false);
 });
-thu(
-  "Request chỉ có ID, số lượng, email; không gửi giá, tổng hay chủ đơn",
-  () => {
-    const body = rap.taoYeuCau(gio(), "khach@example.com");
-    kt.deepEqual(body, {
-      email: "khach@example.com",
-      showTimeId: 101,
-      seatIds: [11, 12],
-      snacks: [],
-      combos: [{ comboId: 21, quantity: 1 }],
-    });
-  },
-);
+thu("Request chỉ có ID, số lượng, email; không gửi giá, tổng hay chủ đơn", () => {
+  const body = rap.taoYeuCau(gio(), "khach@example.com");
+  kt.deepEqual(body, {
+    email: "khach@example.com",
+    showTimeId: 101,
+    seatIds: [11, 12],
+    snacks: [],
+    combos: [{ comboId: 21, quantity: 1 }],
+  });
+});
 thu("Cho mua chỉ bắp nước, không yêu cầu ghế/suất", () => {
   const g = gio();
   g.maSuatChieu = null;
@@ -44,16 +41,10 @@ thu("Cho mua chỉ bắp nước, không yêu cầu ghế/suất", () => {
 });
 thu("Từ chối giỏ cũ/rỗng, ID trùng, thiếu dữ liệu và quantity sai", () => {
   kt.equal(rap.gioHopLe({ ...gio(), version: 1 }, luc), false);
-  kt.equal(
-    rap.gioHopLe({ ...gio(), ghe: [gio().ghe[0], gio().ghe[0]] }, luc),
-    false,
-  );
+  kt.equal(rap.gioHopLe({ ...gio(), ghe: [gio().ghe[0], gio().ghe[0]] }, luc), false);
   for (const q of [0, 11, 1.5, "1"])
     kt.equal(
-      rap.gioHopLe(
-        { ...gio(), combos: [{ comboId: 21, quantity: q, unitPrice: 59000 }] },
-        luc,
-      ),
+      rap.gioHopLe({ ...gio(), combos: [{ comboId: 21, quantity: q, unitPrice: 59000 }] }, luc),
       false,
     );
   for (const g of [

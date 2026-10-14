@@ -23,9 +23,7 @@ test(
       assert.ok(show, name + " thiếu suất chiếu");
       assert.ok(Date.parse(show.startsAt) > Date.now());
       assert.equal(Number(show.price), 75000);
-      const seatsResponse = await fetch(
-        base + "/api/showtimes/" + show.id + "/seats",
-      );
+      const seatsResponse = await fetch(base + "/api/showtimes/" + show.id + "/seats");
       assert.equal(seatsResponse.status, 200);
       const seats = await seatsResponse.json();
       assert.equal(seats.length, 60);
