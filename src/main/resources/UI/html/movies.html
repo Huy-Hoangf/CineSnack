@@ -8,23 +8,29 @@
     <link rel="stylesheet" href="../assets/css/site.css" />
     <link rel="stylesheet" href="../assets/css/app.css" />
     <link rel="stylesheet" href="../assets/css/movies.css" />
+    <script src="../assets/js/api.js" defer></script>
     <script src="../assets/js/cinema.js" defer></script>
     <script src="../assets/js/booking-summary.js" defer></script>
     <script src="../assets/js/movies.js" defer></script>
+    <link rel="stylesheet" href="../assets/css/authentication.css" />
+    <script src="../assets/js/authentication.js" defer></script>
   </head>
-  <body class="app-page">
-    <a class="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
-    <div class="topbar">
-      <div class="container topbar-inner">
+  <body class="ung-dung-trang account-enabled">
+    <a class="bo-qua-lien-ket" href="#noi-dung">Bỏ qua điều hướng</a>
+    <div class="thanh-tren">
+      <div class="bao thanh-tren-trong">
         <span>Một chiếc vé. Cả thế giới điện ảnh.</span
         ><a href="index.html#ve-cinesnack"
           >Về CineSnack <span aria-hidden="true">↗</span></a
         >
       </div>
     </div>
-    <header class="site-header">
-      <div class="container header-inner">
-        <a class="brand" href="index.html" aria-label="CineSnack — Trang chủ"
+    <header class="web-dau">
+      <div class="bao dau-trong">
+        <a
+          class="thuong-hieu"
+          href="index.html"
+          aria-label="CineSnack — Trang chủ"
           ><svg viewBox="0 0 40 40" aria-hidden="true">
             <rect
               x="3"
@@ -41,18 +47,25 @@
               stroke-width="2"
             /></svg
           ><span
-            >Cine<span class="brand-accent">Snack</span
+            >Cine<span class="thuong-hieu-nhan">Snack</span
             ><small>CINEMA & MORE</small></span
           ></a
         >
-        <nav class="main-nav" aria-label="Điều hướng chính">
-          <a href="movies.html" class="nav-active" aria-current="page">Phim</a
+        <nav class="chinh-dieu-huong" aria-label="Điều hướng chính">
+          <a href="movies.html" class="dieu-huong-dang-chon" aria-current="page"
+            >Phim</a
           ><a href="booking.html">Lịch chiếu</a
           ><a href="index.html#uu-dai">Ưu đãi</a
           ><a href="index.html#bap-nuoc">Bắp & nước</a
           ><a href="index.html#ve-cinesnack">Rạp CineSnack</a>
         </nav>
-        <a class="button header-button" href="booking.html"
+        <div class="account-actions">
+          <a class="account-login" href="authentication.html?mode=login"
+            >Đăng nhập</a
+          >
+          <a class="nut" href="orders.html">Đơn của tôi</a>
+        </div>
+        <a class="nut dau-nut" href="booking.html"
           ><svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3"
@@ -62,15 +75,15 @@
       </div>
     </header>
 
-    <main id="noi-dung" class="app-main" tabindex="-1">
+    <main id="noi-dung" class="ung-dung-chinh" tabindex="-1">
       <noscript
-        ><p class="notice container">
-          Bạn cần bật JavaScript để sử dụng bộ lọc và luồng đặt vé minh họa.
+        ><p class="thong-bao bao">
+          Bạn cần bật JavaScript để xem phim và đặt vé.
         </p></noscript
       >
-      <section class="page-lead">
-        <div class="container">
-          <nav class="breadcrumb" aria-label="Đường dẫn">
+      <section class="trang-mo-dau">
+        <div class="bao">
+          <nav class="duong-dan" aria-label="Đường dẫn">
             <a href="index.html">Trang chủ</a><span aria-hidden="true">/</span
             ><span>Khám phá phim</span>
           </nav>
@@ -80,78 +93,95 @@
           </p>
         </div>
       </section>
-      <section class="container catalog-section" aria-label="Danh sách phim">
-        <div class="catalog-tools">
-          <div class="segmented" role="group" aria-label="Trạng thái phim">
+      <section class="bao danh-muc-muc" aria-label="Danh sách phim">
+        <div class="danh-muc-cong-cu">
+          <div class="chia-nhom" role="group" aria-label="Trạng thái phim">
             <button
               type="button"
-              class="selected"
-              data-status="now"
+              class="da-chon"
+              data-trang-thai="dang-chieu"
               aria-pressed="true"
             >
               Đang chiếu <span>04</span></button
-            ><button type="button" data-status="soon" aria-pressed="false">
+            ><button
+              type="button"
+              data-trang-thai="sap-chieu"
+              aria-pressed="false"
+            >
               Sắp chiếu <span>02</span>
             </button>
           </div>
-          <div class="search-field">
-            <label class="sr-only" for="movie-search"
+          <div class="tim-o">
+            <label class="doc-rieng" for="tim-phim"
               >Tìm tên phim hoặc thể loại</label
             ><span aria-hidden="true">⌕</span
             ><input
               type="search"
-              id="movie-search"
+              id="tim-phim"
               placeholder="Tìm tên phim, thể loại…"
               autocomplete="off"
             />
           </div>
         </div>
-        <p class="result-count" id="movie-count" role="status"></p>
-        <div class="catalog-grid" id="catalog-grid"></div>
-        <div class="empty-state" id="no-movies" hidden>
-          <span class="empty-symbol" aria-hidden="true">⌕</span>
+        <p class="ket-qua-so" id="so-phim" role="status"></p>
+        <div class="luoi-phim" id="luoi-phim"></div>
+        <div class="trong-trang-thai" id="khong-phim" hidden>
+          <span class="trong-bieu-tuong" aria-hidden="true">⌕</span>
           <h2>Chưa tìm thấy bộ phim phù hợp</h2>
           <p>Thử tên khác hoặc bỏ bớt từ khóa nhé.</p>
-          <button type="button" class="button secondary" id="clear-search">
+          <button type="button" class="nut phu" id="xoa-tim">
             Xóa tìm kiếm
           </button>
         </div>
-        <p class="demo-disclaimer">
-          Nội dung và lịch chiếu trên trang là dữ liệu minh họa.
+        <p class="mau-luu-y">
+          Danh mục và lịch chiếu được cập nhật từ hệ thống.
         </p>
       </section>
-      <section class="container cinema-callout">
+      <section class="bao rap-loi-moi">
         <div>
           <h2>Chọn phim và suất chiếu</h2>
-          <p>
-            Chọn ghế và thêm combo bắp nước khi đặt vé.
-          </p>
+          <p>Chọn ghế và thêm combo bắp nước khi đặt vé.</p>
         </div>
-        <a class="button" href="booking.html"
+        <a class="nut" href="booking.html"
           >Xem lịch chiếu <span aria-hidden="true">↗</span></a
         >
       </section>
-      <dialog
-        class="movie-dialog"
-        id="movie-dialog"
-        aria-labelledby="detail-title"
-      >
+      <dialog class="hop-phim" id="hop-phim" aria-labelledby="chi-tiet-tieu-de">
         <form method="dialog">
-          <button class="dialog-close" aria-label="Đóng thông tin phim">
-            ×
-          </button>
+          <button class="hop-dong" aria-label="Đóng thông tin phim">×</button>
         </form>
-        <div id="movie-detail"></div>
+        <div id="phim-chi-tiet"></div>
       </dialog>
     </main>
-    <footer class="site-footer">
-      <div class="container footer-inner">
-        <a class="brand footer-brand" href="index.html"
+    <footer class="web-chan">
+      <div class="bao chan-trong">
+        <a class="thuong-hieu chan-thuong-hieu" href="index.html"
           >Cine<span>Snack</span></a
         >
         <p>Hẹn nhau ở rạp. Vui trọn từng khoảnh khắc.</p>
         <a href="admin.html">Quản trị</a><span>© CineSnack 2026</span>
       </div>
     </footer>
+    <dialog
+      id="lua-chon-tai-khoan"
+      class="welcome-dialog"
+      aria-labelledby="tieu-de-chao"
+      aria-describedby="mo-ta-chao"
+    >
+      <p class="welcome-brand">CineSnack</p>
+      <h2 id="tieu-de-chao">Hẹn nhau ở rạp!</h2>
+      <p id="mo-ta-chao">
+        Đăng nhập để đặt vé hoặc tiếp tục xem phim với tư cách khách.
+      </p>
+      <div class="welcome-actions">
+        <a class="nut" href="authentication.html?mode=login" autofocus
+          >Đăng nhập</a
+        >
+        <a class="account-login" href="orders.html">Đơn của tôi</a>
+        <button id="tiep-tuc-khach" class="guest-button" type="button">
+          Tiếp tục với tư cách khách (Guest)
+        </button>
+      </div>
+    </dialog>
   </body>
 </html>

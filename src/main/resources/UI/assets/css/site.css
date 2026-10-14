@@ -1,10 +1,10 @@
 :root {
-  --blue: #0769b1;
-  --blue-dark: #064f88;
-  --ink: #152b40;
-  --muted: #586979;
-  --line: #e2e8ee;
-  --surface: #f5f8fb;
+  --xanh: #0769b1;
+  --xanh-dam: #064f88;
+  --chu: #152b40;
+  --chu-phu: #586979;
+  --vien: #e2e8ee;
+  --nen: #f5f8fb;
 }
 * {
   box-sizing: border-box;
@@ -15,7 +15,7 @@ html {
 }
 body {
   margin: 0;
-  color: var(--ink);
+  color: var(--chu);
   background: #fff;
   font-family: "Segoe UI", Arial, sans-serif;
   line-height: 1.6;
@@ -47,11 +47,11 @@ h3,
 p {
   margin: 0;
 }
-.container {
+.bao {
   width: min(1200px, calc(100% - 64px));
   margin-inline: auto;
 }
-.skip-link {
+.bo-qua-lien-ket {
   position: absolute;
   top: -80px;
   left: 16px;
@@ -59,60 +59,60 @@ p {
   background: #fff;
   z-index: 10;
 }
-.skip-link:focus {
+.bo-qua-lien-ket:focus {
   top: 8px;
 }
-.topbar {
-  background: var(--blue-dark);
+.thanh-tren {
+  background: var(--xanh-dam);
   color: #fff;
   font-size: 11px;
   letter-spacing: 0.2px;
 }
-.topbar-inner {
+.thanh-tren-trong {
   min-height: 32px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.topbar a {
+.thanh-tren a {
   padding-block: 6px;
 }
-.topbar a span {
+.thanh-tren a span {
   margin-left: 10px;
 }
-.header-inner {
+.dau-trong {
   min-height: 80px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 28px;
 }
-.brand {
+.thuong-hieu {
   display: inline-flex;
   align-items: center;
-  color: var(--blue);
+  color: var(--xanh);
   font-size: 28px;
   font-weight: 800;
   letter-spacing: -1.3px;
   line-height: 1.1;
   flex-shrink: 0;
 }
-.brand svg {
+.thuong-hieu svg {
   width: 42px;
   height: 42px;
   margin-right: 9px;
 }
-.brand-accent {
-  color: var(--ink);
+.thuong-hieu-nhan {
+  color: var(--chu);
 }
-.brand small {
+.thuong-hieu small {
   display: block;
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 4px;
   margin-top: 7px;
 }
-.main-nav {
+.chinh-dieu-huong {
   display: flex;
   gap: 30px;
   align-self: stretch;
@@ -120,34 +120,34 @@ p {
   font-size: 14px;
   font-weight: 700;
 }
-.main-nav a {
+.chinh-dieu-huong a {
   display: grid;
   align-items: center;
   height: 100%;
   position: relative;
   white-space: nowrap;
 }
-.main-nav a:hover,
-.text-link:hover {
-  color: var(--blue);
+.chinh-dieu-huong a:hover,
+.chu-lien-ket:hover {
+  color: var(--xanh);
 }
-.main-nav .nav-active {
-  color: var(--blue);
+.chinh-dieu-huong .dieu-huong-dang-chon {
+  color: var(--xanh);
 }
-.nav-active::after {
+.dieu-huong-dang-chon::after {
   content: "";
   position: absolute;
   bottom: 0;
   height: 3px;
-  background: var(--blue);
+  background: var(--xanh);
   width: 100%;
 }
-.button {
+.nut {
   display: inline-flex;
   justify-content: center;
   align-items: center;
   gap: 14px;
-  background: var(--blue);
+  background: var(--xanh);
   color: #fff;
   min-height: 46px;
   padding: 11px 24px;
@@ -156,28 +156,28 @@ p {
   font-weight: 700;
   transition: background 0.18s;
 }
-.button:hover {
-  background: var(--blue-dark);
+.nut:hover {
+  background: var(--xanh-dam);
 }
-.header-button {
+.dau-nut {
   white-space: nowrap;
   padding-inline: 18px;
 }
-.header-button svg {
+.dau-nut svg {
   width: 20px;
   height: 20px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.6;
 }
-.hero {
+.noi-bat {
   position: relative;
   isolation: isolate;
   color: white;
   background: #22231e;
   overflow: hidden;
 }
-.hero-image {
+.noi-bat-anh {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -185,7 +185,7 @@ p {
   object-position: center 42%;
   z-index: -2;
 }
-.hero::before {
+.noi-bat::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -199,37 +199,37 @@ p {
     linear-gradient(0deg, rgba(8, 19, 29, 0.35), transparent 30%);
   z-index: -1;
 }
-.hero-inner {
+.noi-bat-trong {
   min-height: 460px;
   display: flex;
   align-items: center;
   position: relative;
   padding-block: 48px;
 }
-.hero-copy {
+.noi-bat-loi {
   max-width: 620px;
 }
-.eyebrow {
-  color: var(--blue);
+.nhan-dau {
+  color: var(--xanh);
   display: block;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 2px;
 }
-.hero-kicker {
+.noi-bat-nhan {
   font-size: 14px;
   letter-spacing: 0;
   color: #e3d3bb;
   margin-bottom: 12px;
 }
-.hero h1 {
+.noi-bat h1 {
   font-size: clamp(56px, 7vw, 88px);
   letter-spacing: 6px;
   font-weight: 600;
   line-height: 1.15;
   margin-top: 0;
 }
-.hero h1 span {
+.noi-bat h1 span {
   display: block;
   font-size: clamp(16px, 2vw, 20px);
   font-weight: 500;
@@ -237,14 +237,14 @@ p {
   margin-top: 12px;
   line-height: 1.5;
 }
-.hero-description {
+.noi-bat-mo-ta {
   max-width: 42ch;
   font-size: 15px;
   color: #eeefed;
   margin-top: 20px;
   line-height: 1.7;
 }
-.hero-meta {
+.noi-bat-thong-tin {
   display: flex;
   gap: 16px;
   align-items: center;
@@ -253,20 +253,20 @@ p {
   margin-block: 19px 24px;
   flex-wrap: wrap;
 }
-.hero-age {
+.noi-bat-tuoi {
   border: 1px solid #b9b9ac;
   border-radius: 3px;
   padding: 1px 7px;
   font-weight: 700;
   color: #fff;
 }
-.hero-button {
+.noi-bat-nut {
   background: #0877c6;
 }
-.movies-section {
+.phim-muc {
   padding-block: 52px 48px;
 }
-.section-heading {
+.muc-tieu-de {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -279,27 +279,27 @@ h2 {
   line-height: 1.3;
   margin-top: 8px;
 }
-.text-link {
+.chu-lien-ket {
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
-.text-link span {
+.chu-lien-ket span {
   margin-left: 14px;
 }
-.movie-tabs {
+.phim-tab {
   display: flex;
   flex-wrap: wrap;
   position: relative;
   gap: 0 30px;
 }
-.tab-input {
+.tab-o {
   position: absolute;
   width: 1px;
   height: 1px;
   clip-path: inset(50%);
 }
-.tab-label {
+.tab-nhan {
   display: inline-flex;
   align-items: center;
   gap: 9px;
@@ -308,45 +308,45 @@ h2 {
   padding: 0 0 15px;
   border-bottom: 3px solid transparent;
   cursor: pointer;
-  color: var(--muted);
+  color: var(--chu-phu);
 }
-.tab-label > span {
+.tab-nhan > span {
   font-size: 10px;
   font-weight: 500;
   background: #eef2f5;
   border-radius: 4px;
   padding: 1px 6px;
 }
-.tab-input:checked + .tab-label {
-  color: var(--blue);
-  border-bottom-color: var(--blue);
+.tab-o:checked + .tab-nhan {
+  color: var(--xanh);
+  border-bottom-color: var(--xanh);
 }
-.tab-input:checked + .tab-label > span {
+.tab-o:checked + .tab-nhan > span {
   background: #e6f2fc;
-  color: var(--blue-dark);
+  color: var(--xanh-dam);
 }
-.tab-input:focus-visible + .tab-label {
+.tab-o:focus-visible + .tab-nhan {
   outline: 3px solid #e89d19;
   outline-offset: 4px;
 }
-.movie-grid {
+.phim-luoi {
   width: 100%;
   display: none;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 28px;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--vien);
   padding-top: 28px;
 }
-#now-showing:checked ~ .now-grid,
-#coming-soon:checked ~ .soon-grid {
+#dang-chieu:checked ~ .dang-luoi,
+#sap-chieu:checked ~ .chieu-luoi {
   display: grid;
 }
-.movie-card {
+.the-phim {
   min-width: 0;
   display: flex;
   flex-direction: column;
 }
-.poster {
+.anh {
   position: relative;
   overflow: hidden;
   border-radius: 3px;
@@ -354,16 +354,16 @@ h2 {
   background: #e4ebf1;
   aspect-ratio: 2 / 3;
 }
-.poster img {
+.anh img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 0.25s;
 }
-.poster:hover img {
+.anh:hover img {
   transform: scale(1.035);
 }
-.age {
+.tuoi {
   position: absolute;
   top: 12px;
   left: 12px;
@@ -374,10 +374,10 @@ h2 {
   font-size: 11px;
   font-weight: 800;
 }
-.all-ages {
+.tat-ca-tuoi {
   background: #237548;
 }
-.format {
+.dinh-dang {
   position: absolute;
   right: 10px;
   bottom: 10px;
@@ -387,15 +387,15 @@ h2 {
   border-radius: 4px;
   font-size: 10px;
 }
-.movie-meta {
+.phim-thong-tin {
   margin-top: 14px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--chu-phu);
   display: flex;
   gap: 8px;
   justify-content: space-between;
 }
-.movie-meta > span:last-child {
+.phim-thong-tin > span:last-child {
   flex-shrink: 0;
 }
 h3 {
@@ -403,83 +403,83 @@ h3 {
   line-height: 1.45;
   margin-top: 5px;
 }
-.movie-card h3 {
+.the-phim h3 {
   min-height: 50px;
 }
-.movie-card h3 a:hover {
-  color: var(--blue);
+.the-phim h3 a:hover {
+  color: var(--xanh);
 }
-.duration {
+.thoi-luong {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--chu-phu);
   margin-block: 9px 17px;
 }
-.duration span {
+.thoi-luong span {
   font-size: 16px;
   vertical-align: -1px;
   margin-right: 5px;
 }
-.movie-button {
+.phim-nut {
   width: 100%;
   min-height: 42px;
   padding: 9px 18px;
   margin-top: auto;
   font-size: 12px;
 }
-.movie-button span {
+.phim-nut span {
   margin-left: auto;
   font-size: 17px;
 }
-.coming-label {
-  color: var(--muted);
-  background: var(--surface);
+.sap-nhan {
+  color: var(--chu-phu);
+  background: var(--nen);
   padding: 10px;
   font-size: 12px;
   text-align: center;
   border-radius: 6px;
   margin-top: auto;
 }
-.demo-note {
-  color: var(--muted);
+.mau-ghi-chu {
+  color: var(--chu-phu);
   font-size: 11px;
   margin-top: 22px;
 }
-.offers-section {
-  background: var(--surface);
+.uu-dai-muc {
+  background: var(--nen);
   padding-block: 45px 48px;
 }
-.offers-grid {
+.uu-dai-luoi {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
 }
-.offer {
+.the-uu-dai {
   padding: 28px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--vien);
   border-radius: 4px;
   background: #fff;
-  color: var(--ink);
+  color: var(--chu);
 }
-.offer-copy {
+.uu-dai-loi {
   max-width: 100%;
 }
-.offer-tag {
+.uu-dai-nhan {
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1.6px;
 }
-.offer h3 {
+.the-uu-dai h3 {
   font-size: 25px;
   letter-spacing: -0.6px;
   line-height: 1.3;
   margin-top: 14px;
 }
-.offer p {
+.the-uu-dai p {
   max-width: 40ch;
   font-size: 14px;
-  color: var(--muted);
+  color: var(--chu-phu);
 }
-.offer-link {
+.uu-dai-lien-ket {
   display: inline-flex;
   align-items: center;
   gap: 16px;
@@ -489,92 +489,92 @@ h3 {
   padding-bottom: 4px;
   margin-top: 22px;
 }
-.offer-link:hover {
+.uu-dai-lien-ket:hover {
   opacity: 0.75;
 }
-.about-section {
+.gioi-thieu-muc {
   padding-block: 48px;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 50px;
   align-items: center;
 }
-.about-section h2 {
+.gioi-thieu-muc h2 {
   font-size: 25px;
 }
-.about-section > p {
-  color: var(--muted);
+.gioi-thieu-muc > p {
+  color: var(--chu-phu);
   font-size: 13px;
   line-height: 1.9;
 }
-.site-footer {
-  border-top: 1px solid var(--line);
+.web-chan {
+  border-top: 1px solid var(--vien);
   padding-block: 25px;
 }
-.footer-inner {
+.chan-trong {
   display: flex;
   align-items: center;
   gap: 24px;
 }
-.footer-brand {
+.chan-thuong-hieu {
   font-size: 23px;
   letter-spacing: -1px;
   gap: 0;
 }
-.footer-brand span {
-  color: var(--ink);
+.chan-thuong-hieu span {
+  color: var(--chu);
 }
-.footer-inner p {
-  color: var(--muted);
+.chan-trong p {
+  color: var(--chu-phu);
   font-size: 11px;
   flex: 1;
 }
-.footer-inner > a:not(.brand),
-.footer-inner > span {
+.chan-trong > a:not(.thuong-hieu),
+.chan-trong > span {
   font-size: 10px;
-  color: var(--muted);
+  color: var(--chu-phu);
 }
 @media (min-width: 1500px) {
-  .hero-inner {
+  .noi-bat-trong {
     min-height: 580px;
   }
 }
 @media (max-width: 1100px) {
-  .container {
+  .bao {
     width: calc(100% - 48px);
   }
-  .main-nav {
+  .chinh-dieu-huong {
     gap: 18px;
     font-size: 12px;
   }
-  .header-inner {
+  .dau-trong {
     gap: 18px;
   }
-  .brand {
+  .thuong-hieu {
     font-size: 25px;
   }
-  .header-button {
+  .dau-nut {
     padding-inline: 13px;
     font-size: 12px;
     gap: 8px;
   }
-  .movie-grid {
+  .phim-luoi {
     gap: 20px;
   }
-  .offer {
+  .the-uu-dai {
     padding: 24px;
   }
-  .offer h3 {
+  .the-uu-dai h3 {
     font-size: 22px;
   }
 }
 @media (max-width: 800px) {
-  .header-inner {
+  .dau-trong {
     flex-wrap: wrap;
     padding-top: 18px;
     gap: 16px;
   }
-  .main-nav {
+  .chinh-dieu-huong {
     order: 3;
     width: 100%;
     justify-content: space-between;
@@ -582,167 +582,167 @@ h3 {
     overflow-x: auto;
     min-height: 48px;
   }
-  .main-nav a {
+  .chinh-dieu-huong a {
     min-height: 48px;
   }
-  .hero-inner {
+  .noi-bat-trong {
     min-height: 480px;
   }
-  .hero::before {
+  .noi-bat::before {
     background: linear-gradient(90deg, #08131de8, #08131d70);
   }
-  .movie-grid {
+  .phim-luoi {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 28px 22px;
   }
-  .movie-card h3 {
+  .the-phim h3 {
     min-height: auto;
   }
-  .offers-grid {
+  .uu-dai-luoi {
     grid-template-columns: 1fr;
   }
-  .offer {
+  .the-uu-dai {
     padding: 30px;
   }
-  .about-section {
+  .gioi-thieu-muc {
     gap: 25px;
   }
-  .footer-inner {
+  .chan-trong {
     flex-wrap: wrap;
     gap: 15px 24px;
   }
-  .footer-inner p {
+  .chan-trong p {
     flex-basis: 60%;
   }
 }
 @media (max-width: 480px) {
-  .container {
+  .bao {
     width: calc(100% - 32px);
   }
-  .topbar-inner {
+  .thanh-tren-trong {
     font-size: 9px;
   }
-  .topbar a span {
+  .thanh-tren a span {
     margin-left: 4px;
   }
-  .brand {
+  .thuong-hieu {
     font-size: 25px;
   }
-  .brand svg {
+  .thuong-hieu svg {
     width: 34px;
     height: 34px;
     margin-right: 6px;
   }
-  .brand small {
+  .thuong-hieu small {
     font-size: 7px;
     letter-spacing: 3px;
   }
-  .header-button {
+  .dau-nut {
     padding-inline: 12px;
     min-height: 42px;
   }
-  .header-button svg {
+  .dau-nut svg {
     display: none;
   }
-  .main-nav {
+  .chinh-dieu-huong {
     gap: 22px;
     justify-content: flex-start;
     font-size: 12px;
   }
-  .hero-inner {
+  .noi-bat-trong {
     min-height: 450px;
     padding-block: 35px 48px;
   }
-  .hero-image {
+  .noi-bat-anh {
     object-position: 60% center;
   }
-  .hero-meta {
+  .noi-bat-thong-tin {
     gap: 11px;
     font-size: 10px;
   }
-  .movies-section {
+  .phim-muc {
     padding-block: 35px;
   }
-  .eyebrow {
+  .nhan-dau {
     font-size: 8px;
     letter-spacing: 1.5px;
   }
   h2 {
     font-size: 25px;
   }
-  .section-heading {
+  .muc-tieu-de {
     gap: 12px;
   }
-  .text-link {
+  .chu-lien-ket {
     font-size: 10px;
   }
-  .text-link span {
+  .chu-lien-ket span {
     margin-left: 5px;
   }
-  .movie-tabs {
+  .phim-tab {
     gap: 0 20px;
   }
-  .tab-label {
+  .tab-nhan {
     font-size: 13px;
     gap: 6px;
   }
-  .movie-grid {
+  .phim-luoi {
     gap: 26px 14px;
     padding-top: 20px;
   }
-  .movie-meta {
+  .phim-thong-tin {
     font-size: 9px;
     margin-top: 10px;
   }
-  .movie-meta > span:last-child {
+  .phim-thong-tin > span:last-child {
     display: none;
   }
-  .movie-card h3 {
+  .the-phim h3 {
     font-size: 14px;
   }
-  .age {
+  .tuoi {
     top: 8px;
     left: 8px;
     font-size: 9px;
     padding: 2px 6px;
   }
-  .format {
+  .dinh-dang {
     font-size: 8px;
     right: 6px;
     bottom: 6px;
     padding: 3px 6px;
   }
-  .movie-button {
+  .phim-nut {
     padding-inline: 14px;
   }
-  .demo-note {
+  .mau-ghi-chu {
     font-size: 10px;
   }
-  .offers-section {
+  .uu-dai-muc {
     padding-block: 32px;
   }
-  .offer {
+  .the-uu-dai {
     padding: 22px;
   }
-  .offer h3 {
+  .the-uu-dai h3 {
     font-size: 22px;
   }
-  .about-section {
+  .gioi-thieu-muc {
     grid-template-columns: 1fr;
     padding-block: 34px;
     gap: 15px;
   }
-  .about-section h2 {
+  .gioi-thieu-muc h2 {
     font-size: 22px;
   }
-  .footer-inner p {
+  .chan-trong p {
     flex-basis: 100%;
     order: 3;
   }
-  .footer-inner > a:not(.brand) {
+  .chan-trong > a:not(.thuong-hieu) {
     margin-left: auto;
   }
-  .footer-inner > span {
+  .chan-trong > span {
     order: 4;
   }
 }

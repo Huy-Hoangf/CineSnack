@@ -1,197 +1,170 @@
 (function () {
   "use strict";
-  const movies = [
-    {
-      id: "dune",
-      title: "Dune: Hành tinh cát – Phần hai",
-      genre: "Khoa học viễn tưởng, Phiêu lưu",
-      duration: 166,
-      age: "T16",
-      year: 2024,
-      image: "dune.jpg",
-      status: "now",
-      director: "Denis Villeneuve",
-      description:
-        "Paul Atreides tiếp tục hành trình trên hành tinh Arrakis, nơi những lựa chọn của anh có thể thay đổi số phận của cả vũ trụ.",
-    },
-    {
-      id: "inside-out",
-      title: "Những mảnh ghép cảm xúc 2",
-      genre: "Hoạt hình, Gia đình",
-      duration: 96,
-      age: "P",
-      year: 2024,
-      image: "inside-out.jpg",
-      status: "now",
-      director: "Kelsey Mann",
-      description:
-        "Riley bước vào tuổi mới và những cảm xúc mới cũng xuất hiện. Một cuộc phiêu lưu đầy màu sắc về việc lớn lên và thấu hiểu chính mình.",
-    },
-    {
-      id: "kung-fu-panda",
-      title: "Kung Fu Panda 4",
-      genre: "Hoạt hình, Hành động",
-      duration: 94,
-      age: "P",
-      year: 2024,
-      image: "kung-fu-panda.jpg",
-      status: "now",
-      director: "Mike Mitchell",
-      description:
-        "Po bước vào một nhiệm vụ mới, gặp gỡ những người bạn mới và tìm kiếm ý nghĩa của việc trở thành một người dẫn đường.",
-    },
-    {
-      id: "godzilla",
-      title: "Godzilla x Kong: Đế chế mới",
-      genre: "Hành động, Phiêu lưu",
-      duration: 115,
-      age: "T13",
-      year: 2024,
-      image: "godzilla.jpg",
-      status: "now",
-      director: "Adam Wingard",
-      description:
-        "Hai người khổng lồ đối mặt với một mối đe dọa mới. Hành trình khám phá những bí mật sâu dưới lòng Trái Đất bắt đầu.",
-    },
-    {
-      id: "spider-man",
-      title: "Người Nhện: Du hành vũ trụ nhện",
-      genre: "Hoạt hình, Phiêu lưu",
-      duration: 140,
-      age: "T13",
-      year: 2023,
-      image: "spider-man.jpg",
-      status: "soon",
-      director: "Joaquim Dos Santos và cộng sự",
-      description:
-        "Miles Morales bước qua nhiều thế giới, gặp những Người Nhện khác và tìm kiếm con đường của riêng mình.",
-    },
-    {
-      id: "interstellar",
-      title: "Interstellar: Hố đen tử thần",
-      genre: "Khoa học viễn tưởng",
-      duration: 169,
-      age: "T13",
-      year: 2014,
-      image: "interstellar.jpg",
-      status: "soon",
-      director: "Christopher Nolan",
-      description:
-        "Một nhóm phi hành gia đi qua những giới hạn của không gian và thời gian trong hành trình tìm kiếm tương lai cho nhân loại.",
-    },
-  ];
-  const times = ["10:00", "13:15", "16:30", "19:30", "21:45"];
-  const combos = [
-    {
-      id: "solo",
-      name: "Combo Một Mình Vui",
-      detail: "1 bắp vừa + 1 nước ngọt",
-      price: 59000,
-    },
-    {
-      id: "duo",
-      name: "Combo Hẹn Hò",
-      detail: "1 bắp lớn + 2 nước ngọt",
-      price: 99000,
-    },
-  ];
-  function normalize(value) {
-    return value
+  const khoaGio = "cinesnack-gio-v2";
+  const idHopLe = (n) => Number.isSafeInteger(n) && n > 0;
+  const giaHopLe = (n) => typeof n === "number" && Number.isFinite(n) && n >= 0;
+  function boDau(s) {
+    return String(s)
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .replace(/đ/gi, "d")
       .toLowerCase()
       .trim();
   }
-  function dates(now = new Date()) {
-    return [0, 1, 2].map((offset) => {
-      const date = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + offset,
-      );
-      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  function layNgay(now = new Date()) {
+    return [0, 1, 2].map((n) => {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() + n);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     });
   }
-  function displayDate(value) {
-    const [year, month, day] = value.split("-");
-    return `${day}/${month}/${year}`;
+  function dinhDangNgay(s) {
+    return new Intl.DateTimeFormat("vi-VN", {
+      dateStyle: "short",
+      timeZone: "Asia/Ho_Chi_Minh",
+    }).format(new Date(s.length === 10 ? s + "T00:00:00+07:00" : s));
   }
-  function seatPrice(seat) {
-    return "DEF".includes(seat[0]) ? 95000 : 75000;
+  function dinhDangSuat(s) {
+    return new Intl.DateTimeFormat("vi-VN", {
+      dateStyle: "short",
+      timeStyle: "short",
+      timeZone: "Asia/Ho_Chi_Minh",
+    }).format(new Date(s));
   }
-  function occupied(movie, date, time) {
-    const shift =
-      (movie.length + Number(date.slice(-2)) + times.indexOf(time)) % 3;
-    return new Set(
-      ["A", "B", "C", "D", "E", "F"].flatMap((row, i) => [
-        row + (3 + shift + (i % 2)),
-        row + (7 + (i % 2)),
-      ]),
-    );
+  function ngaySuat(s) {
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      timeZone: "Asia/Ho_Chi_Minh",
+    }).formatToParts(new Date(s));
+    const get = (key) => parts.find((p) => p.type === key).value;
+    return `${get("year")}-${get("month")}-${get("day")}`;
   }
-  function totals(cart) {
-    const tickets = cart.seats.reduce((sum, seat) => sum + seatPrice(seat), 0);
-    const snacks = combos.reduce(
-      (sum, combo) => sum + combo.price * cart.combos[combo.id],
-      0,
-    );
-    return { tickets, snacks, total: tickets + snacks };
+  function gioSuat(s) {
+    return new Intl.DateTimeFormat("vi-VN", {
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Asia/Ho_Chi_Minh",
+    }).format(new Date(s));
   }
-  function validCart(cart, now = new Date()) {
-    if (
-      !cart ||
-      !movies.some((m) => m.id === cart.movie && m.status === "now") ||
-      !dates(now).includes(cart.date) ||
-      !times.includes(cart.time)
-    )
-      return false;
-    if (
-      !Array.isArray(cart.seats) ||
-      cart.seats.length < 1 ||
-      cart.seats.length > 10 ||
-      new Set(cart.seats).size !== cart.seats.length
-    )
-      return false;
-    if (
-      !cart.seats.every(
-        (s) =>
-          typeof s === "string" &&
-          /^[A-F](?:[1-9]|10)$/.test(s) &&
-          !occupied(cart.movie, cart.date, cart.time).has(s),
-      )
-    )
-      return false;
-    return (
-      !!cart.combos &&
-      combos.every(
-        (c) =>
-          Number.isInteger(cart.combos[c.id]) &&
-          cart.combos[c.id] >= 0 &&
-          cart.combos[c.id] <= 10,
-      )
-    );
-  }
-  function money(value) {
+  function dinhDangTien(n) {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
       currency: "VND",
-    }).format(value);
+    }).format(n);
   }
-  const api = {
-    movies,
-    times,
-    combos,
-    normalize,
-    dates,
-    displayDate,
-    seatPrice,
-    occupied,
-    totals,
-    validCart,
-    money,
-    storageKey: "cinesnack-demo-cart",
+  function tinhTien(g) {
+    const tienVe = g.ghe.reduce((a, v) => a + v.price, 0);
+    const tienBap = [...g.snacks, ...g.combos].reduce(
+      (a, v) => a + v.unitPrice * v.quantity,
+      0,
+    );
+    return { tienVe, tienBap, tong: tienVe + tienBap };
+  }
+  function gioHopLe(g, now = new Date()) {
+    if (
+      !g ||
+      g.version !== 2 ||
+      !Array.isArray(g.ghe) ||
+      !Array.isArray(g.snacks) ||
+      !Array.isArray(g.combos) ||
+      g.ghe.length > 10 ||
+      g.snacks.length > 20 ||
+      g.combos.length > 20
+    )
+      return false;
+    if (!g.ghe.length && !g.snacks.length && !g.combos.length) return false;
+    if (g.ghe.length) {
+      if (
+        !idHopLe(g.maSuatChieu) ||
+        g.suat?.id !== g.maSuatChieu ||
+        !idHopLe(g.phim?.id) ||
+        !(Date.parse(g.suat.startsAt) > now.getTime())
+      )
+        return false;
+    } else if (g.maSuatChieu !== null) return false;
+    if (
+      new Set(g.ghe.map((v) => v?.id)).size !== g.ghe.length ||
+      g.ghe.some(
+        (v) =>
+          !v ||
+          !idHopLe(v.id) ||
+          typeof v.code !== "string" ||
+          !giaHopLe(v.price),
+      )
+    )
+      return false;
+    for (const [list, key] of [
+      [g.snacks, "productId"],
+      [g.combos, "comboId"],
+    ]) {
+      if (
+        new Set(list.map((v) => v?.[key])).size !== list.length ||
+        list.some(
+          (v) =>
+            !v ||
+            !idHopLe(v[key]) ||
+            !Number.isInteger(v.quantity) ||
+            v.quantity < 1 ||
+            v.quantity > 10 ||
+            !giaHopLe(v.unitPrice),
+        )
+      )
+        return false;
+    }
+    return true;
+  }
+  function taoYeuCau(g, email) {
+    return {
+      email,
+      showTimeId: g.maSuatChieu,
+      seatIds: g.ghe.map((v) => v.id),
+      snacks: g.snacks.map((v) => ({
+        productId: v.productId,
+        quantity: v.quantity,
+      })),
+      combos: g.combos.map((v) => ({
+        comboId: v.comboId,
+        quantity: v.quantity,
+      })),
+    };
+  }
+  function layGio() {
+    try {
+      return JSON.parse(sessionStorage.getItem(khoaGio));
+    } catch {
+      return null;
+    }
+  }
+  function poster(url) {
+    if (url) {
+      try {
+        const u = new URL(url, location.href);
+        if (
+          ["http:", "https:"].includes(u.protocol) &&
+          !u.username &&
+          !u.password
+        )
+          return u.href;
+      } catch {}
+    }
+    return "../assets/images/poster-placeholder.svg";
+  }
+  const rap = {
+    khoaGio,
+    boDau,
+    layNgay,
+    dinhDangNgay,
+    dinhDangSuat,
+    ngaySuat,
+    gioSuat,
+    dinhDangTien,
+    tinhTien,
+    gioHopLe,
+    taoYeuCau,
+    layGio,
+    poster,
   };
-  if (typeof module !== "undefined" && module.exports) module.exports = api;
-  else window.CineSnack = api;
+  if (typeof module !== "undefined" && module.exports) module.exports = rap;
+  else window.CineSnack = rap;
 })();

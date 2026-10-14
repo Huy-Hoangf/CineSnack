@@ -1,141 +1,343 @@
 "use strict";
-(function () {
-  const C = CineSnack;
-  const requested = new URLSearchParams(location.search).get("movie");
-  const initialMovie =
-    C.movies.find((m) => m.id === requested && m.status === "now") ||
-    C.movies[0];
-  let cart = {
-    movie: initialMovie.id,
-    date: C.dates()[0],
-    time: C.times[3],
-    seats: [],
-    combos: { solo: 0, duo: 0 },
+(async () => {
+  const o = (id) => document.getElementById(id);
+  let phim = [],
+    suat = [],
+    ghe = [],
+    food,
+    lanTai = 0,
+    dangTai = true;
+  let g = {
+    version: 2,
+    maSuatChieu: null,
+    phim: null,
+    suat: null,
+    ghe: [],
+    snacks: [],
+    combos: [],
   };
-  try {
-    const saved = JSON.parse(sessionStorage.getItem(C.storageKey));
-    if (C.validCart(saved) && (!requested || requested === saved.movie))
-      cart = saved;
-  } catch {
-    /* A new demo booking can still be started when storage is unavailable. */
+  const luu = CineSnack.layGio();
+  const params = new URLSearchParams(location.search);
+  const maYeuCau = Number(params.get("phim"));
+  const khoiPhuc =
+    CineSnack.gioHopLe(luu) &&
+    (!params.has("phim") || maYeuCau === luu.phim?.id);
+  const loi = (text) => {
+    o("dat-ve-loi").textContent = text;
+  };
+  function hienTrangThaiGhe(text) {
+    o("ghe-trang-thai").textContent = text;
+    o("ghe-so-do-khung").hidden = Boolean(text);
   }
-  const movieSelect = document.querySelector("#booking-movie");
-  movieSelect.innerHTML = C.movies
-    .filter((m) => m.status === "now")
-    .map((m) => `<option value="${m.id}">${m.title}</option>`)
-    .join("");
-  movieSelect.value = cart.movie;
-  document.querySelector("#date-options").innerHTML = C.dates()
-    .map(
-      (date, i) =>
-        `<label class="choice-label"><input type="radio" name="date" value="${date}" ${date === cart.date ? "checked" : ""}><span><small>${i === 0 ? "Hôm nay" : i === 1 ? "Ngày mai" : "Ngày kia"}</small>${C.displayDate(date).slice(0, 5)}</span></label>`,
-    )
-    .join("");
-  document.querySelector("#time-options").innerHTML = C.times
-    .map(
-      (time) =>
-        `<label class="choice-label"><input type="radio" name="time" value="${time}" ${time === cart.time ? "checked" : ""}><span>${time}</span></label>`,
-    )
-    .join("");
-  function update() {
-    C.renderSummary(cart);
-    document.querySelector("#continue-booking").disabled = !cart.seats.length;
-    document.querySelector("#continue-hint").textContent = cart.seats.length
-      ? `${cart.seats.length} ghế đã chọn. Bạn có thể thêm combo bên dưới.`
-      : "Chọn ít nhất 1 ghế để tiếp tục.";
-    document.querySelector("#booking-error").textContent = "";
+  function capNhat() {
+    CineSnack.hienTomTat(g);
+    o("tiep-dat-ve").disabled = dangTai || !CineSnack.gioHopLe(g);
+    o("tiep-goi-y").textContent = g.ghe.length
+      ? `${g.ghe.length} ghế đã chọn.`
+      : "Chọn ghế hoặc bắp nước để tiếp tục.";
   }
-  function renderSeats() {
-    const occupied = C.occupied(cart.movie, cart.date, cart.time);
-    document.querySelector("#seat-rows").innerHTML = [..."ABCDEF"]
-      .map(
-        (row) =>
-          `<div class="seat-row"><span aria-hidden="true">${row}</span>${Array.from(
-            { length: 10 },
-            (_, i) => {
-              const seat = row + (i + 1),
-                taken = occupied.has(seat),
-                vip = "DEF".includes(row);
-              return `<button type="button" class="seat ${vip ? "vip" : ""}" data-seat="${seat}" ${taken ? "disabled" : ""} aria-pressed="${cart.seats.includes(seat)}" aria-label="Ghế ${seat}, ${vip ? "VIP" : "thường"}, ${C.money(C.seatPrice(seat))}${taken ? ", đã đặt" : ""}">${i + 1}</button>`;
-            },
-          ).join("")}</div>`,
-      )
-      .join("");
+  function radio(v, ten, text, checked, change) {
+    const label = document.createElement("label");
+    label.className = "nhan-lua-chon";
+    const i = document.createElement("input");
+    Object.assign(i, { type: "radio", name: ten, value: String(v), checked });
+    const span = document.createElement("span");
+    span.textContent = text;
+    i.addEventListener("change", change);
+    label.append(i, span);
+    return label;
   }
-  function changeShow() {
-    cart.movie = movieSelect.value;
-    cart.date = document.querySelector("input[name=date]:checked").value;
-    cart.time = document.querySelector("input[name=time]:checked").value;
-    cart.seats = [];
-    document.querySelector("#seat-error").textContent = "";
-    document.querySelector("#selection-note").textContent =
-      "Đã đổi suất chiếu. Vui lòng chọn lại ghế.";
-    renderSeats();
-    update();
-  }
-  movieSelect.addEventListener("change", changeShow);
-  document
-    .querySelectorAll("#date-options, #time-options")
-    .forEach((group) => group.addEventListener("change", changeShow));
-  document.querySelector("#seat-rows").addEventListener("click", (event) => {
-    const button = event.target.closest("[data-seat]");
-    if (!button || button.disabled) return;
-    const seat = button.dataset.seat;
-    document.querySelector("#seat-error").textContent = "";
-    if (cart.seats.includes(seat))
-      cart.seats = cart.seats.filter((s) => s !== seat);
-    else if (cart.seats.length >= 10) {
-      document.querySelector("#seat-error").textContent =
-        "Bạn chỉ có thể chọn tối đa 10 ghế mỗi đơn.";
-      return;
-    } else cart.seats.push(seat);
-    button.setAttribute("aria-pressed", String(cart.seats.includes(seat)));
-    update();
-  });
-  document.querySelector("#combo-options").innerHTML = C.combos
-    .map(
-      (c) =>
-        `<article class="combo-row"><span class="combo-icon" aria-hidden="true">▥</span><div class="combo-description"><h3>${c.name}</h3><p>${c.detail}</p><strong>${C.money(c.price)}</strong></div><div class="quantity-control" role="group" aria-label="Số lượng ${c.name}"><button type="button" data-combo="${c.id}" data-change="-1" aria-label="Giảm ${c.name}">−</button><output id="qty-${c.id}" aria-label="Số lượng ${c.name}" aria-live="polite">0</output><button type="button" data-combo="${c.id}" data-change="1" aria-label="Tăng ${c.name}">+</button></div></article>`,
-    )
-    .join("");
-  function updateQuantities() {
-    C.combos.forEach((c) => {
-      document.querySelector("#qty-" + c.id).value = cart.combos[c.id];
-      document.querySelector(
-        `[data-combo="${c.id}"][data-change="-1"]`,
-      ).disabled = cart.combos[c.id] === 0;
-      document.querySelector(
-        `[data-combo="${c.id}"][data-change="1"]`,
-      ).disabled = cart.combos[c.id] === 10;
-    });
-  }
-  document
-    .querySelector("#combo-options")
-    .addEventListener("click", (event) => {
-      const button = event.target.closest("[data-combo]");
-      if (!button || button.disabled) return;
-      const next =
-        cart.combos[button.dataset.combo] + Number(button.dataset.change);
-      if (next < 0 || next > 10) return;
-      cart.combos[button.dataset.combo] = next;
-      updateQuantities();
-      update();
-    });
-  document.querySelector("#continue-booking").addEventListener("click", () => {
-    if (!C.validCart(cart)) {
-      document.querySelector("#booking-error").textContent =
-        "Lựa chọn không còn hợp lệ. Tải lại trang và chọn suất chiếu mới.";
+  async function chonSuat(s) {
+    const lan = ++lanTai;
+    g.suat = s;
+    g.maSuatChieu = s?.id || null;
+    g.ghe = [];
+    ghe = [];
+    o("ghe-loi").textContent = "";
+    hienTrangThaiGhe(s ? "Đang tải sơ đồ ghế…" : "Chọn suất chiếu để xem ghế.");
+    dangTai = true;
+    capNhat();
+    o("hang-ghe").replaceChildren();
+    if (!s) {
+      dangTai = false;
+      capNhat();
       return;
     }
     try {
-      sessionStorage.setItem(C.storageKey, JSON.stringify(cart));
+      const ds = await CineSnackApi.goi(`/api/showtimes/${s.id}/seats`);
+      if (lan !== lanTai) return;
+      ghe = ds;
+      hienTrangThaiGhe(ds.length ? "" : "Suất chiếu chưa được cấu hình ghế.");
+      const hang = new Map();
+      for (const v of ds) {
+        const ma = /^[A-Za-z]+/.exec(v.code)?.[0] || "Ghế";
+        if (!hang.has(ma)) {
+          const row = document.createElement("div");
+          row.className = "hang-ghe";
+          const name = document.createElement("span");
+          name.textContent = ma;
+          row.append(name);
+          hang.set(ma, row);
+          o("hang-ghe").append(row);
+        }
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "nut-ghe" + (v.type === "VIP" ? " vip" : "");
+        b.dataset.gheId = v.id;
+        b.dataset.ghe = v.code;
+        b.textContent = v.code;
+        b.disabled = !v.available;
+        b.setAttribute("aria-pressed", "false");
+        b.setAttribute(
+          "aria-label",
+          `Ghế ${v.code}, ${CineSnack.dinhDangTien(v.price)}${v.available ? "" : ", đã đặt"}`,
+        );
+        b.addEventListener("click", () => {
+          loi("");
+          if (g.ghe.some((x) => x.id === v.id))
+            g.ghe = g.ghe.filter((x) => x.id !== v.id);
+          else {
+            if (g.ghe.length >= 10) {
+              o("ghe-loi").textContent = "Tối đa 10 ghế mỗi đơn.";
+              return;
+            }
+            g.ghe.push(v);
+          }
+          b.setAttribute(
+            "aria-pressed",
+            String(g.ghe.some((x) => x.id === v.id)),
+          );
+          capNhat();
+        });
+        hang.get(ma).append(b);
+      }
+    } catch (e) {
+      if (lan === lanTai) {
+        hienTrangThaiGhe(
+          "Không tải được ghế. Vui lòng chọn lại suất chiếu để thử lại.",
+        );
+        loi(e.message);
+      }
+    } finally {
+      if (lan === lanTai) {
+        dangTai = false;
+        capNhat();
+      }
+    }
+  }
+  function hienGio(ngay, maUuTien = null) {
+    o("chon-gio").replaceChildren();
+    const ds = suat.filter((s) => CineSnack.ngaySuat(s.startsAt) === ngay);
+    const daChon = maUuTien ? ds.find((s) => s.id === maUuTien) : ds[0];
+    for (const s of ds)
+      o("chon-gio").append(
+        radio(
+          s.id,
+          "gio",
+          CineSnack.gioSuat(s.startsAt) + " · " + s.roomName,
+          s.id === daChon?.id,
+          () => chonSuat(s),
+        ),
+      );
+    return chonSuat(daChon || null);
+  }
+  async function doiPhim(maUuTien = null) {
+    const lan = ++lanTai;
+    g.phim = phim.find((p) => p.id === Number(o("chon-phim").value)) || null;
+    g.ghe = [];
+    g.suat = null;
+    g.maSuatChieu = null;
+    dangTai = true;
+    capNhat();
+    o("chon-ngay").replaceChildren();
+    o("chon-gio").replaceChildren();
+    o("hang-ghe").replaceChildren();
+    o("ghe-loi").textContent = "";
+    hienTrangThaiGhe(
+      g.phim ? "Đang tải suất chiếu…" : "Chỉ mua bắp nước: không cần chọn ghế.",
+    );
+    loi("");
+    if (!g.phim) {
+      dangTai = false;
+      capNhat();
+      return;
+    }
+    try {
+      const ds = await CineSnackApi.goi("/api/showtimes?movieId=" + g.phim.id);
+      if (lan !== lanTai) return;
+      suat = ds;
+      const ngay = [...new Set(ds.map((s) => CineSnack.ngaySuat(s.startsAt)))];
+      const daChon = ds.find((s) => s.id === maUuTien);
+      const ngayChon = daChon ? CineSnack.ngaySuat(daChon.startsAt) : ngay[0];
+      for (const n of ngay)
+        o("chon-ngay").append(
+          radio(n, "ngay", CineSnack.dinhDangNgay(n), n === ngayChon, () =>
+            hienGio(n),
+          ),
+        );
+      if (ngay.length) await hienGio(ngayChon, maUuTien);
+      else {
+        dangTai = false;
+        hienTrangThaiGhe("Phim chưa có suất chiếu để chọn ghế.");
+        loi("Phim chưa có suất nhận đặt vé. Bạn có thể mua bắp nước riêng.");
+        capNhat();
+      }
+    } catch (e) {
+      if (lan === lanTai) {
+        dangTai = false;
+        hienTrangThaiGhe(
+          "Không tải được suất chiếu. Vui lòng chọn lại phim để thử lại.",
+        );
+        loi(e.message);
+        capNhat();
+      }
+    }
+  }
+  function hienFood() {
+    o("chon-combo").replaceChildren();
+    for (const [key, idKey, ds] of [
+      ["combos", "comboId", food.combos],
+      ["snacks", "productId", food.products],
+    ])
+      for (const h of ds) {
+        const row = document.createElement("article");
+        row.className = "combo-hang";
+        const info = document.createElement("div");
+        info.className = "combo-mo-ta";
+        const name = document.createElement("h3");
+        name.textContent = h.name;
+        const price = document.createElement("strong");
+        price.textContent = CineSnack.dinhDangTien(h.price);
+        info.append(name, price);
+        const group = document.createElement("div");
+        group.className = "chon-luong";
+        group.setAttribute("role", "group");
+        group.setAttribute("aria-label", "Số lượng " + h.name);
+        const output = document.createElement("output");
+        const daLuu = g[key].find((v) => v[idKey] === h.id)?.quantity || 0;
+        output.textContent = daLuu;
+        output.id = `luong-${key}-${h.id}`;
+        output.setAttribute("aria-live", "polite");
+        const thayDoi = (n) => {
+          const old = g[key].find((v) => v[idKey] === h.id);
+          const q = (old?.quantity || 0) + n;
+          if (q < 0 || q > 10) return;
+          g[key] = g[key].filter((v) => v[idKey] !== h.id);
+          if (q)
+            g[key].push({
+              [idKey]: h.id,
+              name: h.name,
+              quantity: q,
+              unitPrice: h.price,
+            });
+          output.textContent = q;
+          tru.disabled = q === 0;
+          cong.disabled = q === 10;
+          capNhat();
+        };
+        const tru = document.createElement("button");
+        tru.type = "button";
+        tru.textContent = "−";
+        tru.disabled = daLuu === 0;
+        tru.setAttribute("aria-label", "Giảm " + h.name);
+        tru.addEventListener("click", () => thayDoi(-1));
+        const cong = document.createElement("button");
+        cong.type = "button";
+        cong.textContent = "+";
+        cong.disabled = daLuu === 10;
+        cong.dataset.combo = h.id;
+        cong.dataset.loai = key;
+        cong.dataset.doi = "1";
+        cong.setAttribute("aria-label", "Tăng " + h.name);
+        cong.addEventListener("click", () => thayDoi(1));
+        group.append(tru, output, cong);
+        row.append(info, group);
+        o("chon-combo").append(row);
+      }
+  }
+  o("chon-phim").addEventListener("change", () => doiPhim());
+  o("tiep-dat-ve").addEventListener("click", () => {
+    if (!CineSnack.gioHopLe(g)) {
+      loi("Suất hoặc lựa chọn không còn hợp lệ. Hãy chọn lại.");
+      return;
+    }
+    try {
+      sessionStorage.setItem(CineSnack.khoaGio, JSON.stringify(g));
       location.href = "checkout.html";
     } catch {
-      document.querySelector("#booking-error").textContent =
-        "Trình duyệt không cho phép lưu lựa chọn trong phiên. Hãy bật lưu trữ của trang rồi thử lại.";
+      loi(
+        "Trình duyệt không cho phép lưu giỏ. Bật lưu trữ của trang để tiếp tục.",
+      );
     }
   });
-  renderSeats();
-  updateQuantities();
-  update();
+  capNhat();
+  try {
+    const [p, f] = await Promise.all([
+      CineSnackApi.goi("/api/movies?status=DANG_CHIEU&size=100"),
+      CineSnackApi.goi("/api/snacks"),
+    ]);
+    phim = p;
+    food = f;
+    o("chon-phim").replaceChildren();
+    const empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "Chỉ mua bắp nước";
+    o("chon-phim").append(empty);
+    for (const p of phim) {
+      const option = document.createElement("option");
+      option.value = p.id;
+      option.textContent = p.name;
+      o("chon-phim").append(option);
+    }
+    const ma = khoiPhuc ? luu.phim?.id : maYeuCau;
+    o("chon-phim").value = String(
+      phim.find((p) => p.id === ma)?.id ||
+        (!ma && !khoiPhuc ? phim[0]?.id : "") ||
+        "",
+    );
+    if (khoiPhuc) {
+      for (const [key, idKey, ds] of [
+        ["combos", "comboId", food.combos],
+        ["snacks", "productId", food.products],
+      ]) {
+        g[key] = ds.flatMap((h) => {
+          const chon = luu[key].find((v) => v[idKey] === h.id);
+          return chon
+            ? [
+                {
+                  [idKey]: h.id,
+                  name: h.name,
+                  quantity: chon.quantity,
+                  unitPrice: h.price,
+                },
+              ]
+            : [];
+        });
+      }
+    }
+    hienFood();
+    await doiPhim(khoiPhuc ? luu.maSuatChieu : null);
+    if (khoiPhuc && g.maSuatChieu === luu.maSuatChieu) {
+      g.ghe = ghe.filter(
+        (v) => v.available && luu.ghe.some((old) => old.id === v.id),
+      );
+      document
+        .querySelectorAll("[data-ghe-id]")
+        .forEach((n) =>
+          n.setAttribute(
+            "aria-pressed",
+            String(g.ghe.some((v) => v.id === Number(n.dataset.gheId))),
+          ),
+        );
+      if (g.ghe.length !== luu.ghe.length)
+        loi("Một số ghế đã được giữ hoặc ngừng bán. Vui lòng chọn lại ghế.");
+    } else if (khoiPhuc && luu.ghe.length)
+      loi("Suất đã lưu không còn nhận đặt vé. Vui lòng chọn suất mới.");
+    capNhat();
+  } catch (e) {
+    dangTai = true;
+    hienTrangThaiGhe("Không tải được danh mục. Tải lại trang để thử lại.");
+    loi(e.message + " Tải lại trang để thử lại.");
+    capNhat();
+  }
 })();

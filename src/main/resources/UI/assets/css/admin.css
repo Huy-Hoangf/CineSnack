@@ -1,64 +1,64 @@
-.admin-page {
+.quan-tri-trang {
   background: #f5f7fa;
 }
-.admin-sidebar {
+.quan-tri-thanh-ben {
   position: fixed;
   inset: 0 auto 0 0;
   width: 240px;
   background: #fff;
-  border-right: 1px solid var(--line);
+  border-right: 1px solid var(--vien);
   padding: 32px 20px 24px;
   display: flex;
   flex-direction: column;
   z-index: 5;
 }
-.admin-sidebar .brand {
+.quan-tri-thanh-ben .thuong-hieu {
   font-size: 25px;
 }
-.admin-sidebar .brand svg {
+.quan-tri-thanh-ben .thuong-hieu svg {
   width: 35px;
   height: 35px;
   margin-right: 7px;
 }
-.admin-sidebar .brand small {
+.quan-tri-thanh-ben .thuong-hieu small {
   letter-spacing: 2px;
   font-size: 7px;
 }
-.workspace-label {
+.khu-vuc-nhan {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 17px 12px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--vien);
   border-radius: 8px;
   margin: 32px 0;
 }
-.workspace-dot {
+.khu-vuc-cham {
   background: #22825c;
   width: 8px;
   height: 8px;
   border-radius: 50%;
 }
-.workspace-label strong {
+.khu-vuc-nhan strong {
   display: block;
   font-size: 12px;
 }
-.workspace-label small {
-  color: var(--muted);
+.khu-vuc-nhan small {
+  color: var(--chu-phu);
   font-size: 10px;
 }
-.nav-caption {
+.dieu-huong-caption {
   font-size: 9px;
   font-weight: 700;
-  color: var(--muted);
+  color: var(--chu-phu);
   letter-spacing: 1.2px;
   margin: 0 12px 14px;
 }
-.admin-nav {
+.quan-tri-dieu-huong {
   display: grid;
   gap: 8px;
 }
-.admin-nav-button {
+.quan-tri-dieu-huong-nut {
   display: flex;
   align-items: center;
   gap: 13px;
@@ -68,10 +68,10 @@
   padding: 12px;
   border-radius: 7px;
   font-size: 13px !important;
-  color: var(--muted);
+  color: var(--chu-phu);
   background: transparent;
 }
-.admin-nav-button svg {
+.quan-tri-dieu-huong-nut svg {
   width: 18px;
   height: 18px;
   fill: none;
@@ -79,38 +79,38 @@
   stroke-width: 1.6;
   flex-shrink: 0;
 }
-.admin-nav-button:hover {
+.quan-tri-dieu-huong-nut:hover {
   background: #f3f7fa;
-  color: var(--blue);
+  color: var(--xanh);
 }
-.admin-nav-button.active {
+.quan-tri-dieu-huong-nut.dang-chon {
   background: #eaf3fb;
-  color: var(--blue);
+  color: var(--xanh);
   font-weight: 700;
 }
-.sidebar-bottom {
+.thanh-ben-duoi {
   margin-top: auto;
   padding: 22px 12px 0;
 }
-.sidebar-bottom p {
-  color: var(--muted);
+.thanh-ben-duoi p {
+  color: var(--chu-phu);
   font-size: 11px;
   line-height: 1.8;
 }
-.sidebar-bottom a {
-  color: var(--blue);
+.thanh-ben-duoi a {
+  color: var(--xanh);
   font-size: 12px;
   font-weight: 700;
   display: block;
   margin-top: 20px;
 }
-.admin-workspace {
+.quan-tri-khu-vuc {
   margin-left: 240px;
   min-width: 0;
 }
-.admin-topbar {
+.quan-tri-thanh-tren {
   background: #fff;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--vien);
   min-height: 78px;
   padding: 16px 36px;
   display: flex;
@@ -118,98 +118,98 @@
   align-items: center;
   gap: 20px;
   font-size: 12px;
-  color: var(--muted);
+  color: var(--chu-phu);
 }
-.admin-topbar b {
+.quan-tri-thanh-tren b {
   padding-inline: 14px;
   font-weight: 400;
   color: #a4b2bf;
 }
-.admin-topbar strong {
-  color: var(--ink);
+.quan-tri-thanh-tren strong {
+  color: var(--chu);
   font-weight: 600;
 }
-.admin-identity {
+.quan-tri-tai-khoan {
   display: flex;
   align-items: center;
   gap: 16px;
 }
-.demo-badge {
+.mau-nhan {
   padding: 5px 9px;
   border: 1px solid #c9deef;
   border-radius: 4px;
-  color: var(--blue);
+  color: var(--xanh);
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1px;
   white-space: nowrap;
 }
-.avatar {
+.anh-dai-dien {
   width: 34px;
   height: 34px;
   display: grid;
   place-items: center;
   background: #e7f1fa;
-  color: var(--blue);
+  color: var(--xanh);
   border-radius: 50%;
   font-size: 11px;
   font-weight: 700;
 }
-.admin-main {
+.quan-tri-chinh {
   padding: 34px 36px 20px;
   max-width: 1600px;
   margin: auto;
 }
-.admin-title-row {
+.quan-tri-tieu-de-hang {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
 }
-.admin-main h1 {
+.quan-tri-chinh h1 {
   font-size: 30px;
   margin-block: 7px;
 }
-.admin-title-row p {
+.quan-tri-tieu-de-hang p {
   font-size: 13px;
-  color: var(--muted);
+  color: var(--chu-phu);
 }
-.admin-date {
+.quan-tri-ngay {
   padding: 10px 14px;
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1px solid var(--vien);
   border-radius: 6px;
   font-size: 12px;
   white-space: nowrap;
 }
-.admin-demo-note {
+.quan-tri-mau-ghi-chu {
   color: #52677a;
   font-size: 11px;
   padding: 12px 0 22px;
 }
-.stat-grid {
+.thong-ke-luoi {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 18px;
   margin-bottom: 24px;
 }
-.stat-card {
+.the-thong-ke {
   background: #fff;
-  border: 1px solid var(--line);
+  border: 1px solid var(--vien);
   border-radius: 10px;
   padding: 20px;
   min-width: 0;
 }
-.stat-label {
+.thong-ke-nhan {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--chu-phu);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 10px;
 }
-.stat-symbol {
-  color: var(--blue);
+.thong-ke-bieu-tuong {
+  color: var(--xanh);
   background: #edf5fc;
   border-radius: 6px;
   width: 30px;
@@ -218,43 +218,43 @@
   place-items: center;
   font-size: 17px;
 }
-.stat-card strong {
+.the-thong-ke strong {
   font-size: clamp(23px, 2.2vw, 31px);
   letter-spacing: -0.8px;
   display: block;
   margin-top: 10px;
   line-height: 1.3;
 }
-.stat-card p {
-  color: var(--muted);
+.the-thong-ke p {
+  color: var(--chu-phu);
   font-size: 10px;
   margin-top: 8px;
 }
-.dashboard-grid {
+.tong-quan-luoi {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
   gap: 24px;
   margin-bottom: 24px;
 }
-.admin-main .panel {
+.quan-tri-chinh .khung {
   padding: 24px;
 }
-.admin-section-heading {
+.quan-tri-muc-tieu-de {
   display: flex;
   justify-content: space-between;
   align-items: start;
   gap: 15px;
   margin-bottom: 22px;
 }
-.admin-section-heading h2 {
+.quan-tri-muc-tieu-de h2 {
   font-size: 17px;
 }
-.admin-section-heading p {
-  color: var(--muted);
+.quan-tri-muc-tieu-de p {
+  color: var(--chu-phu);
   font-size: 12px;
   margin-top: 5px;
 }
-.revenue-chart {
+.doanh-thu-bieu-do {
   list-style: none;
   display: flex;
   align-items: end;
@@ -263,7 +263,7 @@
   padding: 0;
   margin: 0;
 }
-.revenue-chart li {
+.doanh-thu-bieu-do li {
   flex: 1;
   min-width: 0;
   display: flex;
@@ -273,113 +273,113 @@
   align-items: center;
   gap: 8px;
 }
-.revenue-bar {
+.doanh-thu-cot {
   width: 70%;
   max-width: 38px;
   background: #c2def3;
   border-radius: 5px 5px 0 0;
   min-height: 3px;
 }
-.revenue-chart li:last-child .revenue-bar {
-  background: var(--blue);
+.doanh-thu-bieu-do li:last-child .doanh-thu-cot {
+  background: var(--xanh);
 }
-.revenue-chart .chart-value {
+.doanh-thu-bieu-do .bieu-do-gia-tri {
   color: #47657c;
   font-size: 9px;
   white-space: nowrap;
 }
-.revenue-chart .chart-date {
-  color: var(--muted);
+.doanh-thu-bieu-do .bieu-do-ngay {
+  color: var(--chu-phu);
   font-size: 10px;
 }
-.spotlight-panel .eyebrow {
+.noi-bat-khung .nhan-dau {
   margin-bottom: 20px;
 }
-.spotlight-movie {
+.noi-bat-phim {
   display: flex;
   align-items: start;
   gap: 16px;
 }
-.spotlight-movie img {
+.noi-bat-phim img {
   width: 83px;
   height: 125px;
   object-fit: cover;
   border-radius: 6px;
 }
-.spotlight-movie h2 {
+.noi-bat-phim h2 {
   font-size: 17px;
   margin-top: 11px;
 }
-.spotlight-movie p {
+.noi-bat-phim p {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--chu-phu);
   margin-top: 8px;
 }
-.spotlight-movie .pill {
+.noi-bat-phim .nhan-tron {
   font-size: 9px;
 }
-.spotlight-bottom {
+.noi-bat-duoi {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   padding-block: 20px;
   gap: 14px;
 }
-.spotlight-bottom strong {
+.noi-bat-duoi strong {
   display: block;
   font-size: 13px;
 }
-.spotlight-bottom span {
+.noi-bat-duoi span {
   font-size: 10px;
-  color: var(--muted);
+  color: var(--chu-phu);
 }
-.admin-main .spotlight-panel .button {
+.quan-tri-chinh .noi-bat-khung .nut {
   min-height: 40px;
   font-size: 12px;
 }
-.text-button {
+.chu-nut {
   background: transparent;
-  color: var(--blue);
+  color: var(--xanh);
   font-size: 12px !important;
   font-weight: 700 !important;
   padding: 8px 0;
 }
-.table-scroll {
+.bang-cuon {
   overflow-x: auto;
   position: relative;
 }
-.table-scroll:focus-visible {
+.bang-cuon:focus-visible {
   outline: 3px solid #bf7410;
   outline-offset: 3px;
 }
-.admin-main table {
+.quan-tri-chinh table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
   font-size: 12px;
   white-space: nowrap;
 }
-.admin-main th {
+.quan-tri-chinh th {
   font-size: 10px;
-  color: var(--muted);
+  color: var(--chu-phu);
   font-weight: 600;
   padding: 12px 14px;
   background: #f4f7fa;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--vien);
 }
-.admin-main td {
+.quan-tri-chinh td {
   padding: 16px 14px;
   border-bottom: 1px solid #edf1f5;
 }
-.admin-main tbody tr:last-child td {
+.quan-tri-chinh tbody tr:last-child td {
   border-bottom: 0;
 }
-.table-movie-name {
+.bang-phim-ten {
   white-space: normal;
   min-width: 180px;
   max-width: 240px;
   font-weight: 600;
 }
-.table-film {
+.bang-phim {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -387,24 +387,24 @@
   max-width: 360px;
   white-space: normal;
 }
-.table-film img {
+.bang-phim img {
   width: 38px;
   height: 56px;
   object-fit: cover;
   border-radius: 4px;
   flex-shrink: 0;
 }
-.table-film strong {
+.bang-phim strong {
   font-size: 12px;
   font-weight: 600;
 }
-.table-film small {
+.bang-phim small {
   display: block;
-  color: var(--muted);
+  color: var(--chu-phu);
   font-size: 10px;
   margin-top: 4px;
 }
-.status-badge {
+.trang-thai-nhan {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -415,236 +415,236 @@
   color: #226c48;
   white-space: nowrap;
 }
-.status-badge.pending {
+.trang-thai-nhan.cho-tra {
   background: #fff3de;
   color: #865e18;
 }
-.status-badge.cancelled {
+.trang-thai-nhan.da-huy {
   background: #f4e9e9;
   color: #8c3f3f;
 }
-.status-badge.soon {
+.trang-thai-nhan.sap-chieu {
   background: #eaf1f9;
   color: #32638b;
 }
-.order-detail-button {
+.don-chi-tiet-nut {
   background: #edf4fa;
-  color: var(--blue);
+  color: var(--xanh);
   border-radius: 4px;
   min-height: 44px;
   padding: 7px 10px;
   font-size: 11px !important;
 }
-.admin-filter-row {
+.quan-tri-loc-hang {
   display: flex;
   align-items: center;
   gap: 14px;
   margin-bottom: 24px;
   flex-wrap: wrap;
 }
-.admin-filter-row .search-field {
+.quan-tri-loc-hang .tim-o {
   width: 320px;
 }
-.table-count {
-  color: var(--muted);
+.bang-so {
+  color: var(--chu-phu);
   font-size: 12px;
   margin-left: auto;
 }
-.admin-filter-row select {
+.quan-tri-loc-hang select {
   min-width: 180px;
 }
-.admin-main .table-empty {
-  color: var(--muted);
+.quan-tri-chinh .bang-trong {
+  color: var(--chu-phu);
   text-align: center;
   padding: 35px;
   white-space: normal;
 }
-.admin-footer {
-  color: var(--muted);
+.quan-tri-chan {
+  color: var(--chu-phu);
   font-size: 10px;
   display: flex;
   justify-content: space-between;
   gap: 20px;
   padding-top: 27px;
 }
-.admin-dialog {
+.quan-tri-hop {
   position: fixed;
   width: min(530px, calc(100% - 32px));
   max-height: calc(100dvh - 40px);
   overflow: auto;
-  border: 1px solid var(--line);
+  border: 1px solid var(--vien);
   border-radius: 12px;
   padding: 32px;
-  color: var(--ink);
+  color: var(--chu);
 }
-.admin-dialog h2 {
+.quan-tri-hop h2 {
   margin-top: 10px;
 }
-.admin-dialog .notice {
+.quan-tri-hop .thong-bao {
   font-size: 12px;
 }
 @media (max-width: 1200px) {
-  .admin-sidebar {
+  .quan-tri-thanh-ben {
     width: 210px;
     padding-inline: 16px;
   }
-  .admin-sidebar .brand {
+  .quan-tri-thanh-ben .thuong-hieu {
     font-size: 22px;
   }
-  .admin-workspace {
+  .quan-tri-khu-vuc {
     margin-left: 210px;
   }
-  .admin-main {
+  .quan-tri-chinh {
     padding-inline: 24px;
   }
-  .admin-topbar {
+  .quan-tri-thanh-tren {
     padding-inline: 24px;
   }
-  .stat-grid {
+  .thong-ke-luoi {
     gap: 12px;
   }
-  .stat-card {
+  .the-thong-ke {
     padding: 16px;
   }
-  .dashboard-grid {
+  .tong-quan-luoi {
     grid-template-columns: 1fr;
   }
 }
 @media (max-width: 900px) {
-  .admin-sidebar {
+  .quan-tri-thanh-ben {
     position: static;
     width: auto;
     padding: 18px 24px 0;
     border-right: 0;
-    border-bottom: 1px solid var(--line);
+    border-bottom: 1px solid var(--vien);
   }
-  .admin-sidebar .brand {
+  .quan-tri-thanh-ben .thuong-hieu {
     font-size: 25px;
     align-self: start;
   }
-  .workspace-label,
-  .nav-caption,
-  .sidebar-bottom {
+  .khu-vuc-nhan,
+  .dieu-huong-caption,
+  .thanh-ben-duoi {
     display: none;
   }
-  .admin-nav {
+  .quan-tri-dieu-huong {
     display: flex;
     gap: 8px;
     overflow-x: auto;
     padding-block: 18px 12px;
   }
-  .admin-nav-button {
+  .quan-tri-dieu-huong-nut {
     width: auto;
     min-width: max-content;
     padding-inline: 16px;
   }
-  .admin-workspace {
+  .quan-tri-khu-vuc {
     margin-left: 0;
   }
-  .admin-topbar {
+  .quan-tri-thanh-tren {
     min-height: 62px;
   }
-  .stat-grid {
+  .thong-ke-luoi {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .stat-card strong {
+  .the-thong-ke strong {
     font-size: 30px;
   }
 }
 @media (max-width: 600px) {
-  .admin-sidebar {
+  .quan-tri-thanh-ben {
     padding-inline: 16px;
   }
-  .admin-nav-button {
+  .quan-tri-dieu-huong-nut {
     padding-inline: 11px;
     font-size: 12px !important;
     gap: 8px;
   }
-  .admin-nav-button svg {
+  .quan-tri-dieu-huong-nut svg {
     width: 16px;
     height: 16px;
   }
-  .admin-topbar {
+  .quan-tri-thanh-tren {
     padding: 12px 16px;
     font-size: 10px;
     gap: 12px;
   }
-  .admin-topbar b {
+  .quan-tri-thanh-tren b {
     padding-inline: 6px;
   }
-  .avatar {
+  .anh-dai-dien {
     display: none;
   }
-  .demo-badge {
+  .mau-nhan {
     font-size: 8px;
   }
-  .admin-main {
+  .quan-tri-chinh {
     padding: 25px 16px 20px;
   }
-  .admin-main h1 {
+  .quan-tri-chinh h1 {
     font-size: 27px;
   }
-  .admin-title-row {
+  .quan-tri-tieu-de-hang {
     flex-direction: column;
     align-items: start;
     gap: 14px;
   }
-  .admin-date {
+  .quan-tri-ngay {
     font-size: 11px;
   }
-  .admin-demo-note {
+  .quan-tri-mau-ghi-chu {
     padding-top: 16px;
     font-size: 10px;
   }
-  .stat-card {
+  .the-thong-ke {
     padding: 14px;
   }
-  .stat-symbol {
+  .thong-ke-bieu-tuong {
     display: none;
   }
-  .stat-card strong {
+  .the-thong-ke strong {
     font-size: 25px;
   }
-  .stat-label {
+  .thong-ke-nhan {
     font-size: 10px;
   }
-  .admin-main .panel {
+  .quan-tri-chinh .khung {
     padding: 18px 16px;
   }
-  .dashboard-grid {
+  .tong-quan-luoi {
     gap: 18px;
   }
-  .admin-section-heading h2 {
+  .quan-tri-muc-tieu-de h2 {
     font-size: 16px;
   }
-  .admin-section-heading p {
+  .quan-tri-muc-tieu-de p {
     font-size: 11px;
   }
-  .revenue-chart {
+  .doanh-thu-bieu-do {
     gap: 5px;
     height: 180px;
   }
-  .revenue-chart .chart-value {
+  .doanh-thu-bieu-do .bieu-do-gia-tri {
     font-size: 8px;
   }
-  .revenue-chart .chart-date {
+  .doanh-thu-bieu-do .bieu-do-ngay {
     font-size: 9px;
   }
-  .admin-section-heading .text-button {
+  .quan-tri-muc-tieu-de .chu-nut {
     font-size: 10px !important;
   }
-  .admin-filter-row .search-field {
+  .quan-tri-loc-hang .tim-o {
     width: 100%;
   }
-  .table-count {
+  .bang-so {
     width: 100%;
     margin-left: 0;
   }
-  .admin-footer {
+  .quan-tri-chan {
     flex-direction: column;
     gap: 4px;
   }
-  .admin-dialog {
+  .quan-tri-hop {
     padding: 28px 20px;
   }
 }
