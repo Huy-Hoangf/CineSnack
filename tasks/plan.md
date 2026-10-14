@@ -1,6 +1,6 @@
 # Nối FE–BE và đồng bộ main
 
-Phạm vi/đặc tả và code preview đã được duyệt qua yêu cầu áp dụng sau kiểm thử mô phỏng. Không tự stage/commit, merge hoặc chạy SQL. Giữ nguyên thiết kế và Maven. Các phần ngoài phạm vi: đăng ký, cổng thanh toán, hoàn tiền, email/PDF.
+Phạm vi/đặc tả và code preview đã được duyệt qua yêu cầu áp dụng sau kiểm thử mô phỏng. Sau yêu cầu mới sửa P2/tài khoản/khử conflict, được phép chạy SQL trong CineSnack và lưu snapshot/merge main đã review; không tạo database khác. Giữ nguyên thiết kế và Maven. Các phần ngoài phạm vi: đăng ký, cổng thanh toán, hoàn tiền, email/PDF.
 
 1. Đồng bộ schema và repository theo main, giữ hóa đơn tách và bảo vệ soát vé/giao hàng.
 2. Regression test giờ chờ khóa, phiên/CSRF; thêm API catalog và danh sách đơn cho nhân viên.

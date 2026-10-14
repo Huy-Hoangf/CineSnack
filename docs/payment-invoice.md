@@ -25,7 +25,7 @@ Các đối tượng/bản ghi đã có được bỏ qua, giữ giá và trạn
 - Live API test: đặt CINESNACK_LIVE_URL=http://localhost:8080 rồi chạy node --test tests/frontend/integration/catalog.test.cjs. Test chỉ đọc và kỳ vọng danh mục/giá gốc; sửa kỳ vọng nếu bạn chủ động thay đổi dữ liệu.
 - Maven test sau gộp: 45/45 đạt, không có lỗi hoặc bỏ qua. Đã kiểm tra đăng nhập/session/vai trò của ba tài khoản trên SQL Server thật; luồng thu tiền trong browser được kiểm thử bằng fixture và transaction backend bằng unit/H2, chưa chạy giao dịch thanh toán live trên dữ liệu người dùng. Fixture không thay thế kiểm chứng giao dịch thật.
 
-Không thuộc phạm vi: đăng ký tài khoản, QR/ví/cổng thanh toán, hoàn tiền, email/PDF hóa đơn. Xem docs/git-integration.md để tích hợp main; repository gốc chưa được tự stage/commit/merge.
+Không thuộc phạm vi: đăng ký tài khoản, QR/ví/cổng thanh toán, hoàn tiền, email/PDF hóa đơn. Xem docs/git-integration.md để tích hợp main; đã lưu các thay đổi đã duyệt và tích hợp main theo yêu cầu khử conflict; các commit ở local.
 
 ## Sửa các P2 sau review
 
@@ -36,3 +36,5 @@ SQL: preflight schema trước tất cả EXEC/DDL, toàn file là một batch c
 Catalog: ghế JOIN phim và kiểm tra DANG_CHIEU. Phim theo ID có endpoint riêng, 404 khi không tìm thấy; frontend chọn đúng tab, không giới hạn trong ds trang đầu.
 
 48 kiểm thử Java đạt. 6 live API tests đạt, gồm 3 tài khoản đăng nhập/vai trò/phân quyền/logout và 3 catalog tests. Tài khoản admin@cinesnack.local, user@cinesnack.local, staff@cinesnack.local có mật khẩu demo CineSnack@123 lưu dưới dạng BCrypt. Không ghi đè account cùng email đã có.
+
+Git đã được tích hợp main 07483623 trên nhánh hiện tại, giải quyết modify/delete bằng việc giữ cinesnack.sql duy nhất. 21 FE unit/browser và 6 live API tests của bản cuối đều đạt. Việc merge không thay đổi Java/FE đã kiểm thử hoặc dữ liệu SQL Server.

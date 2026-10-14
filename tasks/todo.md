@@ -9,7 +9,7 @@ Giới hạn còn lại: giao dịch thanh toán trên SQL Server thật chưa �
 - [x] Khôi phục 6 phim/poster và 2 combo từ FE gốc vào SQL Server, không ghi đè bản ghi đã có.
 - [x] Thay SQL reset bằng khởi tạo bổ sung và tắt SQL init khi startup; thử chạy hai lượt trên DB hiện tại và DB tạm mới.
 - [x] Regression API thật (RED rồi GREEN), browser thật, giữ dữ liệu khi khởi động thêm; mvn test 45/45.
-- [ ] Khi tích hợp main: giải quyết conflict SQL bằng file cinesnack.sql đã gộp, giữ việc xóa script cũ. Không tự merge/stage/commit repository gốc.
+- [x] Đã tích hợp main: giải quyết conflict SQL bằng file cinesnack.sql đã gộp, giữ việc xóa script cũ. Không tự merge/stage/commit repository gốc.
 
 - [x] Sửa trạng thái chọn ghế (đang tải/chưa có suất/chưa có ghế/lỗi), giữ nguyên thiết kế và luồng mua chỉ bắp nước.
 - [x] Chỉ dùng CineSnack hiện có; seed phòng/60 ghế/4 suất và chạy lại kiểm tra giữ dữ liệu.
@@ -23,4 +23,8 @@ Giới hạn còn lại: giao dịch thanh toán trên SQL Server thật chưa �
 - [x] Sửa 4 P2 đã review; bổ sung regression cash/invoice/refresh, phim ngừng chiếu và endpoint movie theo ID.
 - [x] Dùng file cinesnack.sql hiện tại: preflight + transaction toàn file; demo admin/user/staff BCrypt.
 - [x] SQL atomicity/idempotency và 6 live API tests trên CineSnack; 48 Java đạt.
-- [ ] Lưu snapshot thay đổi đã duyệt và tích hợp main, giải quyết modify/delete SQL, xác minh Git sạch.
+- [x] Lưu snapshot 100f017 và tích hợp main 07483623, giải quyết modify/delete SQL, giữ file SQL duy nhất.
+
+- [x] Review chéo race cash: thêm generation/khóa thao tác, regression RED rồi GREEN.
+- [x] Bản cuối: 48 Java, 21 FE/browser, 6 API thật; SQL atomicity và giữ dữ liệu khi chạy lại.
+- [x] Tất cả thay đổi đã duyệt được lưu vào Git local theo yêu cầu; không có generated files/credentials SQL Server trong commit.

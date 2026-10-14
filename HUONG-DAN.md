@@ -26,7 +26,7 @@ Phần 4 của database/cinesnack.sql chỉ thêm Phòng 01/ghế còn thiếu v
 
 FE hiện thông báo ngay tại phần ghế khi chưa có suất, chưa cấu hình ghế hoặc API lỗi; không hiện sơ đồ trống. Bản JAR đã build và khởi động lại. Mở /html/booking.html?phim=1 để chọn ngày 15/10/2026 và xem sơ đồ thật.
 
-Xem docs/git-integration.md để tích hợp main; chưa stage/commit/merge ở repository gốc.
+Đã lưu thay đổi và tích hợp main theo yêu cầu giải quyết conflict. Xem docs/git-integration.md để đọc trạng thái; các commit hiện ở local.
 
 ## Kiểm tra script SQL gộp
 
@@ -49,3 +49,5 @@ Script SQL đã có preflight trước DDL, một transaction bao toàn file và
 Đã sửa: thu tiền hiển thị thành công/tiền thừa ngay, lỗi tải hóa đơn tách riêng; phản hồi refresh cũ không ghi đè biên nhận; phim ngừng chiếu không báo ghế khả dụng; phim theo ID mở đúng tab dù không nằm trang đầu. GET /api/movies/{id} công khai và trả 404 nếu phim không còn hiển thị.
 
 Kiểm thử thêm: ./tests/database/p2-atomicity.ps1 -Server '<máy SQL Server>'. Live login/role: đặt CINESNACK_LIVE_URL=http://localhost:8080 rồi chạy node --test tests/frontend/integration/accounts.test.cjs tests/frontend/integration/catalog.test.cjs.
+
+Kết quả kiểm chứng bản sửa P2: 48 Java, 21 FE unit/browser và 6 live API tests đều đạt. Đã kiểm tra ba tài khoản đăng nhập/phân quyền/logout qua Java + SQL Server thật; SQL atomicity/idempotency trên CineSnack cũng đạt.

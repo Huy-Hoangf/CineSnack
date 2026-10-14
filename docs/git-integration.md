@@ -1,9 +1,9 @@
-# Tích hợp main sau khi gộp SQL
+# Trạng thái tích hợp main
 
-Database chỉ còn một file: database/cinesnack.sql. File khởi tạo cũ đã được gộp và xóa khỏi working tree; các phần nâng cấp/catalog/booking cũng nằm trong cùng file. Không dùng lại script khởi tạo xóa dữ liệu của main.
+Đã lưu các thay đổi của dự án cùng bản sửa P2 vào commit 100f017, sau đó tích hợp origin/main tại 07483623c57af3257da4bfd7d3e30b81d557090c trên nhánh hiện tại. Conflict modify/delete duy nhất là đường dẫn SQL cũ: đã giải quyết bằng việc giữ file cinesnack.sql có schema hóa đơn tách, ràng buộc/index/trigger/procedure của main và các kiểm tra an toàn, đồng thời giữ việc xóa file SQL cũ.
 
-Commit local không tự gây conflict. Khi merge/rebase main, Git có thể báo conflict rename/delete hoặc nội dung vì main còn dùng tên SQL cũ. Các lần mô phỏng trước khi gộp đã giải quyết được conflict trong bản sao Git; chưa có merge/commit ở repository gốc. Không coi kết quả cũ là bảo đảm merge sạch cho phiên bản gộp hoặc main thay đổi sau đó.
+Database vẫn chỉ có một file SQL trong dự án và tất cả dùng chung CineSnack. Giải quyết Git không chạy SQL hay reset database. Các commit được lưu ở local.
 
-Trước khi merge, review và commit những thay đổi bạn muốn lưu, gồm file SQL mới và việc xóa file cũ; giữ các thay đổi đã stage từ trước theo ý bạn. Sau đó git fetch origin và git merge origin/main. Nếu conflict ở SQL, đối chiếu thay đổi schema mới của main với cinesnack.sql, bổ sung phần cần thiết vào file duy nhất và giữ việc xóa các script cũ. Không chọn toàn bộ ours/theirs nếu chưa kiểm tra schema. Khi đã giải quyết, git add các đường dẫn liên quan, git diff --cached --check, mvn test rồi git merge --continue.
+Sau commit merge, main tại commit đã tích hợp là tổ tiên của nhánh. Các thay đổi main đã tích hợp sẽ không tạo lại conflict cũ; những thay đổi mới sau đó vẫn cần được đối chiếu khi merge. Để giảm conflict tương lai, thống nhất cùng tên cinesnack.sql với nhóm và phối hợp khi chỉnh cùng phần trong file.
 
-Merge Git không yêu cầu chạy SQL hoặc thao tác database. Script cinesnack.sql chỉ chạy thủ công trong CineSnack hiện có và không xóa dữ liệu. Để giảm conflict sau lần đồng bộ main, thống nhất cùng tên file SQL với nhóm và hạn chế nhiều người sửa cùng phần trong file.
+Trước các lần merge sau: lưu thay đổi đã review, git fetch origin, kiểm tra diff schema, rồi git merge origin/main. Nếu conflict mới, đối chiếu thay đổi cần thiết vào file SQL duy nhất. Không chọn toàn bộ ours/theirs nếu chưa kiểm tra schema; không chạy SQL để giải quyết Git conflict.
