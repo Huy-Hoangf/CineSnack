@@ -31,7 +31,11 @@ class InvoiceRepositoryTest {
         kho.taoHoaDon(new Order(1,1L,"DH1","khach@example.com",new BigDecimal("139000"),"CHO_THANH_TOAN",luc.plusMinutes(15),luc), luc);
         var ds = kho.timTheoDonHang(1);
         assertEquals(2, ds.size()); assertEquals("VE", ds.get(0).loai()); assertEquals("BONG_NUOC", ds.get(1).loai());
-        assertEquals(0, ds.stream().map(h -> h.tongTien()).reduce(BigDecimal.ZERO, BigDecimal::add).compareTo(new BigDecimal("139000")));
+        BigDecimal tongTien = BigDecimal.ZERO;
+        for (var hoaDon : ds) {
+            tongTien = tongTien.add(java.util.Objects.requireNonNull(hoaDon.tongTien()));
+        }
+        assertEquals(0, tongTien.compareTo(new BigDecimal("139000")));
         db.update("UPDATE PHIM SET ten_phim='Phim doi ten'"); db.update("UPDATE GHE SET ma_ghe='A2'");
         assertEquals(ds, kho.timTheoDonHang(1));
     }
