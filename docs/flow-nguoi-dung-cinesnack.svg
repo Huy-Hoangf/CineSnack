@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2240" viewBox="0 0 1600 2240" role="img" aria-labelledby="title desc">
+  <title id="title">Luồng người dùng CineSnack qua từng file</title>
+  <desc id="desc">Sơ đồ từ lúc mở website, xem phim, chọn suất và ghế, chọn bắp nước, tạo đơn, rồi xem đơn, thanh toán tại quầy hoặc hủy đơn.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#08152b"/><stop offset="1" stop-color="#10264a"/></linearGradient>
+    <linearGradient id="head" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#f97316"/><stop offset="1" stop-color="#fb923c"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#020817" flood-opacity=".35"/></filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1 1 10 6 1 11" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <marker id="arrowOrange" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto"><path d="M1 1 10 6 1 11" fill="none" stroke="#fb923c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    <style>
+      text{font-family:Inter,"Segoe UI",Arial,sans-serif;fill:#e5eefb}.title{font-size:42px;font-weight:800;letter-spacing:.2px}.subtitle{font-size:19px;fill:#a9bdd8}.section{font-size:21px;font-weight:800;letter-spacing:1px;fill:#a9d7ff}.label{font-size:15px;font-weight:800;letter-spacing:1px;fill:#fdba74}.name{font-size:20px;font-weight:750}.body{font-size:16px;fill:#c7d5e8}.small{font-size:14px;fill:#a9bdd8}.step{font-size:15px;font-weight:800;fill:#08152b}.branch{font-size:16px;font-weight:750}.foot{font-size:14px;fill:#9fb3ce}
+    </style>
+  </defs>
+  <rect width="1600" height="2240" fill="url(#bg)"/>
+  <circle cx="1450" cy="120" r="180" fill="#1d4ed8" opacity=".08"/><circle cx="110" cy="1870" r="220" fill="#f97316" opacity=".06"/>
+  <text x="90" y="94" class="title">CineSnack · Luồng người dùng</text>
+  <text x="92" y="130" class="subtitle">Từ lúc mở website đến đặt đơn, thanh toán hoặc hủy · các file được gọi theo thứ tự</text>
+
+  <!-- page entry -->
+  <g filter="url(#shadow)"><rect x="90" y="170" width="1420" height="116" rx="20" fill="#162b4a" stroke="#335277"/>
+    <circle cx="140" cy="228" r="25" fill="url(#head)"/><text x="140" y="234" text-anchor="middle" class="step">1</text>
+    <text x="185" y="211" class="label">NGƯỜI DÙNG MỞ WEBSITE</text><text x="185" y="245" class="name">/ → trang chủ</text>
+    <text x="790" y="211" class="body">WebConfig.java chuyển đường dẫn / sang /html/index.html</text>
+    <text x="790" y="245" class="body">index.html nạp home.js · api.js dùng chung để gọi API</text>
+  </g>
+  <path d="M800 286v42" stroke="#7dd3fc" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- catalog -->
+  <g filter="url(#shadow)"><rect x="90" y="338" width="1420" height="190" rx="20" fill="#122844" stroke="#335277"/>
+    <circle cx="140" cy="388" r="25" fill="#38bdf8"/><text x="140" y="394" text-anchor="middle" class="step">2</text>
+    <text x="185" y="380" class="label">KHÁM PHÁ PHIM</text><text x="185" y="415" class="name">Trang chủ / trang phim</text>
+    <text x="185" y="453" class="body">index.html → home.js</text><text x="185" y="481" class="body">movies.html → movies.js</text>
+    <path d="M680 368v130" stroke="#335277" stroke-width="2"/>
+    <text x="720" y="382" class="label">API DANH MỤC</text><text x="720" y="418" class="body">GET /api/movies · tìm kiếm, lọc, phân trang</text>
+    <text x="720" y="450" class="body">CatalogController.java → CatalogService.java</text><text x="720" y="482" class="body">→ CatalogRepository.java → SQL Server</text>
+  </g>
+  <path d="M800 528v42" stroke="#7dd3fc" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- booking -->
+  <g filter="url(#shadow)"><rect x="90" y="580" width="1420" height="315" rx="20" fill="#122844" stroke="#335277"/>
+    <circle cx="140" cy="630" r="25" fill="#38bdf8"/><text x="140" y="636" text-anchor="middle" class="step">3</text>
+    <text x="185" y="622" class="label">CHỌN SUẤT, GHẾ VÀ BẮP NƯỚC</text><text x="185" y="658" class="name">booking.html → booking.js</text>
+    <text x="185" y="700" class="body">Chọn phim / ngày / suất chiếu</text><text x="185" y="730" class="body">Chọn tối đa 10 ghế và số lượng món</text>
+    <text x="185" y="760" class="body">booking-summary.js hiển thị giỏ tạm</text><text x="185" y="790" class="body">booking.js lưu giỏ trong sessionStorage</text>
+    <path d="M680 608v250" stroke="#335277" stroke-width="2"/>
+    <text x="720" y="620" class="label">CÁC LẦN GỌI DANH MỤC</text>
+    <text x="720" y="658" class="body">GET /api/showtimes?movieId=…</text><text x="720" y="688" class="body">GET /api/showtimes/{id}/seats</text><text x="720" y="718" class="body">GET /api/snacks</text>
+    <text x="720" y="763" class="body">CatalogController.java → CatalogService.java</text><text x="720" y="793" class="body">→ CatalogRepository.java / BookingCatalogRepository.java</text>
+    <text x="720" y="833" class="small">Bấm tiếp tục → checkout.html</text>
+  </g>
+  <path d="M800 895v42" stroke="#7dd3fc" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- checkout -->
+  <g filter="url(#shadow)"><rect x="90" y="947" width="1420" height="220" rx="20" fill="#172b49" stroke="#f97316" stroke-width="2"/>
+    <circle cx="140" cy="997" r="25" fill="url(#head)"/><text x="140" y="1003" text-anchor="middle" class="step">4</text>
+    <text x="185" y="990" class="label">XÁC NHẬN THÔNG TIN VÀ TẠO ĐƠN</text><text x="185" y="1027" class="name">checkout.html → checkout.js → api.js</text>
+    <text x="185" y="1068" class="body">Kiểm tra giỏ, lấy trạng thái tài khoản, gửi email nhận vé</text>
+    <text x="185" y="1102" class="body">api.js gửi JSON và CSRF token đến backend</text>
+    <path d="M800 1167v40M440 1207h720M440 1207v34M1160 1207v34" fill="none" stroke="#fb923c" stroke-width="3"/>
+    <path d="M440 1210v31" fill="none" stroke="#fb923c" stroke-width="3" marker-end="url(#arrowOrange)"/>
+    <path d="M1160 1210v31" fill="none" stroke="#fb923c" stroke-width="3" marker-end="url(#arrowOrange)"/>
+  </g>
+
+  <!-- branches -->
+  <g filter="url(#shadow)"><rect x="90" y="1250" width="680" height="150" rx="18" fill="#102e4a" stroke="#38bdf8" stroke-width="2"/>
+    <text x="125" y="1287" class="branch" fill="#7dd3fc">NHÁNH A · ĐÃ ĐĂNG NHẬP</text><text x="125" y="1324" class="body">POST /api/orders</text><text x="125" y="1357" class="body">OrderController.java → OrderService.java</text><text x="125" y="1382" class="small">Controller lấy email từ Principal</text>
+    <rect x="830" y="1250" width="680" height="150" rx="18" fill="#102e4a" stroke="#38bdf8" stroke-width="2"/>
+    <text x="865" y="1287" class="branch" fill="#7dd3fc">NHÁNH B · ĐẶT VỚI TƯ CÁCH KHÁCH</text><text x="865" y="1324" class="body">POST /api/guest/orders</text><text x="865" y="1357" class="body">GuestOrderController.java → OrderService.java</text><text x="865" y="1382" class="small">GuestOrderAccess.java ghi mã đơn vào phiên</text>
+  </g>
+  <path d="M430 1400v35h370M1170 1400v35H800v35" fill="none" stroke="#7dd3fc" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- persistence -->
+  <g filter="url(#shadow)"><rect x="250" y="1470" width="1100" height="205" rx="20" fill="#18304f" stroke="#52749e"/>
+    <circle cx="300" cy="1520" r="25" fill="#38bdf8"/><text x="300" y="1526" text-anchor="middle" class="step">5</text>
+    <text x="345" y="1512" class="label">BACKEND KIỂM TRA VÀ LƯU ĐƠN</text>
+    <text x="345" y="1550" class="body">OrderService.java kiểm tra suất, ghế, sản phẩm và tính lại tổng tiền</text>
+    <text x="345" y="1584" class="body">BookingCatalogRepository.java đọc/khóa dữ liệu suất và món</text>
+    <text x="345" y="1618" class="body">OrderRepository.java ghi đơn + chi tiết · Order.java là mô hình đơn trả về</text>
+    <text x="345" y="1650" class="small">Phản hồi mã đơn → checkout.js chuyển đến orders.html?code=…</text>
+  </g>
+  <path d="M800 1675v42" stroke="#7dd3fc" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- order detail -->
+  <g filter="url(#shadow)"><rect x="90" y="1727" width="1420" height="185" rx="20" fill="#122844" stroke="#335277"/>
+    <circle cx="140" cy="1777" r="25" fill="#38bdf8"/><text x="140" y="1783" text-anchor="middle" class="step">6</text>
+    <text x="185" y="1769" class="label">XEM LẠI ĐƠN HÀNG</text><text x="185" y="1806" class="name">orders.html → orders.js → api.js</text>
+    <text x="185" y="1847" class="body">OrderController.java hoặc GuestOrderController.java</text>
+    <text x="185" y="1878" class="body">→ OrderService.java → OrderRepository.java · khách được kiểm tra phiên</text>
+  </g>
+  <path d="M800 1912v36M435 1948h730" fill="none" stroke="#7dd3fc" stroke-width="3"/>
+  <path d="M435 1948v31" fill="none" stroke="#7dd3fc" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M1165 1948v31" fill="none" stroke="#7dd3fc" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- outcomes -->
+  <g filter="url(#shadow)"><rect x="90" y="1982" width="680" height="160" rx="18" fill="#102e4a" stroke="#34d399" stroke-width="2"/>
+    <text x="125" y="2020" class="branch" fill="#6ee7b7">THANH TOÁN TẠI QUẦY · TÀI KHOẢN</text><text x="125" y="2055" class="body">orders.js → POST /api/orders/{code}/payments/cash</text><text x="125" y="2088" class="body">PaymentController.java → PaymentService.java</text><text x="125" y="2120" class="small">PaymentRepository.java → phát hành hóa đơn</text>
+    <rect x="830" y="1982" width="680" height="160" rx="18" fill="#30263a" stroke="#fb923c" stroke-width="2"/>
+    <text x="865" y="2020" class="branch" fill="#fdba74">HỦY ĐƠN CHƯA THANH TOÁN</text><text x="865" y="2055" class="body">orders.js → POST /{code}/cancel</text><text x="865" y="2088" class="body">OrderController.java hoặc GuestOrderController.java</text><text x="865" y="2120" class="small">→ OrderService.java cập nhật trạng thái đơn</text>
+  </g>
+  <text x="90" y="2192" class="foot">Lưu ý: thanh toán hiện có trong UI/API là thanh toán tiền mặt tại quầy, dành cho tài khoản đã đăng nhập.</text>
+</svg>

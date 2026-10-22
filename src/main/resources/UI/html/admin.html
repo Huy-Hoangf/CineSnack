@@ -3,330 +3,308 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Quản trị | CineSnack</title>
+    <title>Không gian làm việc | CineSnack</title>
     <link rel="stylesheet" href="../assets/css/site.css" />
     <link rel="stylesheet" href="../assets/css/app.css" />
+    <link rel="stylesheet" href="../assets/css/authentication.css" />
+    <link rel="stylesheet" href="../assets/css/orders.css" />
     <link rel="stylesheet" href="../assets/css/admin.css" />
     <script src="../assets/js/api.js" defer></script>
     <script src="../assets/js/cinema.js" defer></script>
     <script src="../assets/js/orders.js" defer></script>
     <script src="../assets/js/admin.js" defer></script>
-    <link rel="stylesheet" href="../assets/css/orders.css" />
   </head>
   <body class="ung-dung-trang quan-tri-trang">
-    <a href="#noi-dung" class="bo-qua-lien-ket">Bỏ qua điều hướng</a>
-    <aside class="quan-tri-thanh-ben">
-      <a class="thuong-hieu" href="index.html" aria-label="CineSnack — Về trang chủ"
-        ><svg viewBox="0 0 40 40" aria-hidden="true">
-          <rect x="3" y="7" width="34" height="26" rx="7" fill="currentColor" />
-          <path d="m17 14 11 6-11 6z" fill="white" /></svg
-        ><span
-          >Cine<span class="thuong-hieu-nhan">Snack</span><small>QUẢN TRỊ RẠP PHIM</small></span
-        ></a
+    <a class="bo-qua-lien-ket" href="#noi-dung">Bỏ qua điều hướng</a>
+    <header class="workspace-header">
+      <a class="thuong-hieu" href="index.html" aria-label="CineSnack — Về website"
+        >Cine<span class="thuong-hieu-nhan">Snack</span></a
       >
-      <div class="khu-vuc-nhan">
-        <span class="khu-vuc-cham" aria-hidden="true"></span>
-        <div><strong>Rạp CineSnack</strong><small>Không gian quản trị</small></div>
-      </div>
-      <span class="dieu-huong-caption">KHÔNG GIAN LÀM VIỆC</span>
-      <nav class="quan-tri-dieu-huong" aria-label="Quản trị">
-        <button
-          type="button"
-          data-muc="tong-quan"
-          aria-controls="muc-tong-quan"
-          aria-pressed="true"
-          class="quan-tri-dieu-huong-nut dang-chon"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="3" width="7" height="7" rx="1" />
-            <rect x="3" y="14" width="7" height="7" rx="1" />
-            <rect x="14" y="14" width="7" height="7" rx="1" /></svg
-          >Tổng quan</button
-        ><button
-          type="button"
-          data-muc="phim"
-          aria-controls="muc-phim"
-          aria-pressed="false"
-          class="quan-tri-dieu-huong-nut"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="4" width="18" height="16" rx="2" />
-            <path d="M7 4v16M17 4v16M3 9h4m-4 6h4m10-6h4m-4 6h4" /></svg
-          >Quản lý phim</button
-        ><button
-          type="button"
-          data-muc="suat"
-          aria-controls="muc-suat"
-          aria-pressed="false"
-          class="quan-tri-dieu-huong-nut"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <rect x="3" y="5" width="18" height="16" rx="2" />
-            <path d="M7 3v4M17 3v4M3 11h18m-13 4h3m3 0h2" /></svg
-          >Suất chiếu</button
-        ><button
-          type="button"
-          data-muc="don"
-          aria-controls="muc-don"
-          aria-pressed="false"
-          class="quan-tri-dieu-huong-nut"
-        >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 5h16v5a2 2 0 0 0 0 4v5H4v-5a2 2 0 0 0 0-4zM15 5v3m0 3v2m0 3v3" /></svg
-          >Đơn đặt vé
-        </button>
-      </nav>
-      <div class="thanh-ben-duoi">
-        <p>Danh sách đơn và tổng tiền hiển thị theo trang đang xem.</p>
-        <a href="index.html">← Về website CineSnack</a>
-      </div>
-    </aside>
-    <div class="quan-tri-khu-vuc">
-      <header class="quan-tri-thanh-tren">
-        <span>Không gian quản trị <b>/</b> <strong id="quan-tri-duong-dan">Tổng quan</strong></span>
-        <div class="quan-tri-tai-khoan">
-          <span class="mau-nhan">NHÂN VIÊN</span><span id="admin-email"></span>
+      <div class="workspace-account">
+        <div>
+          <strong id="admin-role">Không gian làm việc</strong><small id="admin-email"></small>
         </div>
-      </header>
-      <main id="noi-dung" class="ung-dung-chinh quan-tri-chinh" tabindex="-1">
-        <noscript
-          ><p class="thong-bao">Bật JavaScript để xem các bảng dữ liệu minh họa.</p></noscript
-        >
-        <div class="quan-tri-tieu-de-hang">
-          <div>
-            <span class="nhan-dau">CINESNACK STUDIO</span>
-            <h1 id="quan-tri-tieu-de">Tổng quan rạp phim</h1>
-            <p id="quan-tri-phu">Một góc nhìn rõ ràng cho những trải nghiệm điện ảnh trọn vẹn.</p>
+        <button type="button" id="admin-logout" class="account-button" hidden>Đăng xuất</button>
+      </div>
+    </header>
+    <main id="noi-dung" class="workspace" tabindex="-1">
+      <p id="admin-loi" class="loi" role="alert" tabindex="-1"></p>
+      <p id="admin-status" class="workspace-notice" role="status" hidden></p>
+      <a id="admin-login" class="nut" href="authentication.html?next=admin.html" hidden
+        >Đăng nhập nhân viên / quản trị</a
+      >
+      <noscript><p>Bật JavaScript để sử dụng không gian làm việc.</p></noscript>
+      <div id="admin-workspace" class="workspace-grid" hidden>
+        <aside class="workspace-sidebar">
+          <p class="workspace-caption">CINESNACK · VẬN HÀNH</p>
+          <nav class="quan-tri-dieu-huong" aria-label="Không gian làm việc">
+            <button
+              type="button"
+              class="workspace-nav"
+              data-muc="don"
+              aria-controls="muc-don"
+              aria-pressed="true"
+            >
+              Đơn toàn rạp
+            </button>
+            <button
+              type="button"
+              class="workspace-nav"
+              data-muc="hoa-don"
+              aria-controls="muc-don"
+              aria-pressed="false"
+            >
+              Hóa đơn
+            </button>
+            <button
+              type="button"
+              class="workspace-nav"
+              data-muc="phim"
+              data-admin-only
+              aria-controls="muc-phim"
+              aria-pressed="false"
+              hidden
+            >
+              Quản lý phim
+            </button>
+            <button
+              type="button"
+              class="workspace-nav"
+              data-muc="suat"
+              data-admin-only
+              aria-controls="muc-suat"
+              aria-pressed="false"
+              hidden
+            >
+              Lịch chiếu
+            </button>
+          </nav>
+          <a href="index.html" class="workspace-back">← Về website CineSnack</a>
+        </aside>
+        <div class="workspace-content">
+          <div class="workspace-heading">
+            <div>
+              <p id="quan-tri-duong-dan" class="workspace-caption">Đơn toàn rạp</p>
+              <h1 id="quan-tri-tieu-de">Đơn toàn rạp</h1>
+              <p id="quan-tri-phu" class="workspace-subtitle">
+                Đơn của user và guest, tra cứu và xử lý tại quầy.
+              </p>
+            </div>
+            <span id="quan-tri-ngay"></span>
           </div>
-          <span class="quan-tri-ngay" id="quan-tri-ngay"></span>
-        </div>
-        <p class="quan-tri-mau-ghi-chu">
-          Dữ liệu từ hệ thống. Thống kê phía dưới chỉ tính các đơn trên trang đang xem.
-        </p>
-        <p id="admin-loi" class="loi" role="alert" tabindex="-1"></p>
-        <a id="admin-login" class="nut" href="authentication.html?next=admin.html" hidden
-          >Đăng nhập nhân viên</a
-        >
-        <section id="muc-tong-quan" class="quan-tri-muc" aria-label="Tổng quan">
-          <div class="thong-ke-luoi" id="thong-ke"></div>
-          <div class="tong-quan-luoi">
-            <section class="khung doanh-thu-khung">
-              <div class="quan-tri-muc-tieu-de">
-                <div>
-                  <h2>Nhịp rạp trong tuần</h2>
-                  <p>Doanh thu minh họa · 7 ngày gần nhất</p>
-                </div>
-                <span class="nhan-tron">VNĐ</span>
-              </div>
-              <ol
-                class="doanh-thu-bieu-do"
-                id="doanh-thu-bieu-do"
-                aria-label="Doanh thu minh họa theo ngày"
-              ></ol>
-            </section>
-            <section class="khung noi-bat-khung">
-              <span class="nhan-dau">BỘ PHIM NỔI BẬT</span>
-              <div class="noi-bat-phim">
-                <img
-                  src="../assets/images/movies/dune.jpg"
-                  alt="Poster Dune"
-                  width="96"
-                  height="144"
-                />
-                <div>
-                  <span class="nhan-tron">Khoa học viễn tưởng</span>
-                  <h2>Dune: Hành tinh cát – Phần hai</h2>
-                  <p>Phim nổi bật trong danh mục minh họa.</p>
-                </div>
-              </div>
-              <div class="noi-bat-duoi">
-                <div><strong>166 phút</strong><span>Thời lượng</span></div>
-                <div><strong>T16</strong><span>Phân loại</span></div>
-                <div><strong>2D</strong><span>Định dạng</span></div>
-              </div>
-              <button type="button" class="nut phu rong" data-muc="phim">
-                Xem danh mục phim <span aria-hidden="true">↗</span>
-              </button>
-            </section>
-          </div>
-          <section class="khung quan-tri-bang-khung">
-            <div class="quan-tri-muc-tieu-de">
-              <div>
-                <h2>Đơn đặt vé gần đây</h2>
-                <p>Các đơn gần nhất trên trang hiện tại.</p>
-              </div>
-              <button type="button" class="chu-nut" data-muc="don">Tất cả đơn vé ↗</button>
-            </div>
-            <div class="bang-cuon" tabindex="0" role="region" aria-label="Đơn đặt vé gần đây">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Mã đơn</th>
-                    <th>Email</th>
-                    <th>Tạo lúc</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th><span class="doc-rieng">Chi tiết</span></th>
-                  </tr>
-                </thead>
-                <tbody id="moi-don"></tbody>
-              </table>
-            </div>
-          </section>
-        </section>
-        <section id="muc-phim" class="quan-tri-muc" aria-label="Danh mục phim" hidden>
-          <section class="khung quan-tri-bang-khung">
-            <div class="quan-tri-muc-tieu-de">
-              <div>
-                <h2>Danh mục phim</h2>
-                <p>Danh mục đang và sắp chiếu từ hệ thống.</p>
-              </div>
-              <span class="nhan-tron">6 phim</span>
-            </div>
-            <div class="quan-tri-loc-hang">
-              <div class="tim-o">
-                <label class="doc-rieng" for="quan-tri-phim-tim">Tìm phim</label
-                ><span aria-hidden="true">⌕</span
-                ><input
-                  type="search"
-                  id="quan-tri-phim-tim"
-                  data-tim="phim"
-                  placeholder="Tìm tên phim, thể loại…"
-                />
-              </div>
-              <p class="bang-so" id="dem-phim" role="status"></p>
-            </div>
-            <div class="bang-cuon" tabindex="0" role="region" aria-label="Danh sách phim">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Phim</th>
-                    <th>Thời lượng</th>
-                    <th>Phân loại</th>
-                    <th>Trạng thái</th>
-                    <th>Giao diện</th>
-                  </tr>
-                </thead>
-                <tbody id="quan-tri-phim"></tbody>
-              </table>
-            </div>
-          </section>
-        </section>
-        <section id="muc-suat" class="quan-tri-muc" aria-label="Suất chiếu" hidden>
-          <section class="khung quan-tri-bang-khung">
-            <div class="quan-tri-muc-tieu-de">
-              <div>
-                <h2>Lịch chiếu nhận đặt vé</h2>
-                <p>Thông tin phòng và giờ lấy từ hệ thống.</p>
-              </div>
-              <span class="nhan-tron">Hôm nay</span>
-            </div>
-            <div class="quan-tri-loc-hang">
-              <div class="tim-o">
-                <label class="doc-rieng" for="quan-tri-suat-tim">Tìm suất chiếu</label
-                ><span aria-hidden="true">⌕</span
-                ><input
-                  type="search"
-                  id="quan-tri-suat-tim"
-                  data-tim="suat"
-                  placeholder="Tìm phim, giờ chiếu…"
-                />
-              </div>
-              <p class="bang-so" id="suat-so" role="status"></p>
-            </div>
-            <div class="bang-cuon" tabindex="0" role="region" aria-label="Danh sách suất chiếu">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Phim</th>
-                    <th>Suất chiếu</th>
-                    <th>Phòng</th>
-                    <th>Giá vé</th>
-                    <th>Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody id="quan-tri-suat"></tbody>
-              </table>
-            </div>
-          </section>
-        </section>
-        <section id="muc-don" class="quan-tri-muc" aria-label="Đơn đặt vé" hidden>
-          <section class="khung quan-tri-bang-khung">
-            <div class="quan-tri-muc-tieu-de">
-              <div>
-                <h2>Danh sách đơn vé</h2>
-                <p>Tra cứu đơn và xác nhận tiền mặt tại quầy.</p>
-              </div>
-              <span class="nhan-tron">Dữ liệu hệ thống</span>
-            </div>
-            <div class="quan-tri-loc-hang">
-              <div class="tim-o">
-                <label class="doc-rieng" for="quan-tri-don-tim"
-                  >Tìm mã đơn hoặc email trên trang</label
-                ><span aria-hidden="true">⌕</span
-                ><input
-                  type="search"
-                  id="quan-tri-don-tim"
-                  data-tim="don"
-                  placeholder="Lọc mã đơn/email trên trang…"
-                />
-              </div>
-              <div>
-                <label class="doc-rieng" for="don-trang-thai">Lọc trạng thái đơn</label
+          <section id="muc-don" class="quan-tri-muc">
+            <div id="thong-ke" class="workspace-stats"></div>
+            <section class="workspace-card">
+              <div class="workspace-toolbar">
+                <form id="don-search-form" class="workspace-search">
+                  <label class="doc-rieng" for="quan-tri-don-tim">Tìm mã đơn hoặc email</label
+                  ><input
+                    id="quan-tri-don-tim"
+                    maxlength="100"
+                    type="search"
+                    placeholder="Tìm mã đơn hoặc email toàn rạp"
+                  /><button class="account-button" type="submit">Tìm kiếm</button>
+                </form>
+                <label class="doc-rieng" for="don-trang-thai">Trạng thái đơn</label
                 ><select id="don-trang-thai">
-                  <option value="tat-ca">Tất cả trạng thái</option>
-                  <option value="DA_THANH_TOAN">Đã thanh toán</option>
+                  <option value="">Tất cả trạng thái</option>
                   <option value="CHO_THANH_TOAN">Chờ thanh toán</option>
+                  <option value="DA_THANH_TOAN">Đã thanh toán</option>
                   <option value="HUY">Đã hủy</option>
+                  <option value="HET_HAN">Hết hạn</option>
                 </select>
+                <button id="admin-refresh" type="button" class="account-button">Cập nhật</button>
               </div>
-              <p class="bang-so" id="don-so" role="status"></p>
-            </div>
-            <div class="bang-cuon" tabindex="0" role="region" aria-label="Danh sách đơn đặt vé">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Mã đơn</th>
-                    <th>Email</th>
-                    <th>Tạo lúc</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th><span class="doc-rieng">Chi tiết</span></th>
-                  </tr>
-                </thead>
-                <tbody id="quan-tri-don"></tbody>
-              </table>
-            </div>
+              <p id="don-so" class="workspace-hint"></p>
+              <div class="bang-cuon" tabindex="0" role="region" aria-label="Danh sách đơn toàn rạp">
+                <table class="workspace-table">
+                  <thead>
+                    <tr>
+                      <th>Đơn & khách đặt</th>
+                      <th>Tạo lúc</th>
+                      <th>Tổng tiền</th>
+                      <th>Trạng thái</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="quan-tri-don"></tbody>
+                </table>
+              </div>
+              <div class="phan-trang">
+                <button id="admin-truoc" type="button" class="account-button">Trang trước</button
+                ><button id="admin-sau" type="button" class="account-button">Trang sau</button>
+              </div>
+            </section>
+            <form id="tra-don-form" class="workspace-card workspace-lookup">
+              <label for="tra-ma-don">Tra cứu mã đơn bất kỳ</label
+              ><input
+                id="tra-ma-don"
+                maxlength="30"
+                pattern="[A-Za-z0-9]{1,30}"
+                required
+                placeholder="Nhập mã đơn"
+              /><button class="account-button" type="submit">Mở đơn</button>
+            </form>
           </section>
-        </section>
-        <div class="phan-trang">
-          <button id="admin-truoc" type="button" class="nut phu">Trang trước</button
-          ><button id="admin-sau" type="button" class="nut phu">Trang sau</button>
+          <section id="muc-phim" class="quan-tri-muc" hidden>
+            <div class="workspace-toolbar">
+              <p id="dem-phim" class="workspace-hint"></p>
+              <button type="button" class="nut" id="them-phim">+ Thêm phim</button>
+            </div>
+            <section class="workspace-card">
+              <div class="bang-cuon" tabindex="0" role="region" aria-label="Danh mục phim">
+                <table class="workspace-table">
+                  <thead>
+                    <tr>
+                      <th>Phim</th>
+                      <th>Thời lượng</th>
+                      <th>Phân loại</th>
+                      <th>Trạng thái</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="quan-tri-phim"></tbody>
+                </table>
+              </div>
+              <div class="phan-trang">
+                <button id="phim-truoc" class="account-button" type="button">Trang trước</button
+                ><button id="phim-sau" class="account-button" type="button">Trang sau</button>
+              </div>
+            </section>
+            <p class="workspace-hint">
+              Phim có lịch chiếu được chuyển sang ngừng chiếu khi xóa. Phim có đơn đang giữ chỗ sẽ
+              được bảo vệ.
+            </p>
+          </section>
+          <section id="muc-suat" class="quan-tri-muc" hidden>
+            <div class="workspace-toolbar">
+              <p id="suat-so" class="workspace-hint"></p>
+              <button type="button" class="nut" id="them-suat">+ Thêm suất chiếu</button>
+            </div>
+            <section class="workspace-card">
+              <div class="bang-cuon" tabindex="0" role="region" aria-label="Lịch chiếu">
+                <table class="workspace-table">
+                  <thead>
+                    <tr>
+                      <th>Phim / phòng</th>
+                      <th>Bắt đầu / kết thúc</th>
+                      <th>Giá vé</th>
+                      <th>Trạng thái</th>
+                      <th>Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody id="quan-tri-suat"></tbody>
+                </table>
+              </div>
+              <div class="phan-trang">
+                <button id="suat-truoc" class="account-button" type="button">Trang trước</button
+                ><button id="suat-sau" class="account-button" type="button">Trang sau</button>
+              </div>
+            </section>
+            <p class="workspace-hint">
+              Sơ đồ ghế cố định theo phòng, không có chức năng chỉnh sửa. Suất đã có vé được bảo vệ
+              khi thay đổi.
+            </p>
+          </section>
         </div>
-        <form id="tra-don-form" class="khung">
-          <label for="tra-ma-don">Tra cứu mã đơn bất kỳ</label
-          ><input id="tra-ma-don" pattern="[A-Za-z0-9]{1,30}" required /><button
-            class="nut"
-            type="submit"
-          >
-            Tra cứu
-          </button>
+      </div>
+      <dialog id="don-hop" class="workspace-dialog" aria-labelledby="don-chi-tiet-tieu-de">
+        <form method="dialog" class="workspace-dialog-close">
+          <button class="account-button" aria-label="Đóng chi tiết đơn">×</button>
         </form>
-        <p class="quan-tri-chan">
-          CineSnack Studio
-          <span>Website đặt vé & bắp nước</span>
-        </p>
-        <dialog id="don-hop" class="quan-tri-hop" aria-labelledby="don-chi-tiet-tieu-de">
-          <form method="dialog">
-            <button class="hop-dong" aria-label="Đóng chi tiết đơn">×</button>
-          </form>
-          <span class="nhan-dau">ĐƠN HÀNG</span>
-          <h2 id="don-chi-tiet-tieu-de">Chi tiết đơn</h2>
-          <div id="don-chi-tiet"></div>
-          <p class="thong-bao">Chỉ xác nhận thanh toán sau khi đã nhận đủ tiền của khách.</p>
-        </dialog>
-      </main>
-    </div>
+        <p class="workspace-caption">ĐƠN HÀNG</p>
+        <h2 id="don-chi-tiet-tieu-de">Chi tiết đơn</h2>
+        <div id="don-chi-tiet"></div>
+      </dialog>
+      <dialog id="phim-hop" class="workspace-dialog" aria-labelledby="phim-form-title">
+        <form method="dialog" class="workspace-dialog-close">
+          <button class="account-button" aria-label="Đóng form phim">×</button>
+        </form>
+        <h2 id="phim-form-title">Thêm phim</h2>
+        <form id="phim-form" class="workspace-form">
+          <input type="hidden" name="id" /><label
+            >Tên phim<input name="name" required maxlength="200" /></label
+          ><label>Thể loại<input name="genre" required maxlength="100" /></label>
+          <div class="workspace-form-row">
+            <label
+              >Thời lượng (phút)<input
+                name="duration"
+                type="number"
+                min="1"
+                max="600"
+                step="1"
+                required /></label
+            ><label
+              >Phân loại<select name="ageRating">
+                <option>P</option>
+                <option>K</option>
+                <option>T13</option>
+                <option>T16</option>
+                <option>T18</option>
+              </select></label
+            >
+          </div>
+          <label
+            >Đường dẫn poster<input
+              name="posterUrl"
+              maxlength="500"
+              placeholder="/assets/images/movies/ten-phim.jpg" /></label
+          ><label
+            >Trạng thái<select name="status">
+              <option value="SAP_CHIEU">Sắp chiếu</option>
+              <option value="DANG_CHIEU">Đang chiếu</option>
+              <option value="NGUNG_CHIEU">Ngừng chiếu</option>
+            </select></label
+          >
+          <p id="phim-form-error" class="loi" role="alert"></p>
+          <button type="submit" class="nut">Lưu phim</button>
+        </form>
+      </dialog>
+      <dialog id="suat-hop" class="workspace-dialog" aria-labelledby="suat-form-title">
+        <form method="dialog" class="workspace-dialog-close">
+          <button class="account-button" aria-label="Đóng form suất chiếu">×</button>
+        </form>
+        <h2 id="suat-form-title">Thêm suất chiếu</h2>
+        <form id="suat-form" class="workspace-form">
+          <input type="hidden" name="id" /><label
+            >Phim<select name="movieId" required></select></label
+          ><label>Phòng (sơ đồ ghế cố định)<select name="roomId" required></select></label>
+          <div class="workspace-form-row">
+            <label>Giờ bắt đầu<input name="startsAt" type="datetime-local" required /></label
+            ><label
+              >Giá vé (VND)<input
+                name="price"
+                type="number"
+                min="0"
+                max="9999999999"
+                step="1"
+                required
+            /></label>
+          </div>
+          <label
+            >Trạng thái<select name="status">
+              <option value="SAP_CHIEU">Sắp chiếu</option>
+              <option value="DANG_CHIEU">Đang chiếu</option>
+              <option value="DA_CHIEU">Đã chiếu</option>
+              <option value="HUY">Hủy</option>
+            </select></label
+          >
+          <p class="workspace-hint">
+            Giờ kết thúc tự tính theo thời lượng phim. Thời gian theo Việt Nam.
+          </p>
+          <p id="suat-form-error" class="loi" role="alert"></p>
+          <button type="submit" class="nut">Lưu suất chiếu</button>
+        </form>
+      </dialog>
+      <dialog id="confirm-hop" class="workspace-dialog" aria-labelledby="confirm-title">
+        <h2 id="confirm-title">Xác nhận xóa</h2>
+        <p id="confirm-message"></p>
+        <p id="confirm-error" class="loi" role="alert"></p>
+        <div class="order-actions">
+          <button id="confirm-delete" class="nut" type="button">Xác nhận</button
+          ><button class="account-button" type="button" id="confirm-cancel">Quay lại</button>
+        </div>
+      </dialog>
+    </main>
   </body>
 </html>

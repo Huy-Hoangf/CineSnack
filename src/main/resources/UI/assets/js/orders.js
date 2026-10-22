@@ -18,11 +18,27 @@ window.CineSnackOrders = (() => {
     if (cls) n.className = cls;
     return n;
   };
-  async function hienChiTiet(box, code, user, thayDoi = async () => {}, hopLe = () => true) {
+  async function hienChiTiet(
+    box,
+    code,
+    user,
+    thayDoi = async () => {},
+    hopLe = () => true,
+    guestMode = false,
+  ) {
     if (!hopLe()) return;
     const lan = lanMoi(box);
     let dangThuTien = false;
-    const data = await CineSnackApi.goi("/api/orders/" + encodeURIComponent(code));
+    let prefix = user && !guestMode ? "/api/orders" : "/api/guest/orders";
+    let data;
+    try {
+      data = await CineSnackApi.goi(prefix + "/" + encodeURIComponent(code));
+    } catch (error) {
+      if (user?.role !== "KHACH_HANG" || guestMode || ![403, 404].includes(error.status))
+        throw error;
+      prefix = "/api/guest/orders";
+      data = await CineSnackApi.goi(prefix + "/" + encodeURIComponent(code));
+    }
     const d = data.order,
       root = e("div", undefined, "order-detail"),
       dl = e("dl");
@@ -39,20 +55,37 @@ window.CineSnackOrders = (() => {
       row.append(e("dt", key), dd);
       dl.append(row);
     }
+    if (data.tickets.length) {
+      const first = data.tickets[0];
+      const show = e("section", undefined, "order-show");
+      show.append(e("h3", first.movieName || "Vé xem phim"));
+      const parts = [
+        first.roomName,
+        first.startsAt ? CineSnack.dinhDangSuat(first.startsAt) : null,
+      ].filter(Boolean);
+      if (parts.length) show.append(e("p", parts.join(" · ")));
+      show.append(e("strong", "Ghế " + data.tickets.map((v) => v.seatCode || v.seatId).join(", ")));
+      root.append(show);
+    }
     root.append(dl);
     const list = e("ul");
     for (const v of data.tickets)
       list.append(
-        e(
-          "li",
-          `${v.code} · Ghế ${v.seatCode || "#" + v.seatId} · ${CineSnack.dinhDangTien(v.unitPrice)}`,
-        ),
+        e("li", `Ghế ${v.seatCode || "#" + v.seatId} · ${CineSnack.dinhDangTien(v.unitPrice)}`),
       );
     for (const s of data.snacks)
       list.append(
         e("li", `${s.quantity} × ${s.name} · ${CineSnack.dinhDangTien(s.quantity * s.unitPrice)}`),
       );
     root.append(list);
+    if (data.tickets.length) {
+      const codes = e("details", undefined, "ticket-codes"),
+        values = e("ul");
+      for (const ticket of data.tickets)
+        values.append(e("li", `${ticket.seatCode || "Ghế"}: ${ticket.code}`));
+      codes.append(e("summary", "Xem mã vé để cung cấp tại rạp"), values);
+      root.append(codes);
+    }
     const message = e("p", "", "loi");
     message.setAttribute("role", "alert");
     message.tabIndex = -1;
@@ -76,7 +109,7 @@ window.CineSnackOrders = (() => {
     refresh.id = "tai-lai-don";
     refresh.addEventListener("click", () =>
       run(refresh, async () => {
-        await hienChiTiet(box, code, user, thayDoi, hopLe);
+        await hienChiTiet(box, code, user, thayDoi, hopLe, guestMode);
         await thayDoi();
       }),
     );
@@ -86,16 +119,16 @@ window.CineSnackOrders = (() => {
     cancel.disabled = d.status !== "CHO_THANH_TOAN";
     cancel.addEventListener("click", () =>
       run(cancel, async () => {
-        await CineSnackApi.goi(`/api/orders/${encodeURIComponent(code)}/cancel`, {
+        await CineSnackApi.goi(`${prefix}/${encodeURIComponent(code)}/cancel`, {
           method: "POST",
         });
-        await hienChiTiet(box, code, user, thayDoi, hopLe);
+        await hienChiTiet(box, code, user, thayDoi, hopLe, guestMode);
         await thayDoi();
       }),
     );
     actions.append(refresh, cancel);
     root.append(actions, message);
-    if (["NHAN_VIEN", "QUAN_TRI"].includes(user.role) && d.status === "CHO_THANH_TOAN") {
+    if (["NHAN_VIEN", "QUAN_TRI"].includes(user?.role) && d.status === "CHO_THANH_TOAN") {
       const form = e("form", undefined, "cash-form");
       form.id = "cash-form";
       const label = e("label", "Số tiền khách đưa (VND)");
@@ -161,7 +194,7 @@ window.CineSnackOrders = (() => {
     root.append(e("h3", "Hóa đơn đã thanh toán"), invoices);
     if (d.status === "DA_THANH_TOAN") {
       try {
-        const ds = await CineSnackApi.goi(`/api/orders/${encodeURIComponent(code)}/invoices`);
+        const ds = await CineSnackApi.goi(`${prefix}/${encodeURIComponent(code)}/invoices`);
         for (const h of ds) {
           const card = e("article", undefined, "invoice");
           card.append(
@@ -195,6 +228,7 @@ window.CineSnackOrders = (() => {
   if (!list) return;
   const o = (id) => document.getElementById(id);
   let user,
+    scope = "account",
     trang = 0,
     lan = 0,
     lanDanhSach = 0;
@@ -205,31 +239,57 @@ window.CineSnackOrders = (() => {
   async function chiTiet(code) {
     const n = ++lan;
     try {
-      await CineSnackOrders.hienChiTiet(
+      const order = await CineSnackOrders.hienChiTiet(
         o("chi-tiet-don"),
         code,
         user,
         taiDanhSach,
         () => n === lan,
+        scope === "guest",
       );
-      if (n === lan) history.replaceState(null, "", "orders.html?code=" + encodeURIComponent(code));
+      if (n !== lan) return;
+      if (user && order.userId == null && scope !== "guest") {
+        scope = "guest";
+        o("orders-scope").value = scope;
+        o("guest-order-note").hidden = false;
+        trang = 0;
+        await taiDanhSach();
+      }
+      if (n === lan)
+        history.replaceState(
+          null,
+          "",
+          "orders.html?code=" + encodeURIComponent(code) + (scope === "guest" ? "&guest=1" : ""),
+        );
     } catch (e) {
       if (n === lan) loi(e);
     }
   }
   async function taiDanhSach() {
     const n = ++lanDanhSach;
-    const ds = await CineSnackApi.goi(`/api/orders?page=${trang}&size=20`);
+    const ds = await CineSnackApi.goi(
+      `${scope === "guest" ? "/api/guest/orders" : "/api/orders"}?page=${trang}&size=20`,
+    );
     if (n !== lanDanhSach) return;
     list.replaceChildren();
-    if (!ds.length) list.append(CineSnackOrders.e("li", "Chưa có đơn trên trang này."));
+    if (!ds.length)
+      list.append(
+        CineSnackOrders.e(
+          "li",
+          user
+            ? "Chưa có đơn trên trang này. Bạn có thể chọn phim để đặt vé mới."
+            : "Phiên trình duyệt này chưa có đơn. Hãy đặt vé bằng email hoặc đăng nhập để xem đơn tài khoản.",
+        ),
+      );
     for (const d of ds) {
       const li = document.createElement("li"),
-        b = CineSnackOrders.e(
-          "button",
-          `${d.code} · ${CineSnackOrders.nhan[d.status]} · ${CineSnack.dinhDangTien(d.total)}`,
-          "chu-nut",
-        );
+        b = CineSnackOrders.e("button", undefined, "chu-nut order-card-button");
+      b.append(
+        CineSnackOrders.e("strong", CineSnackOrders.nhan[d.status]),
+        CineSnackOrders.e("span", CineSnack.dinhDangTien(d.total)),
+        CineSnackOrders.e("small", d.code),
+        CineSnackOrders.e("small", CineSnack.dinhDangSuat(d.createdAt)),
+      );
       b.type = "button";
       b.addEventListener("click", () => chiTiet(d.code));
       li.append(b);
@@ -237,6 +297,7 @@ window.CineSnackOrders = (() => {
     }
     o("don-truoc").disabled = trang === 0;
     o("don-sau").disabled = ds.length < 20;
+    return ds;
   }
   for (const [id, change] of [
     ["don-truoc", -1],
@@ -251,18 +312,37 @@ window.CineSnackOrders = (() => {
       }
     });
   o("tai-danh-sach").addEventListener("click", () => taiDanhSach().catch(loi));
+  o("orders-scope").addEventListener("change", async () => {
+    scope = o("orders-scope").value;
+    trang = 0;
+    lan++;
+    o("chi-tiet-don").replaceChildren(CineSnackOrders.e("p", "Chọn một đơn để xem chi tiết."));
+    o("guest-order-note").hidden = scope !== "guest";
+    history.replaceState(null, "", "orders.html" + (scope === "guest" ? "?guest=1" : ""));
+    try {
+      await taiDanhSach();
+    } catch (error) {
+      loi(error);
+    }
+  });
   try {
     user = await CineSnackApi.taiKhoan();
+    scope =
+      !user || new URLSearchParams(location.search).get("guest") === "1" ? "guest" : "account";
+    o("orders-scope").value = scope;
+    o("orders-scope-label").hidden = !user;
+    o("guest-order-note").hidden = scope !== "guest";
     if (!user) {
       o("orders-login").hidden = false;
       o("orders-login").href =
         "authentication.html?next=" + encodeURIComponent("orders.html" + location.search);
-      return;
+      o("guest-order-note").hidden = false;
     }
     o("orders-content").hidden = false;
-    await taiDanhSach();
+    const ds = await taiDanhSach();
     const code = new URLSearchParams(location.search).get("code");
     if (code) await chiTiet(code);
+    else if (ds?.length) await chiTiet(ds[0].code);
   } catch (e) {
     loi(e);
   }

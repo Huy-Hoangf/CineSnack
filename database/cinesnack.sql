@@ -1,5 +1,3 @@
--- CineSnack: sửa trên chính file SQL hiện tại, một database duy nhất.
--- Chạy toàn bộ file; không có GO để lỗi không tiếp tục qua batch sau.
 USE [CineSnack];
 SET XACT_ABORT ON;
 SET ANSI_NULLS ON;
@@ -15,14 +13,11 @@ IF OBJECT_ID(N'VE',N'U') IS NOT NULL AND
     THROW 50010, N'Schema hiện có chưa tương thích hóa đơn tách; chưa thay đổi dữ liệu.', 1;
 BEGIN TRY
     BEGIN TRANSACTION;
-    -- Khối 1: giữ nội dung SQL đã có, thực thi sau preflight.
-    EXEC(N'-- CineSnack: một file SQL, chỉ dùng database CineSnack đã tồn tại.
--- Chạy thủ công trong SSMS; ứng dụng không tự chạy SQL khi khởi động.
--- Không tạo/xóa database, không xóa dữ liệu và không ghi đè danh mục đã có.
--- Lịch seed cho ngày mai theo giờ Việt Nam; chạy ngày khác có thể thêm lịch mới.
--- 1. CẤU TRÚC BẢNG, RÀNG BUỘC, INDEX VÀ PROCEDURE
+
+    EXEC(N'
+
 USE [CineSnack];
--- Khởi tạo đối tượng còn thiếu, giữ nguyên dữ liệu.
+
 SET ANSI_NULLS ON;
 SET ANSI_PADDING ON;
 SET ANSI_WARNINGS ON;
@@ -30,15 +25,15 @@ SET ARITHABORT ON;
 SET CONCAT_NULL_YIELDS_NULL ON;
 SET QUOTED_IDENTIFIER ON;
 SET NUMERIC_ROUNDABORT OFF;
--- Chỉ dùng database CineSnack đã có; không tự tạo database.
+
 IF DB_ID(N''CineSnack'') IS NULL THROW 50010,
 N''Không tìm thấy database CineSnack. Chọn đúng SQL Server đã cấu hình.'',
 1;
 USE [CineSnack];
 ');
-    -- Khối 2: giữ nội dung SQL đã có, thực thi sau preflight.
+
     EXEC(N'USE [CineSnack];
--- 1. Moi phong co nhieu ghe va nhieu suat chieu.
+
 IF OBJECT_ID(N''PHONG_CHIEU'', N''U'') IS NULL BEGIN
 CREATE TABLE PHONG_CHIEU (
     phong_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -47,7 +42,7 @@ CREATE TABLE PHONG_CHIEU (
     trang_thai VARCHAR(20) NOT NULL
 );
 END;
--- 2. Mot phim co the co nhieu suat chieu.
+
 IF OBJECT_ID(N''PHIM'', N''U'') IS NULL BEGIN
 CREATE TABLE PHIM (
     phim_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -60,7 +55,7 @@ CREATE TABLE PHIM (
     CHECK (thoi_luong_phut > 0)
 );
 END;
--- 3. Tai khoan khach hang, nhan vien va quan tri.
+
 IF OBJECT_ID(N''NGUOI_DUNG'', N''U'') IS NULL BEGIN
 CREATE TABLE NGUOI_DUNG (
     nguoi_dung_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -71,7 +66,7 @@ CREATE TABLE NGUOI_DUNG (
     trang_thai VARCHAR(20) NOT NULL
 );
 END;
--- 4. San pham ban le: bong, nuoc, do an vat.
+
 IF OBJECT_ID(N''SAN_PHAM'', N''U'') IS NULL BEGIN
 CREATE TABLE SAN_PHAM (
     san_pham_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -82,7 +77,7 @@ CREATE TABLE SAN_PHAM (
     CHECK (gia_ban >= 0)
 );
 END;
--- 5. Combo co gia ban rieng.
+
 IF OBJECT_ID(N''COMBO'', N''U'') IS NULL BEGIN
 CREATE TABLE COMBO (
     combo_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -92,7 +87,7 @@ CREATE TABLE COMBO (
     CHECK (gia_ban >= 0)
 );
 END;
--- 6. Ma ghe chi can duy nhat trong cung mot phong.
+
 IF OBJECT_ID(N''GHE'', N''U'') IS NULL BEGIN
 CREATE TABLE GHE (
     ghe_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -104,7 +99,7 @@ CREATE TABLE GHE (
     UNIQUE (phong_id, ma_ghe)
 );
 END;
--- 7. Mot suat chieu chieu mot phim tai mot phong.
+
 IF OBJECT_ID(N''SUAT_CHIEU'', N''U'') IS NULL BEGIN
 CREATE TABLE SUAT_CHIEU (
     suat_chieu_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -120,7 +115,7 @@ CREATE TABLE SUAT_CHIEU (
     CHECK (gia_co_ban >= 0)
 );
 END;
--- 8. Nguoi dung co the NULL neu cho phep khach mua khong dang nhap.
+
 IF OBJECT_ID(N''DON_HANG'', N''U'') IS NULL BEGIN
 CREATE TABLE DON_HANG (
     don_hang_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
@@ -135,7 +130,7 @@ CREATE TABLE DON_HANG (
     CHECK (tong_tien >= 0)
 );
 END;
--- 9. Bang trung gian: mot combo gom nhieu san pham.
+
 IF OBJECT_ID(N''COMBO_SAN_PHAM'', N''U'') IS NULL BEGIN
 CREATE TABLE COMBO_SAN_PHAM (
     combo_id BIGINT NOT NULL,
@@ -147,9 +142,7 @@ CREATE TABLE COMBO_SAN_PHAM (
     CHECK (so_luong > 0)
 );
 END;
--- Mô hình hóa đơn tách; chỉ tạo bảng/ràng buộc chưa có.
--- DON_HANG lien ket mot lan mua, co the chi mua ve hoac chi mua bong nuoc.
--- Thanh toan chung theo DON_HANG. Moi loai co toi da mot hoa don / don hang.
+
 IF NOT EXISTS (
     SELECT
         1
@@ -277,7 +270,7 @@ CREATE TABLE VE (
     )
 );
 END;
--- Ve da soat van chiem ghe; ve huy/het han duoc phep ban lai ghe.
+
 IF NOT EXISTS (
     SELECT
         1
@@ -414,12 +407,10 @@ IF NOT EXISTS (
 )
 CREATE INDEX IX_SUAT_CHIEU_PHONG_THOI_GIAN ON SUAT_CHIEU (phong_id, bat_dau) INCLUDE (ket_thuc, trang_thai);
 ');
-    -- Khối 3: giữ nội dung SQL đã có, thực thi sau preflight.
+
     EXEC(N'USE [CineSnack];
-IF OBJECT_ID(N''TR_SUAT_CHIEU_KHONG_TRUNG_GIO'') IS NULL EXEC (
-    N''-- Bao ve khi INSERT/UPDATE, ke ca cap nhat nhieu suat chieu trong mot lenh.
--- UPDLOCK + HOLDLOCK giu khoa den cuoi transaction; backend retry khi deadlock.
--- Hai khoang tiep giap (ket_thuc = bat_dau) duoc phep.
+IF OBJECT_ID(N''TR_SUAT_CHIEU_KHONG_TRUNG_GIO'') IS NULL EXEC(N''
+
 CREATE
 TRIGGER TR_SUAT_CHIEU_KHONG_TRUNG_GIO ON SUAT_CHIEU AFTER
 INSERT
@@ -449,15 +440,12 @@ N''''Suat chieu bi trung gio trong cung phong.'''',
 1;
 END;
 END;
-''
-);
+'');
 ');
-    -- Khối 4: giữ nội dung SQL đã có, thực thi sau preflight.
+
     EXEC(N'USE [CineSnack];
-IF OBJECT_ID(N''SOAT_VE'') IS NULL EXEC (
-    N''-- @nhan_vien_id phai lay tu danh tinh dang nhap, KHONG lay tu request cua khach.
--- Backend phai kiem tra quyen; SQL kiem tra them vai tro va trang thai tai khoan.
--- Gia dinh soat ve tu 30 phut truoc gio chieu den truoc gio ket thuc.
+IF OBJECT_ID(N''SOAT_VE'') IS NULL EXEC(N''
+
 CREATE PROCEDURE SOAT_VE @ma_ve VARCHAR(30),
 @nhan_vien_id BIGINT AS BEGIN
 SET NOCOUNT ON;
@@ -513,14 +501,12 @@ FROM
 WHERE
     ma_ve = @ma_ve;
 END;
-''
-);
+'');
 ');
-    -- Khối 5: giữ nội dung SQL đã có, thực thi sau preflight.
+
     EXEC(N'USE [CineSnack];
-IF OBJECT_ID(N''NHAN_BONG_NUOC'') IS NULL EXEC (
-    N''-- Xac nhan TOAN BO so_luong cua mot dong; cac dong khac co the nhan sau.
--- QR hoa don giup backend liet ke dong hang; backend xac minh dong thuoc QR.
+IF OBJECT_ID(N''NHAN_BONG_NUOC'') IS NULL EXEC(N''
+
 CREATE PROCEDURE NHAN_BONG_NUOC @ma_hoa_don VARCHAR(30),
 @chi_tiet_id BIGINT,
 @nhan_vien_id BIGINT AS BEGIN
@@ -573,33 +559,16 @@ FROM
 WHERE
     chi_tiet_id = @chi_tiet_id;
 END;
-''
-);
+'');
 ');
-    -- Khối 6: giữ nội dung SQL đã có, thực thi sau preflight.
+
     EXEC(N'USE [CineSnack];
--- CAN XU LY TRONG BACKEND, TRONG CUNG TRANSACTION:
--- 1. Tinh tong_tien tung hoa don tu chi tiet; DON_HANG = tong hai hoa don hien co.
---    Khong nhan tong tien/gia tu frontend; khong sua gia/chi tiet sau thanh toan.
--- 2. Khi thanh toan thanh cong: doi DON_HANG, hoa don va VE sang DA_THANH_TOAN;
---    doi dong bong nuoc sang CHO_NHAN. Xac minh chu ky, so tien, ma don cua cong.
---    Xu ly callback lap theo nha_cung_cap + ma_giao_dich; unique index chi chan ghi trung.
--- 3. Job het han doi DON_HANG, hoa don, VE va dong bong nuoc CHO_THANH_TOAN
---    sang HET_HAN. Su dung khoa tren DON_HANG de tranh xung dot voi thanh toan.
---    Het_han_luc khong tu dong giai phong ghe; phai cap nhat trang thai VE.
--- 4. Tao ve chi cho suat/ghe dang mo ban; huy suat can cap nhat don/hoa don/ve lien quan.
--- 5. Soat ve/giao hang qua procedure, tham so nhan vien tu session dang nhap.
---    QR nen chua token kho doan, khong su dung ID tuan tu de xac thuc.
--- 6. Vai tro nhan vien: NHAN_VIEN/QUAN_TRI; tai khoan hoat dong: HOAT_DONG.
--- 7. Hoan tien/huy sau DA_SOAT hoac DA_NHAN chua thuoc pham vi ban de xuat nay.
--- 8. Các phần metadata và danh mục nằm ở phần 2–4 bên dưới.
+
 ');
-    -- Khối 7: giữ nội dung SQL đã có, thực thi sau preflight.
-    EXEC(N'-- 2. BỔ SUNG CỘT HÓA ĐƠN VÀ INDEX
+
+    EXEC(N'
 USE [CineSnack];
--- Nâng cấp không xóa dữ liệu từ schema hóa đơn tách của main.
--- Chỉ bổ sung metadata cho schema hóa đơn tách đã có.
--- Với schema cũ VE.don_hang_id, cần migration chuyển dữ liệu riêng trước.
+
 SET XACT_ABORT ON;
 SET ANSI_NULLS ON;
 SET ANSI_PADDING ON;
@@ -630,9 +599,8 @@ ADD phat_hanh_luc DATETIME2(0) NULL;
 IF COL_LENGTH(''VE'', ''mo_ta_luc_mua'') IS NULL
 ALTER TABLE VE
 ADD mo_ta_luc_mua NVARCHAR(400) NULL;
--- Backfill bằng câu lệnh động để dùng các cột vừa thêm trong cùng batch.
-EXEC (
-    N''UPDATE h
+
+EXEC(N''UPDATE h
 SET email_nhan = d.email_nhan_ve,
     phat_hanh_luc = t.luc
 FROM
@@ -649,10 +617,8 @@ FROM
     ) t
 WHERE
     h.email_nhan IS NULL
-''
-);
-EXEC (
-    N''UPDATE h
+'');
+EXEC(N''UPDATE h
 SET email_nhan = d.email_nhan_ve,
     phat_hanh_luc = t.luc
 FROM
@@ -669,10 +635,8 @@ FROM
     ) t
 WHERE
     h.email_nhan IS NULL
-''
-);
-EXEC (
-    N''UPDATE v
+'');
+EXEC(N''UPDATE v
 SET mo_ta_luc_mua = CONCAT(
         p.ten_phim,
         N'''' | '''',
@@ -690,8 +654,7 @@ FROM
     JOIN GHE g ON g.ghe_id = v.ghe_id
 WHERE
     v.mo_ta_luc_mua IS NULL
-''
-);
+'');
 IF NOT EXISTS (
     SELECT
         1
@@ -730,10 +693,10 @@ END TRY BEGIN CATCH
 THROW;
 END CATCH;
 ');
-    -- Khối 8: giữ nội dung SQL đã có, thực thi sau preflight.
-    EXEC(N'-- 3. DANH MỤC PHIM VÀ COMBO
+
+    EXEC(N'
 USE [CineSnack];
--- danh mục khôi phục từ FE cũ; không sửa bản ghi đã có.
+
 USE [CineSnack];
 SET XACT_ABORT ON;
 BEGIN TRY
@@ -940,11 +903,10 @@ END TRY BEGIN CATCH
 THROW;
 END CATCH;
 ');
-    -- Khối 9: giữ nội dung SQL đã có, thực thi sau preflight.
-    EXEC(N'-- 4. PHÒNG, GHẾ VÀ SUẤT CHIẾU
+
+    EXEC(N'
 USE [CineSnack];
--- Chỉ bổ sung phòng/ghế/suất trong CineSnack hiện có. Không chạy tự động khi startup.
--- Lịch khởi tạo cho ngày mai theo giờ Việt Nam. Chạy lại trong cùng ngày không tạo trùng.
+
 USE [CineSnack];
 SET XACT_ABORT ON;
 SET ANSI_NULLS ON;
@@ -1107,15 +1069,15 @@ WHERE
             phong_id = @phong
             AND bat_dau = t.bat_dau
     );
--- Trigger của schema bảo vệ lịch chồng lấn; không thay thế suất đã có.
+
 COMMIT;
 END TRY BEGIN CATCH
     IF @@TRANCOUNT > 0 ROLLBACK;
 THROW;
 END CATCH;
 ');
-    -- Khối 10: giữ nội dung SQL đã có, thực thi sau preflight.
-    EXEC(N'-- Tài khoản demo cố định: mật khẩu CineSnack@123, lưu bằng BCrypt.
+
+    EXEC(N'
 INSERT INTO
     NGUOI_DUNG (ho_ten, email, mat_khau_hash, vai_tro, trang_thai)
 SELECT

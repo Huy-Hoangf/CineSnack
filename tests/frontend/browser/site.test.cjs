@@ -136,7 +136,7 @@ thu(
     kt.deepEqual(m.loi, []);
   },
 );
-thu("FE thật: API catalog lỗi không fallback; khách chưa đăng nhập không tạo đơn", async (t) => {
+thu("FE thật: API catalog lỗi không fallback và không tiếp tục giỏ rỗng", async (t) => {
   const m = await chuanBi(t),
     page = await m.trangMoi();
   await page.route("**/api/movies*", (r) =>

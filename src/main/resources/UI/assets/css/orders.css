@@ -5,8 +5,76 @@
   margin-top: 24px;
   align-items: start;
 }
+.order-show {
+  padding: 18px;
+  background: #edf5fc;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.order-show h3 {
+  font-size: 20px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.order-show p {
+  color: #526c82;
+  margin-bottom: 8px;
+}
+.ticket-codes {
+  margin: 18px 0;
+  color: #526c82;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.ticket-codes summary {
+  cursor: pointer;
+  padding: 10px 0;
+}
+.guest-order-note {
+  background: #eaf3fc;
+  padding: 14px 18px;
+  border-radius: 9px;
+  margin-top: 18px;
+  color: #365b7c;
+  font-size: 14px;
+}
+.order-card-button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 12px;
+  padding: 16px !important;
+}
+.order-card-button strong {
+  font-size: 14px;
+}
+.order-card-button small {
+  grid-column: 1/-1;
+  color: #65768a;
+  font-size: 12px;
+  font-weight: 400;
+}
+.order-card-button small:first-of-type {
+  overflow-wrap: anywhere;
+}
 .orders-grid .khung {
   min-width: 0;
+}
+#orders-scope-label {
+  display: grid;
+  gap: 7px;
+  margin: 16px 0;
+  color: #65768a;
+  font-size: 13px;
+}
+#orders-scope {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid var(--vien);
+  border-radius: 8px;
+  color: var(--chu);
+  background: #fff;
+  font: inherit;
 }
 .order-list {
   list-style: none;

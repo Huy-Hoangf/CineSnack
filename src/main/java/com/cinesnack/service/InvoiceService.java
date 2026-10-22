@@ -4,6 +4,7 @@ import com.cinesnack.entity.Invoice;
 import com.cinesnack.entity.Order;
 import com.cinesnack.repository.InvoiceRepository;
 import java.time.LocalDateTime;
+import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,6 +30,15 @@ public class InvoiceService {
     @Transactional(readOnly = true)
     public java.util.List<Invoice> layHoaDon(String ma, String thuDienTu) {
         Order donHang = dichVuDonHang.layDonDuocPhepTruyCap(ma, thuDienTu);
+        return layHoaDon(donHang);
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.List<Invoice> layHoaDonKhach(String ma, Set<String> maDonTrongPhien) {
+        return layHoaDon(dichVuDonHang.layDonKhachDuocPhepTruyCap(ma, maDonTrongPhien));
+    }
+
+    private java.util.List<Invoice> layHoaDon(Order donHang) {
         var hoaDon = khoHoaDon.timTheoDonHang(donHang.maSo());
         if (hoaDon.isEmpty()) throw new ResponseStatusException(
             HttpStatus.NOT_FOUND,

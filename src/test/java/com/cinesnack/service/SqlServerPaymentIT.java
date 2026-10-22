@@ -2,6 +2,7 @@ package com.cinesnack.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.cinesnack.dto.AdminCatalog;
 import com.cinesnack.dto.CreateOrderRequest;
 import com.cinesnack.repository.*;
 import com.cinesnack.support.Sql;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import org.springframework.jdbc.datasource.*;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.*;
 
-/** Chỉ chạy khi người dùng cấu hình riêng database kiểm thử SQL Server. */
+/** Kiểm thử opt-in trên CineSnack hiện có; Spring rollback mỗi test. */
 @SpringJUnitConfig(SqlServerPaymentIT.Config.class)
 @EnabledIfEnvironmentVariable(named = "CINESNACK_TEST_DB_URL", matches = ".+")
 @Transactional
@@ -36,6 +38,8 @@ class SqlServerPaymentIT {
         PaymentRepository.class,
         InvoiceRepository.class,
         UserRepository.class,
+        AdminCatalogRepository.class,
+        AdminCatalogService.class,
     })
     static class Config {
 
@@ -78,6 +82,161 @@ class SqlServerPaymentIT {
 
     @Autowired
     Clock dongHo;
+
+    @Autowired
+    AdminCatalogService quanLy;
+
+    @BeforeEach
+    void dungDatabaseVaTuyChonSqlServer() {
+        assertEquals("CineSnack", truyVan.queryForObject("SELECT DB_NAME()", String.class));
+        truyVan.execute(
+            "SET ANSI_NULLS ON; SET ANSI_PADDING ON; SET ANSI_WARNINGS ON; SET ARITHABORT ON; SET CONCAT_NULL_YIELDS_NULL ON; SET QUOTED_IDENTIFIER ON; SET NUMERIC_ROUNDABORT OFF;"
+        );
+    }
+
+    @Test
+    void adminGuestStaffCyclePreservesInvoicesAndProtectsHistory() {
+        String suffix = UUID.randomUUID().toString();
+        String admin = "admin-" + suffix + "@example.com",
+            staff = "staff-" + suffix + "@example.com";
+        String guestEmail = "guest-" + suffix + "@example.com";
+        taoNguoiDung(admin, "QUAN_TRI");
+        taoNguoiDung(staff, "NHAN_VIEN");
+        taoNguoiDung(guestEmail, "KHACH_HANG");
+        long room = Sql.themVaLayMa(
+            truyVan,
+            "INSERT INTO PHONG_CHIEU(ten_phong,loai_phong,trang_thai) OUTPUT INSERTED.phong_id VALUES(?,'2D','HOAT_DONG')",
+            "IT-" + suffix
+        );
+        long seat = Sql.themVaLayMa(
+            truyVan,
+            "INSERT INTO GHE(phong_id,ma_ghe,loai_ghe,trang_thai) OUTPUT INSERTED.ghe_id VALUES(?,'A1','THUONG','HOAT_DONG')",
+            room
+        );
+        long product = Sql.themVaLayMa(
+            truyVan,
+            "INSERT INTO SAN_PHAM(ten_san_pham,loai_san_pham,gia_ban,trang_thai) OUTPUT INSERTED.san_pham_id VALUES(N'Bắp IT','BONG',59000,'HOAT_DONG')"
+        );
+        var movieRequest = new AdminCatalog.MovieRequest(
+            "Phim IT " + suffix,
+            "Hành động",
+            90,
+            "T13",
+            "",
+            "DANG_CHIEU"
+        );
+        var movie = quanLy.saveMovie(null, movieRequest, admin);
+        var startsAt = OffsetDateTime.now(dongHo).plusHours(3).withNano(0);
+        var showRequest = new AdminCatalog.ShowRequest(
+            movie.maSo(),
+            room,
+            startsAt,
+            new BigDecimal("80000"),
+            "SAP_CHIEU"
+        );
+        var show = quanLy.saveShow(null, showRequest, admin);
+        assertEquals(startsAt.plusMinutes(90), show.ketThuc());
+        show = quanLy.saveShow(
+            show.maSo(),
+            new AdminCatalog.ShowRequest(
+                movie.maSo(),
+                room,
+                startsAt,
+                new BigDecimal("90000"),
+                "SAP_CHIEU"
+            ),
+            admin
+        );
+        assertEquals(0, show.gia().compareTo(new BigDecimal("90000")));
+        var order = dichVuDonHang.taoDonKhach(
+            new CreateOrderRequest(
+                guestEmail,
+                show.maSo(),
+                List.of(seat),
+                List.of(new CreateOrderRequest.SnackChoice(product, 1)),
+                List.of()
+            )
+        );
+        assertNull(order.maNguoiDung());
+        assertEquals(0, order.tongTien().compareTo(new BigDecimal("149000")));
+        var ownedCodes = Set.of(order.ma());
+        var details = dichVuDonHang.layChiTietKhach(order.ma(), ownedCodes);
+        assertEquals(movie.ten(), details.dsVe().get(0).tenPhim());
+        assertTrue(
+            dichVuDonHang
+                .layDanhSachQuanTri(staff, guestEmail, "", 0, 20)
+                .stream()
+                .anyMatch(o -> o.ma().equals(order.ma()))
+        );
+        assertEquals(
+            403,
+            assertThrows(org.springframework.web.server.ResponseStatusException.class, () ->
+                dichVuDonHang.layChiTiet(order.ma(), guestEmail)
+            )
+                .getStatusCode()
+                .value()
+        );
+        assertEquals(
+            403,
+            assertThrows(org.springframework.web.server.ResponseStatusException.class, () ->
+                dichVuDonHang.layChiTietKhach(order.ma(), Set.of())
+            )
+                .getStatusCode()
+                .value()
+        );
+        long showId = show.maSo();
+        assertEquals(
+            409,
+            assertThrows(org.springframework.web.server.ResponseStatusException.class, () ->
+                quanLy.deleteShow(showId, admin)
+            )
+                .getStatusCode()
+                .value()
+        );
+        var receipt = dichVuThanhToan.thanhToanTaiQuay(order.ma(), new BigDecimal("150000"), staff);
+        assertEquals(0, receipt.tienThua().compareTo(new BigDecimal("1000")));
+        assertEquals(
+            receipt.giaoDich().maSo(),
+            dichVuThanhToan
+                .thanhToanTaiQuay(order.ma(), new BigDecimal("150000"), staff)
+                .giaoDich()
+                .maSo()
+        );
+        var invoices = dichVuHoaDon.layHoaDonKhach(order.ma(), ownedCodes);
+        assertEquals(2, invoices.size());
+        quanLy.deleteMovie(movie.maSo(), admin);
+        assertEquals(
+            "NGUNG_CHIEU",
+            quanLy
+                .movies(admin, 0, 100)
+                .stream()
+                .filter(m -> m.maSo() == movie.maSo())
+                .findFirst()
+                .orElseThrow()
+                .trangThai()
+        );
+        assertEquals(invoices, dichVuHoaDon.layHoaDonKhach(order.ma(), ownedCodes));
+        var unused = quanLy.saveMovie(null, movieRequest, admin);
+        var unusedShow = quanLy.saveShow(
+            null,
+            new AdminCatalog.ShowRequest(
+                unused.maSo(),
+                room,
+                startsAt.plusHours(3),
+                new BigDecimal("75000"),
+                "SAP_CHIEU"
+            ),
+            admin
+        );
+        quanLy.deleteShow(unusedShow.maSo(), admin);
+        quanLy.deleteMovie(unused.maSo(), admin);
+        assertTrue(
+            quanLy
+                .movies(admin, 0, 100)
+                .stream()
+                .noneMatch(m -> m.maSo() == unused.maSo())
+        );
+    }
 
     @Test
     void thuTienMotLanVaGiuNguyenHoaDon() {
