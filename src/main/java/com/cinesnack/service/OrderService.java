@@ -51,6 +51,15 @@ public class OrderService {
     @Transactional
     public Order taoDonHang(CreateOrderRequest yeuCau, String thuDienTu) {
         User nguoiDung = dichVuNguoiDung.layTaiKhoanHoatDong(thuDienTu);
+        return taoDonHang(yeuCau, nguoiDung.maSo());
+    }
+
+    @Transactional
+    public Order taoDonKhach(CreateOrderRequest yeuCau) {
+        return taoDonHang(yeuCau, (Long) null);
+    }
+
+    private Order taoDonHang(CreateOrderRequest yeuCau, Long maNguoiDung) {
         kiemTraLuaChon(yeuCau);
         var suatChieu = yeuCau.dsMaGhe().isEmpty()
             ? null
@@ -116,7 +125,7 @@ public class OrderService {
 
         String maDonHang = Codes.taoMa("DH");
         long maSo = khoDonHang.taoDonHang(
-            nguoiDung.maSo(),
+            maNguoiDung,
             maDonHang,
             yeuCau.thuDienTu(),
             tongTien,
@@ -149,7 +158,7 @@ public class OrderService {
             );
         return new Order(
             maSo,
-            nguoiDung.maSo(),
+            maNguoiDung,
             maDonHang,
             yeuCau.thuDienTu(),
             tongTien,
@@ -162,6 +171,10 @@ public class OrderService {
     @Transactional(readOnly = true)
     public Details layChiTiet(String maDonHang, String thuDienTu) {
         Order donHang = layDonDuocPhepTruyCap(maDonHang, thuDienTu);
+        return chiTiet(donHang);
+    }
+
+    private Details chiTiet(Order donHang) {
         return new Details(
             donHang,
             khoDonHang.layVe(donHang.maSo()),
@@ -176,6 +189,40 @@ public class OrderService {
         return donHang;
     }
 
+    @Transactional(readOnly = true)
+    public Details layChiTietKhach(String ma, Set<String> maDonTrongPhien) {
+        return chiTiet(layDonKhachDuocPhepTruyCap(ma, maDonTrongPhien));
+    }
+
+    public Order layDonKhachDuocPhepTruyCap(String ma, Set<String> maDonTrongPhien) {
+        kiemTraMaDonKhach(ma, maDonTrongPhien);
+        return kiemTraDonKhach(khoDonHang.timTheoMa(ma));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Order> layDanhSachKhach(Set<String> maDonTrongPhien, int trang, int kichThuoc) {
+        return khoDonHang.layDanhSachKhach(maDonTrongPhien, trang, kichThuoc);
+    }
+
+    private void kiemTraMaDonKhach(String ma, Set<String> maDonTrongPhien) {
+        if (!maDonTrongPhien.contains(ma)) throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "Đơn không thuộc phiên này"
+        );
+    }
+
+    private Order kiemTraDonKhach(Order donHang) {
+        if (donHang == null) throw new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Không tìm thấy đơn hàng"
+        );
+        if (donHang.maNguoiDung() != null) throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "Không có quyền truy cập đơn hàng này"
+        );
+        return donHang;
+    }
+
     public List<Order> layDanhSach(String thuDienTu, int trang, int kichThuoc) {
         return khoDonHang.layDanhSach(
             dichVuNguoiDung.layTaiKhoanHoatDong(thuDienTu).maSo(),
@@ -185,13 +232,23 @@ public class OrderService {
     }
 
     public List<Order> layDanhSachQuanTri(String email, int trang, int kichThuoc) {
+        return layDanhSachQuanTri(email, "", "", trang, kichThuoc);
+    }
+
+    public List<Order> layDanhSachQuanTri(
+        String email,
+        String tuTim,
+        String trangThai,
+        int trang,
+        int kichThuoc
+    ) {
         if (
             !dichVuNguoiDung.layTaiKhoanHoatDong(email).laNhanVien()
         ) throw new ResponseStatusException(
             HttpStatus.FORBIDDEN,
             "Chỉ nhân viên được tra cứu toàn rạp"
         );
-        return khoDonHang.layTatCa(trang, kichThuoc);
+        return khoDonHang.layTatCa(tuTim, trangThai, trang, kichThuoc);
     }
 
     @Transactional
@@ -199,6 +256,16 @@ public class OrderService {
         User nguoiDung = dichVuNguoiDung.layTaiKhoanHoatDong(thuDienTu);
         Order donHang = khoDonHang.timVaKhoa(maDonHang);
         dichVuNguoiDung.kiemTraQuyenTruyCapDon(nguoiDung, donHang);
+        return huyDonDaKhoa(donHang);
+    }
+
+    @Transactional
+    public Order huyDonKhach(String ma, Set<String> maDonTrongPhien) {
+        kiemTraMaDonKhach(ma, maDonTrongPhien);
+        return huyDonDaKhoa(kiemTraDonKhach(khoDonHang.timVaKhoa(ma)));
+    }
+
+    private Order huyDonDaKhoa(Order donHang) {
         if (
             "HUY".equals(donHang.trangThai()) || "HET_HAN".equals(donHang.trangThai())
         ) return donHang;

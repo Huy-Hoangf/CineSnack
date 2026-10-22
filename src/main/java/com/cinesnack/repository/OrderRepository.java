@@ -7,7 +7,11 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -46,17 +50,45 @@ public class OrderRepository {
         );
     }
 
-    public List<Order> layTatCa(int trang, int kichThuoc) {
+    public List<Order> layDanhSachKhach(Set<String> maDon, int trang, int kichThuoc) {
+        if (maDon.isEmpty()) return List.of();
+
+        String placeholders = String.join(",", Collections.nCopies(maDon.size(), "?"));
+        List<Object> thamSo = new ArrayList<>(maDon);
+        thamSo.add((long) trang * kichThuoc);
+        thamSo.add(kichThuoc);
         return truyVan.query(
-            "SELECT * FROM DON_HANG ORDER BY don_hang_id DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
+            "SELECT * FROM DON_HANG WHERE nguoi_dung_id IS NULL AND ma_don_hang IN (" +
+                placeholders +
+                ") ORDER BY don_hang_id DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY",
             (dong, viTri) -> docDonHang(dong),
+            thamSo.toArray()
+        );
+    }
+
+    public List<Order> layTatCa(int trang, int kichThuoc) {
+        return layTatCa("", "", trang, kichThuoc);
+    }
+
+    public List<Order> layTatCa(String tuTim, String trangThai, int trang, int kichThuoc) {
+        return truyVan.query(
+            """
+            SELECT * FROM DON_HANG
+            WHERE (?='' OR trang_thai=?) AND (ma_don_hang LIKE ? OR email_nhan_ve LIKE ?)
+            ORDER BY don_hang_id DESC OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
+            """,
+            (dong, viTri) -> docDonHang(dong),
+            trangThai,
+            trangThai,
+            "%" + tuTim + "%",
+            "%" + tuTim + "%",
             (long) trang * kichThuoc,
             kichThuoc
         );
     }
 
     public long taoDonHang(
-        long maNguoiDung,
+        Long maNguoiDung,
         String ma,
         String email,
         BigDecimal tong,
@@ -151,7 +183,15 @@ public class OrderRepository {
 
     public List<Ticket> layVe(long maDon) {
         return truyVan.query(
-            "SELECT v.*,g.ma_ghe FROM VE v JOIN HOA_DON_VE h ON h.hoa_don_ve_id=v.hoa_don_ve_id JOIN GHE g ON g.ghe_id=v.ghe_id WHERE h.don_hang_id=? ORDER BY v.ve_id",
+            """
+            SELECT v.*,g.ma_ghe,p.ten_phim,r.ten_phong,s.bat_dau FROM VE v
+            JOIN HOA_DON_VE h ON h.hoa_don_ve_id=v.hoa_don_ve_id
+            JOIN GHE g ON g.ghe_id=v.ghe_id
+            JOIN SUAT_CHIEU s ON s.suat_chieu_id=v.suat_chieu_id
+            JOIN PHIM p ON p.phim_id=s.phim_id
+            JOIN PHONG_CHIEU r ON r.phong_id=s.phong_id
+            WHERE h.don_hang_id=? ORDER BY v.ve_id
+            """,
             (d, i) ->
                 new Ticket(
                     d.getLong("ve_id"),
@@ -160,7 +200,10 @@ public class OrderRepository {
                     d.getString("ma_ghe"),
                     d.getString("ma_ve"),
                     d.getBigDecimal("don_gia"),
-                    d.getString("trang_thai")
+                    d.getString("trang_thai"),
+                    d.getString("ten_phim"),
+                    d.getString("ten_phong"),
+                    Sql.docThoiGian(d, "bat_dau").atOffset(ZoneOffset.ofHours(7))
                 ),
             maDon
         );

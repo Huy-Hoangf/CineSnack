@@ -37,6 +37,8 @@ class ApiSecurityTest {
         InvoiceController.class,
         CsrfController.class,
         CatalogController.class,
+        AdminCatalogController.class,
+        GuestOrderController.class,
         ApiExceptionHandler.class,
     })
     static class Config {
@@ -59,6 +61,16 @@ class ApiSecurityTest {
         @Bean
         InvoiceService dichVuHoaDon() {
             return mock(InvoiceService.class);
+        }
+
+        @Bean
+        AdminCatalogService quanLyDanhMuc() {
+            return mock(AdminCatalogService.class);
+        }
+
+        @Bean
+        com.cinesnack.security.GuestOrderAccess quyenKhach() {
+            return new com.cinesnack.security.GuestOrderAccess();
         }
 
         @Bean
@@ -102,6 +114,63 @@ class ApiSecurityTest {
         )
             .apply(springSecurity())
             .build();
+    }
+
+    @Test
+    void guestGetsSessionOrdersAndStillNeedsCsrfToCreate() throws Exception {
+        kiemThuHttp.perform(get("/api/guest/orders")).andExpect(status().isOk());
+        String body =
+            "{\"email\":\"guest@example.com\",\"seatIds\":[],\"snacks\":[],\"combos\":[{\"comboId\":1,\"quantity\":1}]}";
+        kiemThuHttp
+            .perform(
+                post("/api/guest/orders").contentType(MediaType.APPLICATION_JSON).content(body)
+            )
+            .andExpect(status().isForbidden());
+        when(dichVuDonHang.taoDonKhach(any())).thenReturn(
+            new com.cinesnack.entity.Order(
+                7L,
+                null,
+                "DHGUEST",
+                "guest@example.com",
+                java.math.BigDecimal.TEN,
+                "CHO_THANH_TOAN",
+                null,
+                java.time.LocalDateTime.of(2026, 10, 15, 10, 0)
+            )
+        );
+        kiemThuHttp
+            .perform(
+                post("/api/guest/orders")
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
+            )
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.email").value("guest@example.com"));
+    }
+
+    @Test
+    void movieAndShowManagementOnlyAllowsAdmin() throws Exception {
+        for (String path : new String[] {
+            "/api/admin/movies",
+            "/api/admin/showtimes",
+            "/api/admin/rooms",
+        }) {
+            kiemThuHttp
+                .perform(get(path).with(user("staff").roles("NHAN_VIEN")))
+                .andExpect(status().isForbidden());
+            kiemThuHttp
+                .perform(get(path).with(user("admin").roles("QUAN_TRI")))
+                .andExpect(status().isOk());
+        }
+        for (String path : new String[] { "/api/admin/movies/1", "/api/admin/showtimes/1" }) {
+            kiemThuHttp
+                .perform(delete(path).with(user("staff").roles("NHAN_VIEN")).with(csrf()))
+                .andExpect(status().isForbidden());
+            kiemThuHttp
+                .perform(delete(path).with(user("admin").roles("QUAN_TRI")).with(csrf()))
+                .andExpect(status().isNoContent());
+        }
     }
 
     @Test

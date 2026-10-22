@@ -56,6 +56,16 @@ public class ApiSecurityConfig {
                             "/api/snacks"
                         )
                         .permitAll()
+                        .requestMatchers(
+                            "/api/admin/movies",
+                            "/api/admin/movies/**",
+                            "/api/admin/showtimes",
+                            "/api/admin/showtimes/**",
+                            "/api/admin/rooms"
+                        )
+                        .hasRole("QUAN_TRI")
+                        .requestMatchers("/api/guest/orders", "/api/guest/orders/**")
+                        .permitAll()
                         .requestMatchers("/api/admin/**")
                         .hasAnyRole("NHAN_VIEN", "QUAN_TRI")
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/payments/cash")

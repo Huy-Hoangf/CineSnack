@@ -1,3 +1,61 @@
+.account-button,
+.ung-dung-trang button.account-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 15px;
+  border: 1px solid #d7e2ed;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--xanh-dam);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.account-button:hover,
+.ung-dung-trang button.account-button:hover {
+  background: #edf5fc;
+  border-color: #98b9d4;
+}
+.account-button:focus-visible {
+  outline: 3px solid #e89d19;
+  outline-offset: 3px;
+}
+.account-primary,
+.ung-dung-trang button.account-primary {
+  color: #fff;
+  background: var(--xanh);
+  border-color: var(--xanh);
+}
+.account-primary:hover,
+.ung-dung-trang button.account-primary:hover {
+  color: var(--xanh-dam);
+}
+.account-secondary {
+  color: var(--chu-phu);
+}
+.account-identity {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--chu-phu);
+}
+.account-button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+@media (max-width: 600px) {
+  .account-identity {
+    flex-basis: 100%;
+  }
+  .account-actions .account-button {
+    flex: 1;
+  }
+}
+
 /* Nút tài khoản trên thanh điều hướng */
 .account-actions {
   display: flex;

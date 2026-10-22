@@ -25,6 +25,7 @@ function taoMayChu() {
     showTime: {
       id: 101,
       movieId: 1,
+      movieName: "Chuyến phiêu lưu CineSnack",
       roomId: 1,
       roomName: "Phòng 01",
       startsAt: new Date(hienTai + 3600000).toISOString(),
@@ -60,7 +61,13 @@ function taoMayChu() {
       name: "Khách khác",
       role: "KHACH_HANG",
     },
+    { id: 4, email: "admin@example.test", name: "Quản trị mô phỏng", role: "QUAN_TRI" },
   ];
+  const movies = new Map([[catalog.movie.id, catalog.movie]]);
+  const shows = new Map([[catalog.showTime.id, catalog.showTime]]);
+  const rooms = [{ id: 1, name: "Phòng 01", type: "2D", status: "HOAT_DONG" }];
+  let movieId = 1,
+    showId = 101;
   const tokenMoi = () => randomBytes(24).toString("hex");
   function loi(status, message) {
     throw Object.assign(new Error(message), { status });
@@ -153,7 +160,7 @@ function taoMayChu() {
     }
     return dsDong;
   }
-  function taoDon(body, nguoiDung) {
+  function taoDon(body, nguoiDung, guestSession) {
     const dsDong = kiemTraDon(body);
     const tienVe = body.seatIds.length * catalog.showTime.price;
     const tienHang = dsDong.reduce((a, g) => a + g.quantity * g.unitPrice, 0);
@@ -163,7 +170,7 @@ function taoMayChu() {
     const ct = {
       order: {
         id,
-        userId: nguoiDung.id,
+        userId: nguoiDung?.id ?? null,
         email: body.email,
         code,
         total: tienVe + tienHang,
@@ -180,6 +187,10 @@ function taoMayChu() {
         id: id * 100 + i,
         showTimeId: body.showTimeId,
         seatId,
+        seatCode: catalog.seats.find((g) => g.id === seatId).code,
+        movieName: catalog.movie.name,
+        roomName: catalog.showTime.roomName,
+        startsAt: catalog.showTime.startsAt,
         code: `VEMP${id}${i}`,
         name: `${catalog.movie.name} | ${catalog.showTime.roomName} | ${catalog.seats.find((g) => g.id === seatId).code}`,
         quantity: 1,
@@ -189,6 +200,7 @@ function taoMayChu() {
       snacks: dsDong.map((dong, i) => ({ id: id * 100 + i, ...dong })),
       invoices: [],
       payments: [],
+      guestSession,
     };
     for (const [type, total, lines] of [
       ["VE", tienVe, ct.tickets],
@@ -290,10 +302,13 @@ function taoMayChu() {
         }
         return gui(200, { headerName: "X-CSRF-TOKEN", token: session.token });
       }
-      if (req.method === "POST" && (!session || req.headers["x-csrf-token"] !== session.token))
+      if (
+        ["POST", "PUT", "DELETE"].includes(req.method) &&
+        (!session || req.headers["x-csrf-token"] !== session.token)
+      )
         loi(403, "Thiếu hoặc sai token CSRF.");
       let body;
-      if (req.method === "POST") {
+      if (["POST", "PUT"].includes(req.method)) {
         let noiDung = "";
         for await (const chunk of req) {
           noiDung += chunk;
@@ -313,29 +328,39 @@ function taoMayChu() {
           loi(401, "Email hoặc mật khẩu mô phỏng không đúng.");
         phien.delete(idPhien);
         const id = tokenMoi();
-        phien.set(id, { token: tokenMoi(), user });
+        Object.assign(session, { token: tokenMoi(), user });
+        phien.set(id, session);
         res.setHeader("Set-Cookie", `SIMSESSION=${id}; HttpOnly; SameSite=Strict; Path=/`);
         return gui(204);
       }
       xuLyHetHan();
+      if (url.pathname === "/api/guest/orders" && req.method === "GET" && !session)
+        return gui(200, []);
       if (req.method === "GET") {
         if (url.pathname === "/api/movies")
           return gui(
             200,
-            !url.searchParams.has("status") ||
-              url.searchParams.get("status") === catalog.movie.status
-              ? [catalog.movie]
-              : [],
+            [...movies.values()].filter(
+              (m) => !url.searchParams.get("status") || m.status === url.searchParams.get("status"),
+            ),
           );
+        const movieMatch = /^\/api\/movies\/(\d+)$/.exec(url.pathname);
+        if (movieMatch) {
+          const movie = movies.get(Number(movieMatch[1]));
+          if (!movie) loi(404, "Không tìm thấy phim.");
+          return gui(200, movie);
+        }
         if (url.pathname === "/api/showtimes")
           return gui(
             200,
-            Date.parse(catalog.showTime.startsAt) > hienTai &&
-              catalog.showTime.status === "SAP_CHIEU" &&
-              (!url.searchParams.has("movieId") ||
-                Number(url.searchParams.get("movieId")) === catalog.movie.id)
-              ? [catalog.showTime]
-              : [],
+            [...shows.values()].filter(
+              (s) =>
+                Date.parse(s.startsAt) > hienTai &&
+                s.status === "SAP_CHIEU" &&
+                movies.get(s.movieId)?.status === "DANG_CHIEU" &&
+                (!url.searchParams.has("movieId") ||
+                  Number(url.searchParams.get("movieId")) === s.movieId),
+            ),
           );
         if (url.pathname === "/api/showtimes/101/seats")
           return gui(
@@ -352,6 +377,41 @@ function taoMayChu() {
             combos: catalog.combos,
           });
       }
+      if (url.pathname === "/api/guest/orders" && session) {
+        if (req.method === "POST") return gui(201, taoDon(body, null, session));
+        if (req.method === "GET") {
+          const page = Number(url.searchParams.get("page") || 0),
+            size = Number(url.searchParams.get("size") || 20);
+          return gui(
+            200,
+            [...orders.values()]
+              .filter((c) => c.guestSession === session)
+              .map((c) => c.order)
+              .sort((a, b) => b.id - a.id)
+              .slice(page * size, (page + 1) * size),
+          );
+        }
+      }
+      const guestMatch = /^\/api\/guest\/orders\/([A-Za-z0-9]+)(?:\/(cancel|invoices))?$/.exec(
+        url.pathname,
+      );
+      if (guestMatch) {
+        const ct = orders.get(guestMatch[1]);
+        if (!session || !ct || ct.guestSession !== session)
+          loi(403, "Không có quyền xem đơn của phiên khách khác.");
+        if (!guestMatch[2] && req.method === "GET")
+          return gui(200, { order: ct.order, tickets: ct.tickets, snacks: ct.snacks });
+        if (guestMatch[2] === "invoices" && req.method === "GET") {
+          if (ct.order.status !== "DA_THANH_TOAN") loi(404, "Chưa có hóa đơn.");
+          return gui(200, ct.invoices);
+        }
+        if (guestMatch[2] === "cancel" && req.method === "POST") {
+          if (ct.order.status === "DA_THANH_TOAN") loi(409, "Không hủy đơn đã thanh toán.");
+          if (ct.order.status === "CHO_THANH_TOAN") doiTrangThai(ct, "HUY");
+          return gui(200, ct.order);
+        }
+        loi(405, "Phương thức không được hỗ trợ.");
+      }
       const user = session?.user;
       if (!user) loi(401, "Bạn cần đăng nhập.");
       if (url.pathname === "/api/auth/me" && req.method === "GET") return gui(200, user);
@@ -361,6 +421,65 @@ function taoMayChu() {
         return gui(204);
       }
       const laNhanVien = ["NHAN_VIEN", "QUAN_TRI"].includes(user.role);
+      const adminCatalog = /^\/api\/admin\/(movies|showtimes|rooms)(?:\/(\d+))?$/.exec(
+        url.pathname,
+      );
+      if (adminCatalog) {
+        if (user.role !== "QUAN_TRI") loi(403, "Chỉ quản trị được sửa danh mục.");
+        const [, kind, rawId] = adminCatalog;
+        if (kind === "rooms") {
+          if (req.method !== "GET") loi(405, "Phòng chỉ được xem.");
+          return gui(200, rooms);
+        }
+        const records = kind === "movies" ? movies : shows;
+        if (req.method === "GET")
+          return gui(200, rawId ? records.get(Number(rawId)) : [...records.values()]);
+        if (req.method === "DELETE") {
+          if (!records.has(Number(rawId))) loi(404, "Không tìm thấy.");
+          const id = Number(rawId);
+          const relatedShows =
+            kind === "movies"
+              ? [...shows.values()].filter((s) => s.movieId === id).map((s) => s.id)
+              : [id];
+          const relatedOrders = [...orders.values()].filter((c) =>
+            c.tickets.some((v) => relatedShows.includes(v.showTimeId)),
+          );
+          if (kind === "showtimes" && relatedOrders.length)
+            loi(409, "Suất chiếu đã có lịch sử vé.");
+          if (kind === "movies" && relatedOrders.some((c) => c.order.status === "CHO_THANH_TOAN"))
+            loi(409, "Phim còn vé chờ thanh toán.");
+          if (kind === "movies" && relatedShows.length) records.get(id).status = "NGUNG_CHIEU";
+          else records.delete(id);
+          return gui(204);
+        }
+        if (!["POST", "PUT"].includes(req.method)) loi(405, "Phương thức không hỗ trợ.");
+        if (
+          kind === "movies" &&
+          (!body.name?.trim() || !Number.isInteger(body.duration) || body.duration < 1)
+        )
+          loi(400, "Phim không hợp lệ.");
+        if (
+          kind === "showtimes" &&
+          (!movies.has(body.movieId) ||
+            body.roomId !== 1 ||
+            !Number.isFinite(Date.parse(body.startsAt)) ||
+            !Number.isFinite(body.price))
+        )
+          loi(400, "Suất không hợp lệ.");
+        const id = rawId ? Number(rawId) : kind === "movies" ? ++movieId : ++showId;
+        if (req.method === "PUT" && !records.has(id)) loi(404, "Không tìm thấy.");
+        const value = { ...body, id };
+        if (kind === "showtimes")
+          Object.assign(value, {
+            roomName: rooms[0].name,
+            movieName: movies.get(body.movieId).name,
+            endsAt: new Date(
+              Date.parse(body.startsAt) + movies.get(body.movieId).duration * 60000,
+            ).toISOString(),
+          });
+        records.set(id, value);
+        return gui(req.method === "POST" ? 201 : 200, value);
+      }
       if (url.pathname === "/api/orders") {
         if (req.method === "POST") return gui(201, taoDon(body, user));
         if (req.method === "GET")
@@ -371,9 +490,21 @@ function taoMayChu() {
       }
       if (url.pathname === "/api/admin/orders" && req.method === "GET") {
         if (!laNhanVien) loi(403, "Chỉ nhân viên được xem danh sách vận hành.");
+        const query = (url.searchParams.get("q") || "").toLowerCase();
+        const state = url.searchParams.get("status") || "";
+        const size = Number(url.searchParams.get("size") || 20),
+          page = Number(url.searchParams.get("page") || 0);
         return gui(
           200,
-          [...orders.values()].map((ct) => ct.order),
+          [...orders.values()]
+            .map((ct) => ct.order)
+            .filter(
+              (d) =>
+                (!state || d.status === state) &&
+                (d.code + " " + d.email).toLowerCase().includes(query),
+            )
+            .sort((a, b) => b.id - a.id)
+            .slice(page * size, (page + 1) * size),
         );
       }
       const match = /^\/api\/orders\/([A-Za-z0-9]+)(?:\/(cancel|invoices|payments\/cash))?$/.exec(

@@ -28,12 +28,27 @@ public class BookingCatalogRepository {
     }
 
     public Show timVaKhoaSuatChieu(long maSo) {
-        var dsGiaTri = truyVan.query(
+        var movieIds = truyVan.query(
+            "SELECT phim_id FROM SUAT_CHIEU WHERE suat_chieu_id = ?",
+            (dong, viTri) -> dong.getLong("phim_id"),
+            maSo
+        );
+        if (movieIds.isEmpty()) return null;
+
+        long movieId = movieIds.get(0);
+        var activeMovies = truyVan.query(
+            "SELECT phim_id FROM PHIM WITH (HOLDLOCK) WHERE phim_id = ? AND trang_thai = 'DANG_CHIEU'",
+            (dong, viTri) -> dong.getLong("phim_id"),
+            movieId
+        );
+        if (activeMovies.isEmpty()) return null;
+
+        var shows = truyVan.query(
             """
             SELECT suat_chieu_id, phong_id, gia_co_ban, bat_dau, trang_thai
-            FROM SUAT_CHIEU WITH (UPDLOCK, HOLDLOCK) WHERE suat_chieu_id = ?
+            FROM SUAT_CHIEU WITH (UPDLOCK, HOLDLOCK)
+            WHERE suat_chieu_id = ? AND phim_id = ?
               AND EXISTS(SELECT 1 FROM PHONG_CHIEU r WHERE r.phong_id=SUAT_CHIEU.phong_id AND r.trang_thai='HOAT_DONG')
-              AND EXISTS(SELECT 1 FROM PHIM p WHERE p.phim_id=SUAT_CHIEU.phim_id AND p.trang_thai='DANG_CHIEU')
             """,
             (dong, viTri) ->
                 new Show(
@@ -43,9 +58,10 @@ public class BookingCatalogRepository {
                     Sql.docThoiGian(dong, "bat_dau"),
                     dong.getString("trang_thai")
                 ),
-            maSo
+            maSo,
+            movieId
         );
-        return dsGiaTri.isEmpty() ? null : dsGiaTri.get(0);
+        return shows.isEmpty() ? null : shows.get(0);
     }
 
     public Seat timGhe(long maSo) {

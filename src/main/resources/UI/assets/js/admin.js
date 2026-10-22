@@ -2,169 +2,425 @@
 (async () => {
   const o = (id) => document.getElementById(id),
     e = CineSnackOrders.e;
-  let user,
-    trang = 0,
-    lanChiTiet = 0,
-    lanDanhSach = 0,
-    ds = [],
-    phim = [],
-    suat = [];
-  const loi = (error) => {
-    o("admin-loi").textContent = error.message;
-    o("admin-loi").focus();
+  const nhan = {
+    ...CineSnackOrders.nhan,
+    DANG_CHIEU: "Đang chiếu",
+    SAP_CHIEU: "Sắp chiếu",
+    NGUNG_CHIEU: "Ngừng chiếu",
+    DA_CHIEU: "Đã chiếu",
   };
-  function dong(values) {
-    const tr = e("tr");
-    for (const v of values) tr.append(e("td", v));
-    return tr;
+  let user,
+    section = "don",
+    page = 0,
+    moviePage = 0,
+    showPage = 0,
+    listGeneration = 0,
+    detailGeneration = 0;
+  let movies = [],
+    shows = [],
+    rooms = [],
+    movieOptions = [];
+  const isAdmin = () => user?.role === "QUAN_TRI";
+  function error(err) {
+    o("admin-loi").textContent = err.message;
+    o("admin-loi").focus();
   }
-  async function xem(code) {
-    const n = ++lanChiTiet;
-    try {
-      await CineSnackOrders.hienChiTiet(
-        o("don-chi-tiet"),
-        code,
-        user,
-        taiDon,
-        () => n === lanChiTiet,
-      );
-      if (n !== lanChiTiet) return;
-      o("don-chi-tiet-tieu-de").textContent = "Đơn " + code;
-      if (!o("don-hop").open) o("don-hop").showModal();
-    } catch (error) {
-      loi(error);
-    }
+  function notice(text) {
+    o("admin-status").textContent = text;
+    o("admin-status").hidden = !text;
   }
-  function bangDon(box, list) {
-    box.replaceChildren();
-    if (!list.length) {
-      const tr = e("tr"),
-        td = e("td", "Không có đơn trên trang này.");
-      td.colSpan = 6;
-      tr.append(td);
-      box.append(tr);
-    }
-    for (const d of list) {
-      const tr = dong([
-        d.code,
-        d.email,
-        CineSnack.dinhDangSuat(d.createdAt),
-        CineSnack.dinhDangTien(d.total),
-        CineSnackOrders.nhan[d.status],
-      ]);
-      const td = e("td"),
-        b = e("button", "Chi tiết", "chu-nut");
-      b.type = "button";
-      b.dataset.don = d.code;
-      b.addEventListener("click", () => xem(d.code));
-      td.append(b);
-      tr.append(td);
-      box.append(tr);
-    }
+  function button(text, action, attrs = {}) {
+    const b = e("button", text, "account-button");
+    b.type = "button";
+    Object.assign(b.dataset, attrs);
+    b.addEventListener("click", async () => {
+      if (b.disabled) return;
+      b.disabled = true;
+      try {
+        await action();
+      } catch (err) {
+        error(err);
+      } finally {
+        b.disabled = false;
+      }
+    });
+    return b;
   }
-  function locDon() {
-    const tu = CineSnack.boDau(o("quan-tri-don-tim").value),
-      state = o("don-trang-thai").value;
-    const list = ds.filter(
-      (d) =>
-        (state === "tat-ca" || state === d.status) &&
-        CineSnack.boDau(d.code + " " + d.email).includes(tu),
+  function cell(row, text) {
+    const td = e("td", text);
+    row.append(td);
+    return td;
+  }
+  function badge(text, paid = false) {
+    return e("span", text, "workspace-badge" + (paid ? " paid" : ""));
+  }
+  async function showOrder(code) {
+    const generation = ++detailGeneration;
+    o("admin-loi").textContent = "";
+    await CineSnackOrders.hienChiTiet(
+      o("don-chi-tiet"),
+      code,
+      user,
+      loadOrders,
+      () => generation === detailGeneration,
     );
-    bangDon(o("quan-tri-don"), list);
-    o("don-so").textContent = `Trang ${trang + 1} · ${list.length} đơn`;
+    if (generation !== detailGeneration) return;
+    o("don-chi-tiet-tieu-de").textContent = "Đơn " + code;
+    if (!o("don-hop").open) o("don-hop").showModal();
   }
-  async function taiDon() {
-    const n = ++lanDanhSach;
-    const moi = await CineSnackApi.goi(`/api/admin/orders?page=${trang}&size=20`);
-    if (n !== lanDanhSach) return;
-    ds = moi;
-    locDon();
-    bangDon(o("moi-don"), ds.slice(0, 4));
-    o("admin-truoc").disabled = trang === 0;
+  o("don-hop").addEventListener("close", () => detailGeneration++);
+  async function loadOrders() {
+    const generation = ++listGeneration;
+    const q = o("quan-tri-don-tim").value.trim(),
+      status = o("don-trang-thai").value;
+    const ds = await CineSnackApi.goi(
+      `/api/admin/orders?page=${page}&size=20&q=${encodeURIComponent(q)}&status=${encodeURIComponent(status)}`,
+    );
+    if (generation !== listGeneration) return;
+    const tbody = o("quan-tri-don");
+    tbody.replaceChildren();
+    if (!ds.length) {
+      const row = e("tr");
+      cell(row, "Không có đơn phù hợp trên trang này.").colSpan = 5;
+      tbody.append(row);
+    }
+    for (const d of ds) {
+      const row = e("tr"),
+        first = cell(row);
+      first.append(
+        e("strong", d.code),
+        e("small", d.email),
+        badge(d.userId == null ? "Guest" : "User"),
+      );
+      cell(row, CineSnack.dinhDangSuat(d.createdAt));
+      cell(row, CineSnack.dinhDangTien(d.total));
+      cell(row).append(badge(nhan[d.status] || d.status, d.status === "DA_THANH_TOAN"));
+      cell(row).append(
+        button(d.status === "DA_THANH_TOAN" ? "Hóa đơn" : "Chi tiết", () => showOrder(d.code), {
+          don: d.code,
+        }),
+      );
+      tbody.append(row);
+    }
+    o("don-so").textContent =
+      `Trang ${page + 1} · ${ds.length} đơn phù hợp. Tìm kiếm áp dụng toàn rạp.`;
+    o("admin-truoc").disabled = page === 0;
     o("admin-sau").disabled = ds.length < 20;
     o("thong-ke").replaceChildren();
-    for (const [name, value] of [
+    for (const [label, count] of [
       ["Đơn trên trang", ds.length],
       ["Chờ thanh toán", ds.filter((d) => d.status === "CHO_THANH_TOAN").length],
       ["Đã thanh toán", ds.filter((d) => d.status === "DA_THANH_TOAN").length],
-      [
-        "Tổng đơn đã trả trên trang",
-        CineSnack.dinhDangTien(
-          ds.filter((d) => d.status === "DA_THANH_TOAN").reduce((a, d) => a + d.total, 0),
-        ),
-      ],
     ]) {
-      const card = e("article", undefined, "the-thong-ke");
-      card.append(e("span", name, "thong-ke-nhan"), e("strong", value));
+      const card = e("article", undefined, "workspace-stat");
+      card.append(e("span", label), e("strong", String(count)));
       o("thong-ke").append(card);
     }
   }
-  function hienPhim() {
+  async function loadMovies() {
+    movies = await CineSnackApi.goi(`/api/admin/movies?page=${moviePage}&size=100`);
     o("quan-tri-phim").replaceChildren();
-    const tu = CineSnack.boDau(o("quan-tri-phim-tim").value);
-    const list = phim.filter((p) => CineSnack.boDau(p.name + " " + p.genre).includes(tu));
-    for (const p of list) {
-      const tr = dong([p.name, p.duration + " phút", p.ageRating, p.status]);
-      const td = e("td"),
-        a = e("a", "Xem phim", "chu-nut");
-      a.href = "movies.html?phim=" + p.id;
-      td.append(a);
-      tr.append(td);
-      o("quan-tri-phim").append(tr);
+    for (const p of movies) {
+      const row = e("tr"),
+        first = cell(row);
+      first.append(e("strong", p.name), e("small", p.genre));
+      cell(row, p.duration + " phút");
+      cell(row, p.ageRating);
+      cell(row).append(badge(nhan[p.status] || p.status, p.status === "DANG_CHIEU"));
+      const actions = e("div", undefined, "workspace-row-actions");
+      actions.append(
+        button("Sửa", () => editMovie(p), { editMovie: p.id }),
+        button(
+          "Xóa",
+          () =>
+            confirmDelete(
+              `Xóa phim “${p.name}”? Phim có lịch được chuyển sang ngừng chiếu; dữ liệu vé và hóa đơn được giữ.`,
+              async () => {
+                await CineSnackApi.goi(`/api/admin/movies/${p.id}`, { method: "DELETE" });
+                await loadMovies();
+                notice("Đã cập nhật danh mục phim.");
+              },
+            ),
+          { deleteMovie: p.id },
+        ),
+      );
+      cell(row).append(actions);
+      o("quan-tri-phim").append(row);
     }
-    o("dem-phim").textContent = list.length + " phim (tối đa 100 kết quả)";
+    o("dem-phim").textContent = `Trang ${moviePage + 1} · ${movies.length} phim`;
+    o("phim-truoc").disabled = moviePage === 0;
+    o("phim-sau").disabled = movies.length < 100;
   }
-  function hienSuat() {
+  async function loadShows() {
+    shows = await CineSnackApi.goi(`/api/admin/showtimes?page=${showPage}&size=100`);
     o("quan-tri-suat").replaceChildren();
-    const tu = CineSnack.boDau(o("quan-tri-suat-tim").value);
-    const list = suat.filter((s) => CineSnack.boDau(s.movieName + " " + s.roomName).includes(tu));
-    for (const s of list) {
-      const tr = dong([
-        s.movieName,
-        CineSnack.dinhDangSuat(s.startsAt),
-        s.roomName,
-        CineSnack.dinhDangTien(s.price),
-        s.status,
-      ]);
-      o("quan-tri-suat").append(tr);
+    for (const s of shows) {
+      const row = e("tr"),
+        first = cell(row);
+      first.append(e("strong", s.movieName), e("small", s.roomName));
+      const time = cell(row);
+      time.append(
+        e("strong", CineSnack.dinhDangSuat(s.startsAt)),
+        e("small", "Đến " + CineSnack.dinhDangSuat(s.endsAt)),
+      );
+      cell(row, CineSnack.dinhDangTien(s.price));
+      cell(row).append(badge(nhan[s.status] || s.status));
+      const actions = e("div", undefined, "workspace-row-actions");
+      actions.append(
+        button("Sửa", () => editShow(s), { editShow: s.id }),
+        button(
+          "Xóa",
+          () =>
+            confirmDelete(
+              "Xóa suất chiếu này? Suất đã phát sinh vé sẽ được hệ thống bảo vệ.",
+              async () => {
+                await CineSnackApi.goi(`/api/admin/showtimes/${s.id}`, { method: "DELETE" });
+                await loadShows();
+                notice("Đã cập nhật lịch chiếu.");
+              },
+            ),
+          { deleteShow: s.id },
+        ),
+      );
+      cell(row).append(actions);
+      o("quan-tri-suat").append(row);
     }
-    o("suat-so").textContent = list.length + " suất đang nhận đặt vé";
+    o("suat-so").textContent = `Trang ${showPage + 1} · ${shows.length} suất`;
+    o("suat-truoc").disabled = showPage === 0;
+    o("suat-sau").disabled = shows.length < 100;
   }
-  document.querySelectorAll("[data-muc]").forEach((b) =>
-    b.addEventListener("click", () => {
-      const id = b.dataset.muc;
-      document.querySelectorAll(".quan-tri-muc").forEach((x) => {
-        x.hidden = x.id !== "muc-" + id;
+  async function openSection(id) {
+    if ((id === "phim" || id === "suat") && !isAdmin()) return;
+    if (!user) return;
+    const previous = section;
+    section = id;
+    const titles = {
+      don: ["Đơn toàn rạp", "Tra cứu đơn của user và guest, đối chiếu trước khi nhận tiền."],
+      "hoa-don": ["Hóa đơn đã thanh toán", "Mở chi tiết đơn để xem hóa đơn vé và bắp nước."],
+      phim: ["Phim tại rạp", "Quản lý danh mục, nội dung và trạng thái phim."],
+      suat: ["Lịch chiếu", "Xếp lịch theo phòng, giữ nguyên sơ đồ ghế có sẵn."],
+    };
+    o("quan-tri-tieu-de").textContent = titles[id][0];
+    o("quan-tri-duong-dan").textContent = titles[id][0];
+    o("quan-tri-phu").textContent = titles[id][1];
+    document
+      .querySelectorAll(".quan-tri-muc")
+      .forEach((x) => (x.hidden = x.id !== "muc-" + (id === "hoa-don" ? "don" : id)));
+    document
+      .querySelectorAll("[data-muc]")
+      .forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.muc === id)));
+    if (id === "phim") await loadMovies();
+    else if (id === "suat") await loadShows();
+    else {
+      if (previous !== id) {
+        page = 0;
+        o("don-trang-thai").value = id === "hoa-don" ? "DA_THANH_TOAN" : "";
+      }
+      o("don-trang-thai").disabled = id === "hoa-don";
+      await loadOrders();
+    }
+  }
+  function field(form, name) {
+    return form.elements.namedItem(name);
+  }
+  function editMovie(movie) {
+    const form = o("phim-form");
+    form.reset();
+    o("phim-form-error").textContent = "";
+    field(form, "id").value = movie?.id || "";
+    if (movie)
+      for (const name of ["name", "genre", "duration", "ageRating", "posterUrl", "status"])
+        field(form, name).value = movie[name] ?? "";
+    o("phim-form-title").textContent = movie ? "Sửa phim" : "Thêm phim";
+    o("phim-hop").showModal();
+  }
+  async function editShow(show) {
+    const form = o("suat-form");
+    form.reset();
+    o("suat-form-error").textContent = "";
+    [movieOptions, rooms] = await Promise.all([
+      CineSnackApi.goi("/api/admin/movies?size=100"),
+      CineSnackApi.goi("/api/admin/rooms"),
+    ]);
+    const movieSelect = field(form, "movieId"),
+      roomSelect = field(form, "roomId");
+    movieSelect.replaceChildren();
+    roomSelect.replaceChildren();
+    for (const p of movieOptions) {
+      const option = e("option", p.name);
+      option.value = p.id;
+      movieSelect.append(option);
+    }
+    if (show && !movieOptions.some((p) => p.id === show.movieId)) {
+      const option = e("option", show.movieName);
+      option.value = show.movieId;
+      movieSelect.append(option);
+    }
+    for (const r of rooms) {
+      const option = e("option", r.name);
+      option.value = r.id;
+      roomSelect.append(option);
+    }
+    if (show && !rooms.some((r) => r.id === show.roomId)) {
+      const option = e("option", show.roomName);
+      option.value = show.roomId;
+      roomSelect.append(option);
+    }
+    field(form, "id").value = show?.id || "";
+    if (show) {
+      field(form, "movieId").value = show.movieId;
+      field(form, "roomId").value = show.roomId;
+      field(form, "startsAt").value = show.startsAt.slice(0, 16);
+      field(form, "price").value = show.price;
+      field(form, "status").value = show.status;
+    }
+    o("suat-form-title").textContent = show ? "Sửa suất chiếu" : "Thêm suất chiếu";
+    o("suat-hop").showModal();
+  }
+  function confirmDelete(message, action) {
+    o("confirm-message").textContent = message;
+    o("confirm-error").textContent = "";
+    o("confirm-delete").onclick = async () => {
+      const b = o("confirm-delete");
+      b.disabled = true;
+      try {
+        await action();
+        o("confirm-hop").close();
+      } catch (err) {
+        o("confirm-error").textContent = err.message;
+      } finally {
+        b.disabled = false;
+      }
+    };
+    o("confirm-hop").showModal();
+  }
+  o("confirm-cancel").addEventListener("click", () => o("confirm-hop").close());
+  o("phim-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!isAdmin()) return;
+    const form = event.currentTarget,
+      submit = form.querySelector("button[type=submit]");
+    if (submit.disabled || !form.reportValidity()) return;
+    submit.disabled = true;
+    o("phim-form-error").textContent = "";
+    try {
+      const id = field(form, "id").value;
+      const body = Object.fromEntries(
+        ["name", "genre", "ageRating", "status"].map((name) => [
+          name,
+          field(form, name).value.trim(),
+        ]),
+      );
+      body.duration = Number(field(form, "duration").value);
+      body.posterUrl = field(form, "posterUrl").value.trim() || null;
+      await CineSnackApi.goi("/api/admin/movies" + (id ? "/" + id : ""), {
+        method: id ? "PUT" : "POST",
+        body,
       });
-      document.querySelectorAll(".quan-tri-dieu-huong-nut").forEach((x) => {
-        x.classList.toggle("dang-chon", x.dataset.muc === id);
-        x.setAttribute("aria-pressed", String(x.dataset.muc === id));
+      o("phim-hop").close();
+      await loadMovies();
+      notice("Đã lưu phim.");
+    } catch (err) {
+      o("phim-form-error").textContent = err.message;
+    } finally {
+      submit.disabled = false;
+    }
+  });
+  o("suat-form").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!isAdmin()) return;
+    const form = event.currentTarget,
+      submit = form.querySelector("button[type=submit]");
+    if (submit.disabled || !form.reportValidity()) return;
+    submit.disabled = true;
+    o("suat-form-error").textContent = "";
+    try {
+      const id = field(form, "id").value,
+        raw = field(form, "startsAt").value;
+      const body = {
+        movieId: Number(field(form, "movieId").value),
+        roomId: Number(field(form, "roomId").value),
+        startsAt: raw + (raw.length === 16 ? ":00" : "") + "+07:00",
+        price: Number(field(form, "price").value),
+        status: field(form, "status").value,
+      };
+      await CineSnackApi.goi("/api/admin/showtimes" + (id ? "/" + id : ""), {
+        method: id ? "PUT" : "POST",
+        body,
       });
-      o("quan-tri-duong-dan").textContent = b.textContent.trim();
-    }),
-  );
-  o("quan-tri-don-tim").addEventListener("input", locDon);
-  o("don-trang-thai").addEventListener("change", locDon);
-  o("quan-tri-phim-tim").addEventListener("input", hienPhim);
-  o("quan-tri-suat-tim").addEventListener("input", hienSuat);
-  for (const [id, n] of [
+      o("suat-hop").close();
+      await loadShows();
+      notice("Đã lưu suất chiếu.");
+    } catch (err) {
+      o("suat-form-error").textContent = err.message;
+    } finally {
+      submit.disabled = false;
+    }
+  });
+  o("them-phim").addEventListener("click", () => {
+    if (isAdmin()) editMovie(null);
+  });
+  o("them-suat").addEventListener("click", () => {
+    if (isAdmin()) editShow(null).catch(error);
+  });
+  document
+    .querySelectorAll("[data-muc]")
+    .forEach((b) => b.addEventListener("click", () => openSection(b.dataset.muc).catch(error)));
+  o("don-search-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    page = 0;
+    loadOrders().catch(error);
+  });
+  let searchTimer;
+  o("quan-tri-don-tim").addEventListener("input", () => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      page = 0;
+      loadOrders().catch(error);
+    }, 250);
+  });
+  o("don-trang-thai").addEventListener("change", () => {
+    page = 0;
+    loadOrders().catch(error);
+  });
+  o("admin-refresh").addEventListener("click", () => loadOrders().catch(error));
+  for (const [id, delta] of [
     ["admin-truoc", -1],
     ["admin-sau", 1],
   ])
-    o(id).addEventListener("click", async () => {
-      trang = Math.max(0, trang + n);
-      try {
-        await taiDon();
-      } catch (error) {
-        loi(error);
-      }
+    o(id).addEventListener("click", () => {
+      page = Math.max(0, page + delta);
+      loadOrders().catch(error);
+    });
+  for (const [id, delta] of [
+    ["phim-truoc", -1],
+    ["phim-sau", 1],
+  ])
+    o(id).addEventListener("click", () => {
+      moviePage = Math.max(0, moviePage + delta);
+      loadMovies().catch(error);
+    });
+  for (const [id, delta] of [
+    ["suat-truoc", -1],
+    ["suat-sau", 1],
+  ])
+    o(id).addEventListener("click", () => {
+      showPage = Math.max(0, showPage + delta);
+      loadShows().catch(error);
     });
   o("tra-don-form").addEventListener("submit", (event) => {
     event.preventDefault();
-    xem(o("tra-ma-don").value.trim());
+    showOrder(o("tra-ma-don").value.trim()).catch(error);
   });
-  document.querySelectorAll(".doanh-thu-khung,.noi-bat-khung").forEach((x) => {
-    x.hidden = true;
+  o("admin-logout").addEventListener("click", async () => {
+    o("admin-logout").disabled = true;
+    try {
+      await CineSnackApi.dangXuat();
+      location.href = "index.html";
+    } catch (err) {
+      error(err);
+      o("admin-logout").disabled = false;
+    }
   });
   try {
     user = await CineSnackApi.taiKhoan();
@@ -173,19 +429,19 @@
       return;
     }
     if (!["NHAN_VIEN", "QUAN_TRI"].includes(user.role)) {
-      loi(new Error("Tài khoản không có quyền quản trị hoặc nhận tiền."));
+      error(new Error("Tài khoản không có quyền vào không gian làm việc."));
       return;
     }
+    o("admin-role").textContent = isAdmin() ? "Quản trị viên" : "Nhân viên quầy";
     o("admin-email").textContent = user.email;
-    o("quan-tri-ngay").textContent = CineSnack.dinhDangNgay(new Date().toISOString());
-    await taiDon();
-    [phim, suat] = await Promise.all([
-      CineSnackApi.goi("/api/movies?size=100"),
-      CineSnackApi.goi("/api/showtimes"),
-    ]);
-    hienPhim();
-    hienSuat();
-  } catch (error) {
-    loi(error);
+    o("admin-logout").hidden = false;
+    o("quan-tri-ngay").textContent = new Intl.DateTimeFormat("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+    }).format(new Date());
+    document.querySelectorAll("[data-admin-only]").forEach((node) => (node.hidden = !isAdmin()));
+    o("admin-workspace").hidden = false;
+    await openSection(isAdmin() ? "phim" : "don");
+  } catch (err) {
+    error(err);
   }
 })();

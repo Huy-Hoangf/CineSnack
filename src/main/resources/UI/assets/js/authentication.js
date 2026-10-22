@@ -1,106 +1,116 @@
 "use strict";
 (async () => {
+  const form = document.querySelector("#bieu-mau-tai-khoan");
   const loginButton = document.querySelector("#gui-tai-khoan");
   if (loginButton) loginButton.disabled = true;
-  function ghiNhan() {
-    try {
-      sessionStorage.setItem("cinesnack-welcome-dismissed", "true");
-    } catch {}
-  }
-  document
-    .querySelectorAll("[data-tiep-tuc-khach]")
-    .forEach((a) => a.addEventListener("click", ghiNhan));
-  const popup = document.querySelector("#lua-chon-tai-khoan");
-  if (popup) {
-    document.querySelector("#tiep-tuc-khach").addEventListener("click", () => {
-      ghiNhan();
-      popup.close();
-    });
-    popup.addEventListener("close", ghiNhan);
-    popup.addEventListener("cancel", ghiNhan);
-    popup.querySelectorAll("a").forEach((a) => a.addEventListener("click", ghiNhan));
-  }
   let user;
   try {
     user = await CineSnackApi.taiKhoan();
   } catch {
-    user = null;
+    user = undefined;
   }
+  const workRole = user && ["NHAN_VIEN", "QUAN_TRI"].includes(user.role);
+  if (workRole && /\/(booking|checkout|orders)\.html$/.test(location.pathname)) {
+    location.replace("admin.html");
+    return;
+  }
+  if (workRole) document.querySelectorAll(".dau-nut").forEach((node) => (node.hidden = true));
+  const returnTo = location.pathname + location.search;
   for (const box of document.querySelectorAll(".account-actions")) {
     box.replaceChildren();
-    const a = document.createElement("a");
-    a.className = "account-login";
-    a.href = user ? "orders.html" : "authentication.html";
-    a.textContent = user ? "Đơn của tôi" : "Đăng nhập";
-    box.append(a);
     if (user) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "chu-nut";
-      b.textContent = "Đăng xuất";
-      b.addEventListener("click", async () => {
-        b.disabled = true;
+      const identity = document.createElement("span");
+      identity.className = "account-identity";
+      identity.textContent =
+        user.role === "QUAN_TRI"
+          ? "Quản trị viên"
+          : user.role === "NHAN_VIEN"
+            ? "Nhân viên quầy"
+            : "Tài khoản của bạn";
+      box.append(identity);
+    }
+    const link = document.createElement("a");
+    link.className = "account-button";
+    link.href = workRole ? "admin.html" : user ? "orders.html" : "orders.html?guest=1";
+    link.textContent = workRole
+      ? user.role === "QUAN_TRI"
+        ? "Quản trị rạp"
+        : "Quầy nhân viên"
+      : "Đơn của tôi";
+    box.append(link);
+    if (user) {
+      const logout = document.createElement("button");
+      logout.type = "button";
+      logout.className = "account-button account-secondary";
+      logout.textContent = "Đăng xuất";
+      logout.addEventListener("click", async () => {
+        logout.disabled = true;
         try {
           await CineSnackApi.dangXuat();
           location.href = "index.html";
-        } catch (e) {
-          b.disabled = false;
-          alert(e.message);
+        } catch (error) {
+          logout.disabled = false;
+          logout.textContent = "Thử đăng xuất lại";
+          logout.title = error.message;
         }
       });
-      box.append(b);
-      if (["NHAN_VIEN", "QUAN_TRI"].includes(user.role)) {
-        const q = document.createElement("a");
-        q.href = "admin.html";
-        q.textContent = "Quản trị";
-        box.append(q);
-      }
+      box.append(logout);
+    } else {
+      const login = document.createElement("a");
+      login.className = "account-button account-primary";
+      login.href = "authentication.html?next=" + encodeURIComponent(returnTo);
+      login.textContent = "Đăng nhập";
+      box.append(login);
     }
   }
-  if (popup && !user) {
-    let dismiss = false;
-    try {
-      dismiss = sessionStorage.getItem("cinesnack-welcome-dismissed") === "true";
-    } catch {}
-    if (!dismiss) popup.showModal();
-  }
-  const form = document.querySelector("#bieu-mau-tai-khoan");
   if (!form) return;
-  const message = document.querySelector("#thong-bao-tai-khoan"),
-    nut = document.querySelector("#gui-tai-khoan");
+  const message = document.querySelector("#thong-bao-tai-khoan");
   const params = new URLSearchParams(location.search);
-  if (params.get("mode") === "register") {
-    message.textContent =
-      "Đăng ký chưa được cung cấp. Hãy dùng tài khoản đã được cấp để đăng nhập.";
+  const next = params.get("next");
+  let url = null;
+  if (next) {
+    try {
+      url = new URL(next, location.href);
+    } catch {
+      url = null;
+    }
   }
-  function duongDanSauLogin() {
-    const next = params.get("next") || "orders.html";
-    const url = new URL(next, location.href);
-    return url.origin === location.origin &&
-      /^\/html\/(booking|checkout|orders|admin|movies|index)\.html$/.test(url.pathname)
-      ? url.pathname + url.search
-      : "orders.html";
+  const guest = document.querySelector("[data-tiep-tuc-khach]");
+  if (guest && url) {
+    if (
+      url.origin === location.origin &&
+      /^\/html\/(booking|checkout|orders|movies|index)\.html$/.test(url.pathname)
+    )
+      guest.href = url.pathname + url.search;
   }
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (nut.disabled || !form.reportValidity()) return;
-    nut.disabled = true;
+  function destination(account) {
+    const worker = ["NHAN_VIEN", "QUAN_TRI"].includes(account.role);
+    const fallback = worker ? "admin.html" : "orders.html";
+    if (!url) return fallback;
+    const allowed = worker
+      ? url.pathname === "/html/admin.html"
+      : /^\/html\/(booking|checkout|orders|movies|index)\.html$/.test(url.pathname);
+    return url.origin === location.origin && allowed ? url.pathname + url.search : fallback;
+  }
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (loginButton.disabled || !form.reportValidity()) return;
+    loginButton.disabled = true;
     message.textContent = "Đang đăng nhập…";
     try {
-      await CineSnackApi.dangNhap(
+      const account = await CineSnackApi.dangNhap(
         document.querySelector("#email").value.trim(),
         document.querySelector("#mat-khau").value,
       );
       document.querySelector("#mat-khau").value = "";
-      ghiNhan();
-      location.href = duongDanSauLogin();
+      location.href = destination(account);
     } catch (error) {
       message.textContent =
         error.status === 401 ? "Email hoặc mật khẩu không đúng." : error.message;
       message.focus();
     } finally {
-      nut.disabled = false;
+      loginButton.disabled = false;
     }
   });
-  nut.disabled = false;
+  loginButton.disabled = false;
 })();
