@@ -1,0 +1,416 @@
+/* Giao diện CineSnack lấy nhịp bố cục sáng và sắc xanh từ website rạp chiếu phim. */
+:root {
+  --xanh: #075d9b;
+  --xanh-dam: #064675;
+  --chu: #263746;
+  --chu-phu: #596b79;
+  --vien: #dfe6ec;
+  --nen: #f7f9fb;
+}
+
+::selection {
+  background: #cce8fa;
+  color: var(--chu);
+}
+
+body {
+  background: var(--nen);
+}
+
+button,
+input,
+select {
+  accent-color: var(--xanh);
+}
+
+.thanh-tren {
+  background: var(--xanh-dam);
+  font-size: 12px;
+  padding-inline: 12px;
+}
+
+.thanh-tren-trong {
+  min-height: 30px;
+  font-size: 12px;
+}
+
+.web-dau,
+.workspace-header,
+.authentication-page .web-dau {
+  background: #fff;
+  border-top: 5px solid var(--xanh);
+  border-bottom: 1px solid var(--vien);
+}
+
+.dau-trong {
+  min-height: 78px;
+}
+
+.thuong-hieu {
+  letter-spacing: -0.03em;
+}
+
+.thuong-hieu small {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  margin-top: 5px;
+}
+
+.chinh-dieu-huong {
+  gap: clamp(14px, 2vw, 30px);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.chinh-dieu-huong a {
+  min-height: 48px;
+}
+
+.nut {
+  border-radius: 5px;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+}
+
+.nut:focus-visible,
+.account-button:focus-visible,
+.workspace-nav:focus-visible {
+  outline: 3px solid #e69d22;
+  outline-offset: 3px;
+}
+
+.noi-bat {
+  width: min(1200px, calc(100% - 64px));
+  margin: 26px auto 0;
+  padding-inline: 12px;
+  border-radius: 18px;
+}
+
+.noi-bat-trong {
+  min-height: 440px;
+}
+
+.noi-bat::before {
+  background: linear-gradient(90deg, rgb(8 23 36 / 92%), rgb(8 23 36 / 48%) 52%, transparent 88%);
+}
+
+.noi-bat h1 {
+  font-size: clamp(44px, 6vw, 76px);
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+
+.noi-bat-nhan {
+  color: #dceefa;
+  font-size: 13px;
+}
+
+.noi-bat-thong-tin {
+  font-size: 12px;
+}
+
+.phim-muc {
+  padding-block: 46px 56px;
+}
+
+.muc-tieu-de {
+  margin-bottom: 18px;
+}
+
+.phim-tab {
+  justify-content: flex-end;
+  border-bottom: 1px solid var(--vien);
+}
+
+.chu-lien-ket {
+  font-size: 13px;
+}
+
+.tab-nhan {
+  text-transform: uppercase;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+
+.tab-nhan > span {
+  font-size: 11px;
+}
+
+.phim-luoi {
+  border-top: 0;
+  padding-top: 30px;
+}
+
+.anh {
+  border-radius: 12px;
+}
+
+.the-phim h3 {
+  color: var(--xanh-dam);
+  font-size: 18px;
+  line-height: 1.35;
+}
+
+.phim-thong-tin,
+.thoi-luong,
+.mau-ghi-chu {
+  font-size: 12px;
+}
+
+.phim-nut {
+  min-height: 44px;
+  font-size: 13px;
+}
+
+.uu-dai-muc {
+  background: #edf4f9;
+  padding-inline: 12px;
+}
+
+.the-uu-dai {
+  border-radius: 12px;
+  padding: 30px;
+}
+
+.uu-dai-nhan,
+.uu-dai-lien-ket {
+  font-size: 12px;
+}
+
+.web-chan {
+  background: #fff;
+}
+
+.chan-trong > a:not(.thuong-hieu),
+.chan-trong > span,
+.chan-trong p {
+  font-size: 12px;
+}
+
+.ung-dung-trang,
+.authentication-page,
+.quan-tri-trang {
+  background: var(--nen);
+  color: var(--chu);
+}
+
+.trang-mo-dau {
+  background: #fff;
+  border-top: 0;
+  border-bottom: 1px solid var(--vien);
+  padding-inline: 12px;
+  padding-block: 22px 30px;
+}
+
+.nhan-dau,
+.ung-dung-chinh .nhan-dau {
+  font-size: 12px;
+}
+
+.ung-dung-chinh h1 {
+  letter-spacing: -0.025em;
+}
+
+.ung-dung-trang .khung,
+.authentication-card,
+.workspace-card,
+.workspace-sidebar,
+.workspace-stat {
+  background: #fff;
+  border: 1px solid var(--vien);
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.ung-dung-trang .khung {
+  padding: 26px;
+}
+
+.muc-so {
+  background: #e8f3fb;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
+.tien-trinh-buoc li,
+.chon-nhom legend,
+.o-nhan {
+  font-size: 14px;
+}
+
+.nhan-lua-chon > span {
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.nhan-lua-chon input:checked + span {
+  background: #e7f3fb;
+  box-shadow: inset 0 0 0 1px var(--xanh);
+}
+
+.man-hinh {
+  color: #486276;
+  font-size: 11px;
+  border-top-width: 2px;
+  border-radius: 0;
+}
+
+.ung-dung-trang .nut-ghe {
+  background: #eff2f5;
+  border-color: #a9b9c5;
+  color: #294358;
+  font-size: 12px;
+}
+
+.ung-dung-trang .nut-ghe:disabled {
+  background: #f7e7e7;
+  border-color: #e6baba;
+  color: #7f4444;
+}
+
+.ghe-chu-thich,
+.tom-tat-ghi-chu {
+  font-size: 12px;
+}
+
+.don-tom-tat {
+  top: 18px;
+}
+
+.tom-tat-tong strong {
+  color: var(--xanh-dam);
+}
+
+.order-show,
+.guest-order-note {
+  background: #eaf4fb;
+}
+
+.order-list button {
+  border-radius: 6px;
+}
+
+.authentication-main {
+  padding-block: 56px;
+}
+
+.authentication-card {
+  padding: 36px;
+}
+
+.authentication-card h1 {
+  color: var(--xanh-dam);
+}
+
+.workspace-header {
+  padding-block: 18px;
+}
+
+.workspace {
+  max-width: 1280px;
+}
+
+.workspace-nav[aria-pressed="true"] {
+  background: #e7f3fb;
+  color: var(--xanh-dam);
+}
+
+.workspace-heading h1 {
+  color: var(--xanh-dam);
+}
+
+.workspace-table th {
+  background: #edf4f9;
+  color: #445d70;
+}
+
+.workspace-table tr:hover td {
+  background: #f8fbfd;
+}
+
+@media (max-width: 800px) {
+  .noi-bat {
+    width: calc(100% - 32px);
+    margin-top: 16px;
+  }
+
+  .noi-bat-trong {
+    min-height: 420px;
+  }
+
+  .phim-tab {
+    justify-content: flex-start;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .chinh-dieu-huong,
+  .account-enabled .chinh-dieu-huong {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0 8px;
+    overflow: visible;
+  }
+
+  .chinh-dieu-huong a,
+  .account-enabled .chinh-dieu-huong a {
+    min-height: 44px;
+    height: auto;
+    white-space: normal;
+    text-align: center;
+    justify-items: center;
+    line-height: 1.25;
+  }
+
+  .thuong-hieu small {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
+
+  .noi-bat {
+    width: calc(100% - 24px);
+    border-radius: 12px;
+  }
+
+  .noi-bat-trong {
+    min-height: 410px;
+  }
+
+  .noi-bat h1 {
+    font-size: 42px;
+  }
+
+  .phim-luoi {
+    gap: 24px 14px;
+  }
+
+  .the-phim h3 {
+    font-size: 16px;
+  }
+
+  .phim-thong-tin {
+    font-size: 12px;
+  }
+
+  .ung-dung-trang .khung,
+  .authentication-card,
+  .workspace-card {
+    padding: 20px;
+  }
+
+  .authentication-main {
+    padding: 28px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anh img,
+  .nut {
+    transition: none;
+  }
+}

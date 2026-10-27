@@ -5,7 +5,6 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import com.cinesnack.config.ApiSecurityConfig;
 import com.cinesnack.entity.User;
 import com.cinesnack.repository.UserRepository;
@@ -38,6 +37,7 @@ class ApiSecurityTest {
         CsrfController.class,
         CatalogController.class,
         AdminCatalogController.class,
+        AdminOrderController.class,
         GuestOrderController.class,
         ApiExceptionHandler.class,
     })
@@ -171,6 +171,18 @@ class ApiSecurityTest {
                 .perform(delete(path).with(user("admin").roles("QUAN_TRI")).with(csrf()))
                 .andExpect(status().isNoContent());
         }
+    }
+
+    @Test
+    void chiNhanVienDuocTaoDonTaiQuay() throws Exception {
+        String body = "{\"email\":\"guest@example.com\",\"seatIds\":[],\"snacks\":[],\"combos\":[{\"comboId\":1,\"quantity\":1}]}";
+        kiemThuHttp.perform(post("/api/admin/orders").with(user("admin").roles("QUAN_TRI"))
+            .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+            .andExpect(status().isForbidden());
+        kiemThuHttp.perform(post("/api/admin/orders").with(user("staff").roles("NHAN_VIEN"))
+            .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+            .andExpect(status().isCreated());
+        verify(dichVuDonHang).taoDonTaiQuay(any(), eq("staff"));
     }
 
     @Test

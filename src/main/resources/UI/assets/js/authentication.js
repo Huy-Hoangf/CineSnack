@@ -10,7 +10,10 @@
     user = undefined;
   }
   const workRole = user && ["NHAN_VIEN", "QUAN_TRI"].includes(user.role);
-  if (workRole && /\/(booking|checkout|orders)\.html$/.test(location.pathname)) {
+  const redirectToAdmin =
+    (user?.role === "QUAN_TRI" && /\/(booking|checkout|orders)\.html$/.test(location.pathname)) ||
+    (user?.role === "NHAN_VIEN" && /\/orders\.html$/.test(location.pathname));
+  if (redirectToAdmin) {
     location.replace("admin.html");
     return;
   }
@@ -87,9 +90,10 @@
     const worker = ["NHAN_VIEN", "QUAN_TRI"].includes(account.role);
     const fallback = worker ? "admin.html" : "orders.html";
     if (!url) return fallback;
-    const allowed = worker
-      ? url.pathname === "/html/admin.html"
-      : /^\/html\/(booking|checkout|orders|movies|index)\.html$/.test(url.pathname);
+    const allowed =
+      (account.role === "NHAN_VIEN" && /^\/html\/(admin|booking|checkout)\.html$/.test(url.pathname)) ||
+      (account.role === "QUAN_TRI" && url.pathname === "/html/admin.html") ||
+      (!worker && /^\/html\/(booking|checkout|orders|movies|index)\.html$/.test(url.pathname));
     return url.origin === location.origin && allowed ? url.pathname + url.search : fallback;
   }
   form.addEventListener("submit", async (event) => {

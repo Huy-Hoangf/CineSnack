@@ -84,6 +84,35 @@ class OrderServiceTest {
     }
 
     @Test
+    void nhanVienCoTheTaoDonTaiQuay() {
+        when(dichVuNguoiDung.layTaiKhoanHoatDong("staff@example.com")).thenReturn(
+            new User(2L, "staff@example.com", "hash", "NHAN_VIEN", "HOAT_DONG")
+        );
+        Order don = dichVu.taoDonTaiQuay(taoYeuCau(List.of(1L)), "staff@example.com");
+        assertEquals("CHO_THANH_TOAN", don.trangThai());
+        assertNull(don.maNguoiDung());
+    }
+
+    @Test
+    void khachKhongTheTaoDonTaiQuay() {
+        assertEquals(403, assertThrows(ResponseStatusException.class, () ->
+            dichVu.taoDonTaiQuay(taoYeuCau(List.of(1L)), "customer@example.com")
+        ).getStatusCode().value());
+        verify(khoDonHang, never()).taoDonHang(any(), anyString(), anyString(), any(), any(), any());
+    }
+
+    @Test
+    void quanTriKhongTheTaoDonTaiQuay() {
+        when(dichVuNguoiDung.layTaiKhoanHoatDong("admin@example.com")).thenReturn(
+            new User(3L, "admin@example.com", "hash", "QUAN_TRI", "HOAT_DONG")
+        );
+        assertEquals(403, assertThrows(ResponseStatusException.class, () ->
+            dichVu.taoDonTaiQuay(taoYeuCau(List.of(1L)), "admin@example.com")
+        ).getStatusCode().value());
+        verify(khoDonHang, never()).taoDonHang(any(), anyString(), anyString(), any(), any(), any());
+    }
+
+    @Test
     void giuChoKhongQuaGioChieu() {
         when(danhMucDatVe.timVaKhoaSuatChieu(1L)).thenReturn(
             new BookingCatalogRepository.Show(

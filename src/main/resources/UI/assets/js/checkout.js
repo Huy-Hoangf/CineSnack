@@ -22,6 +22,12 @@
   try {
     user = await CineSnackApi.taiKhoan();
     if (user) email.value = user.email;
+    if (user?.role === "NHAN_VIEN") {
+      email.value = "";
+      document.querySelector("#checkout-payment-title").textContent = "Tạo đơn tại quầy";
+      document.querySelector("#checkout-payment-note").textContent =
+        "Nhập email khách nhận đơn. Sau khi tạo, xác nhận tiền mặt hoặc chuyển khoản tại màn hình nhân viên.";
+    }
     else {
       document.querySelector("#checkout-guest-note").hidden = false;
       document.querySelector("#checkout-guest-note").textContent =
@@ -49,7 +55,8 @@
     nut.setAttribute("aria-busy", "true");
     loi.textContent = "Đang tạo đơn…";
     try {
-      const d = await CineSnackApi.goi(user ? "/api/orders" : "/api/guest/orders", {
+      const staff = user?.role === "NHAN_VIEN";
+      const d = await CineSnackApi.goi(staff ? "/api/admin/orders" : user ? "/api/orders" : "/api/guest/orders", {
         method: "POST",
         body: CineSnack.taoYeuCau(g, email.value.trim()),
       });
@@ -57,7 +64,9 @@
       try {
         sessionStorage.removeItem(CineSnack.khoaGio);
       } catch {}
-      location.href = "orders.html?code=" + encodeURIComponent(d.code) + (user ? "" : "&guest=1");
+      location.href = staff
+        ? "admin.html?code=" + encodeURIComponent(d.code)
+        : "orders.html?code=" + encodeURIComponent(d.code) + (user ? "" : "&guest=1");
     } catch (error) {
       khongRo = !error.status;
       loi.textContent = error.message + " Bạn có thể kiểm tra Đơn của tôi trước khi thử lại.";

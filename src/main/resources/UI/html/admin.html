@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="../assets/css/authentication.css" />
     <link rel="stylesheet" href="../assets/css/orders.css" />
     <link rel="stylesheet" href="../assets/css/admin.css" />
+    <link rel="stylesheet" href="../assets/css/cinema-theme.css?v=2" />
     <script src="../assets/js/api.js" defer></script>
     <script src="../assets/js/cinema.js" defer></script>
     <script src="../assets/js/orders.js" defer></script>
@@ -47,6 +48,9 @@
             >
               Đơn toàn rạp
             </button>
+            <a class="workspace-nav" href="booking.html" data-staff-only hidden>Tạo đơn tại quầy</a>
+            <button type="button" class="workspace-nav" data-muc="monitor"
+              aria-controls="muc-don" aria-pressed="false">Theo dõi thanh toán</button>
             <button
               type="button"
               class="workspace-nav"
@@ -111,7 +115,6 @@
                   <option value="CHO_THANH_TOAN">Chờ thanh toán</option>
                   <option value="DA_THANH_TOAN">Đã thanh toán</option>
                   <option value="HUY">Đã hủy</option>
-                  <option value="HET_HAN">Hết hạn</option>
                 </select>
                 <button id="admin-refresh" type="button" class="account-button">Cập nhật</button>
               </div>

@@ -192,8 +192,7 @@ ADD CONSTRAINT CK_DON_HANG_TRANG_THAI CHECK (
     trang_thai IN (
         ''CHO_THANH_TOAN'',
         ''DA_THANH_TOAN'',
-        ''HUY'',
-        ''HET_HAN''
+        ''HUY''
     )
 );
 IF OBJECT_ID(N''HOA_DON_VE'', N''U'') IS NULL BEGIN
@@ -202,14 +201,7 @@ CREATE TABLE HOA_DON_VE (
     don_hang_id BIGINT NOT NULL UNIQUE,
     ma_hoa_don VARCHAR(30) NOT NULL UNIQUE,
     tong_tien DECIMAL(12, 2) NOT NULL CHECK (tong_tien >= 0),
-    trang_thai VARCHAR(20) NOT NULL DEFAULT ''CHO_THANH_TOAN'' CHECK (
-        trang_thai IN (
-            ''CHO_THANH_TOAN'',
-            ''DA_THANH_TOAN'',
-            ''HUY'',
-            ''HET_HAN''
-        )
-    ),
+    trang_thai VARCHAR(20) NOT NULL DEFAULT ''DA_THANH_TOAN'' CHECK (trang_thai = ''DA_THANH_TOAN''),
     tao_luc DATETIME2(0) NOT NULL DEFAULT SYSDATETIME(),
     FOREIGN KEY (don_hang_id) REFERENCES DON_HANG (don_hang_id)
 );
@@ -220,14 +212,7 @@ CREATE TABLE HOA_DON_BONG_NUOC (
     don_hang_id BIGINT NOT NULL UNIQUE,
     ma_hoa_don VARCHAR(30) NOT NULL UNIQUE,
     tong_tien DECIMAL(12, 2) NOT NULL CHECK (tong_tien >= 0),
-    trang_thai VARCHAR(20) NOT NULL DEFAULT ''CHO_THANH_TOAN'' CHECK (
-        trang_thai IN (
-            ''CHO_THANH_TOAN'',
-            ''DA_THANH_TOAN'',
-            ''HUY'',
-            ''HET_HAN''
-        )
-    ),
+    trang_thai VARCHAR(20) NOT NULL DEFAULT ''DA_THANH_TOAN'' CHECK (trang_thai = ''DA_THANH_TOAN''),
     tao_luc DATETIME2(0) NOT NULL DEFAULT SYSDATETIME(),
     FOREIGN KEY (don_hang_id) REFERENCES DON_HANG (don_hang_id)
 );
@@ -235,7 +220,8 @@ END;
 IF OBJECT_ID(N''VE'', N''U'') IS NULL BEGIN
 CREATE TABLE VE (
     ve_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
-    hoa_don_ve_id BIGINT NOT NULL,
+    hoa_don_ve_id BIGINT NULL,
+    don_hang_id BIGINT NOT NULL,
     suat_chieu_id BIGINT NOT NULL,
     ghe_id BIGINT NOT NULL,
     phong_id BIGINT NOT NULL,
@@ -246,13 +232,13 @@ CREATE TABLE VE (
             ''CHO_THANH_TOAN'',
             ''DA_THANH_TOAN'',
             ''DA_SOAT'',
-            ''HUY'',
-            ''HET_HAN''
+            ''HUY''
         )
     ),
     soat_ve_luc DATETIME2(0) NULL,
     nhan_vien_soat_id BIGINT NULL,
     FOREIGN KEY (hoa_don_ve_id) REFERENCES HOA_DON_VE (hoa_don_ve_id),
+    FOREIGN KEY (don_hang_id) REFERENCES DON_HANG (don_hang_id),
     FOREIGN KEY (suat_chieu_id, phong_id) REFERENCES SUAT_CHIEU (suat_chieu_id, phong_id),
     FOREIGN KEY (ghe_id, phong_id) REFERENCES GHE (ghe_id, phong_id),
     FOREIGN KEY (nhan_vien_soat_id) REFERENCES NGUOI_DUNG (nguoi_dung_id),
@@ -296,7 +282,8 @@ CREATE INDEX IX_VE_HOA_DON ON VE (hoa_don_ve_id);
 IF OBJECT_ID(N''CHI_TIET_HOA_DON_BONG_NUOC'', N''U'') IS NULL BEGIN
 CREATE TABLE CHI_TIET_HOA_DON_BONG_NUOC (
     chi_tiet_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
-    hoa_don_bong_nuoc_id BIGINT NOT NULL,
+    hoa_don_bong_nuoc_id BIGINT NULL,
+    don_hang_id BIGINT NOT NULL,
     san_pham_id BIGINT NULL,
     combo_id BIGINT NULL,
     ten_luc_mua NVARCHAR(100) NOT NULL,
@@ -307,13 +294,13 @@ CREATE TABLE CHI_TIET_HOA_DON_BONG_NUOC (
             ''CHO_THANH_TOAN'',
             ''CHO_NHAN'',
             ''DA_NHAN'',
-            ''HUY'',
-            ''HET_HAN''
+            ''HUY''
         )
     ),
     nhan_luc DATETIME2(0) NULL,
     nhan_vien_giao_id BIGINT NULL,
     FOREIGN KEY (hoa_don_bong_nuoc_id) REFERENCES HOA_DON_BONG_NUOC (hoa_don_bong_nuoc_id),
+    FOREIGN KEY (don_hang_id) REFERENCES DON_HANG (don_hang_id),
     FOREIGN KEY (san_pham_id) REFERENCES SAN_PHAM (san_pham_id),
     FOREIGN KEY (combo_id) REFERENCES COMBO (combo_id),
     FOREIGN KEY (nhan_vien_giao_id) REFERENCES NGUOI_DUNG (nguoi_dung_id),

@@ -1,0 +1,44 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "src/main/resources/UI/html/index.html"
+        ],
+        "createdAt": "2026-10-27T02:57:33.068Z",
+        "reason": "Agent: top strip is intentionally thin; hero image is full bleed inside a padded text container; promotion content is inset by .bao."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "src/main/resources/UI/html/movies.html"
+        ],
+        "createdAt": "2026-10-27T02:57:33.570Z",
+        "reason": "Agent: top strip is intentionally thin; intro text is inset by the .bao child container."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "src/main/resources/UI/html/booking.html"
+        ],
+        "createdAt": "2026-10-27T02:57:34.115Z",
+        "reason": "Agent: top strip is intentionally thin; intro text is inset by the .bao child container."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "src/main/resources/UI/html/checkout.html"
+        ],
+        "createdAt": "2026-10-27T02:57:34.707Z",
+        "reason": "Agent: intro text is inset by the .bao child container."
+      }
+    ]
+  }
+}

@@ -28,16 +28,10 @@ class OrderAvailabilityTest {
             "CREATE TABLE GHE(ghe_id BIGINT PRIMARY KEY,phong_id BIGINT,trang_thai VARCHAR(20))"
         );
         db.execute(
-            "CREATE TABLE HOA_DON_VE(hoa_don_ve_id BIGINT PRIMARY KEY,don_hang_id BIGINT,tong_tien DECIMAL(12,2),trang_thai VARCHAR(20))"
+            "CREATE TABLE VE(don_hang_id BIGINT,suat_chieu_id BIGINT,ghe_id BIGINT,don_gia DECIMAL(12,2),trang_thai VARCHAR(20))"
         );
         db.execute(
-            "CREATE TABLE VE(hoa_don_ve_id BIGINT,suat_chieu_id BIGINT,ghe_id BIGINT,don_gia DECIMAL(12,2),trang_thai VARCHAR(20))"
-        );
-        db.execute(
-            "CREATE TABLE HOA_DON_BONG_NUOC(hoa_don_bong_nuoc_id BIGINT,don_hang_id BIGINT,tong_tien DECIMAL(12,2),trang_thai VARCHAR(20))"
-        );
-        db.execute(
-            "CREATE TABLE CHI_TIET_HOA_DON_BONG_NUOC(hoa_don_bong_nuoc_id BIGINT,so_luong INT,don_gia DECIMAL(12,2),trang_thai_phuc_vu VARCHAR(20))"
+            "CREATE TABLE CHI_TIET_HOA_DON_BONG_NUOC(don_hang_id BIGINT,so_luong INT,don_gia DECIMAL(12,2),trang_thai_phuc_vu VARCHAR(20))"
         );
         db.update("INSERT INTO PHIM VALUES(1,'DANG_CHIEU')");
         db.update("INSERT INTO PHONG_CHIEU VALUES(1,'HOAT_DONG')");
@@ -45,7 +39,6 @@ class OrderAvailabilityTest {
             "INSERT INTO SUAT_CHIEU VALUES(1,1,1,TIMESTAMP '2026-10-14 13:00:00','SAP_CHIEU')"
         );
         db.update("INSERT INTO GHE VALUES(1,1,'HOAT_DONG')");
-        db.update("INSERT INTO HOA_DON_VE VALUES(1,1,80000,'CHO_THANH_TOAN')");
         db.update("INSERT INTO VE VALUES(1,1,1,80000,'CHO_THANH_TOAN')");
         var kho = new OrderRepository(db);
         var luc = LocalDateTime.of(2026, 10, 14, 12, 0);

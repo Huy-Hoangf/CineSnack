@@ -110,28 +110,6 @@ public class OrderRepository {
         );
     }
 
-    public void taoHoaDonVe(long maDon, BigDecimal tong, String email, LocalDateTime luc) {
-        truyVan.update(
-            "INSERT INTO HOA_DON_VE(don_hang_id,ma_hoa_don,tong_tien,email_nhan,tao_luc) VALUES(?,?,?,?,?)",
-            maDon,
-            Codes.taoMa("HDV"),
-            tong,
-            email,
-            luc
-        );
-    }
-
-    public void taoHoaDonBapNuoc(long maDon, BigDecimal tong, String email, LocalDateTime luc) {
-        truyVan.update(
-            "INSERT INTO HOA_DON_BONG_NUOC(don_hang_id,ma_hoa_don,tong_tien,email_nhan,tao_luc) VALUES(?,?,?,?,?)",
-            maDon,
-            Codes.taoMa("HDB"),
-            tong,
-            email,
-            luc
-        );
-    }
-
     public boolean gheDaDuocDat(long maSuat, long maGhe) {
         Integer n = truyVan.queryForObject(
             "SELECT COUNT(*) FROM VE WHERE suat_chieu_id=? AND ghe_id=? AND trang_thai IN ('CHO_THANH_TOAN','DA_THANH_TOAN','DA_SOAT')",
@@ -145,17 +123,17 @@ public class OrderRepository {
     public void themVe(long maDon, long maSuat, long maGhe, BigDecimal gia) {
         int n = truyVan.update(
             """
-            INSERT INTO VE(hoa_don_ve_id,suat_chieu_id,ghe_id,phong_id,ma_ve,don_gia,trang_thai)
-            SELECT h.hoa_don_ve_id,s.suat_chieu_id,?,s.phong_id,?,?,'CHO_THANH_TOAN'
-            FROM HOA_DON_VE h CROSS JOIN SUAT_CHIEU s WHERE h.don_hang_id=? AND s.suat_chieu_id=?
+            INSERT INTO VE(don_hang_id,suat_chieu_id,ghe_id,phong_id,ma_ve,don_gia,trang_thai)
+            SELECT ?,s.suat_chieu_id,?,s.phong_id,?,?,'CHO_THANH_TOAN'
+            FROM SUAT_CHIEU s WHERE s.suat_chieu_id=?
             """,
+            maDon,
             maGhe,
             Codes.taoMa("VE"),
             gia,
-            maDon,
             maSuat
         );
-        if (n != 1) throw new IllegalStateException("Thiếu hóa đơn vé hoặc suất chiếu");
+        if (n != 1) throw new IllegalStateException("Thiếu suất chiếu");
     }
 
     public void themBapNuoc(
@@ -168,29 +146,28 @@ public class OrderRepository {
     ) {
         int n = truyVan.update(
             """
-            INSERT INTO CHI_TIET_HOA_DON_BONG_NUOC(hoa_don_bong_nuoc_id,san_pham_id,combo_id,ten_luc_mua,so_luong,don_gia,trang_thai_phuc_vu)
-            SELECT hoa_don_bong_nuoc_id,?,?,?,?,?,'CHO_THANH_TOAN' FROM HOA_DON_BONG_NUOC WHERE don_hang_id=?
+            INSERT INTO CHI_TIET_HOA_DON_BONG_NUOC(don_hang_id,san_pham_id,combo_id,ten_luc_mua,so_luong,don_gia,trang_thai_phuc_vu)
+            VALUES(?,?,?,?,?,?,'CHO_THANH_TOAN')
             """,
+            maDon,
             maSanPham,
             maCombo,
             ten,
             soLuong,
-            gia,
-            maDon
+            gia
         );
-        if (n != 1) throw new IllegalStateException("Thiếu hóa đơn bắp nước");
+        if (n != 1) throw new IllegalStateException("Không tạo được chi tiết bắp nước");
     }
 
     public List<Ticket> layVe(long maDon) {
         return truyVan.query(
             """
             SELECT v.*,g.ma_ghe,p.ten_phim,r.ten_phong,s.bat_dau FROM VE v
-            JOIN HOA_DON_VE h ON h.hoa_don_ve_id=v.hoa_don_ve_id
             JOIN GHE g ON g.ghe_id=v.ghe_id
             JOIN SUAT_CHIEU s ON s.suat_chieu_id=v.suat_chieu_id
             JOIN PHIM p ON p.phim_id=s.phim_id
             JOIN PHONG_CHIEU r ON r.phong_id=s.phong_id
-            WHERE h.don_hang_id=? ORDER BY v.ve_id
+            WHERE v.don_hang_id=? ORDER BY v.ve_id
             """,
             (d, i) ->
                 new Ticket(
@@ -211,7 +188,7 @@ public class OrderRepository {
 
     public List<OrderItem> layBapNuoc(long maDon) {
         return truyVan.query(
-            "SELECT c.* FROM CHI_TIET_HOA_DON_BONG_NUOC c JOIN HOA_DON_BONG_NUOC h ON h.hoa_don_bong_nuoc_id=c.hoa_don_bong_nuoc_id WHERE h.don_hang_id=? ORDER BY c.chi_tiet_id",
+            "SELECT c.* FROM CHI_TIET_HOA_DON_BONG_NUOC c WHERE c.don_hang_id=? ORDER BY c.chi_tiet_id",
             (d, i) ->
                 new OrderItem(
                     d.getLong("chi_tiet_id"),
@@ -229,8 +206,8 @@ public class OrderRepository {
     public BigDecimal tinhTongChiTiet(long maDon) {
         return truyVan.queryForObject(
             """
-            SELECT COALESCE((SELECT SUM(v.don_gia) FROM VE v JOIN HOA_DON_VE h ON h.hoa_don_ve_id=v.hoa_don_ve_id WHERE h.don_hang_id=?),0)
-                 + COALESCE((SELECT SUM(c.so_luong*c.don_gia) FROM CHI_TIET_HOA_DON_BONG_NUOC c JOIN HOA_DON_BONG_NUOC h ON h.hoa_don_bong_nuoc_id=c.hoa_don_bong_nuoc_id WHERE h.don_hang_id=?),0)
+            SELECT COALESCE((SELECT SUM(v.don_gia) FROM VE v WHERE v.don_hang_id=?),0)
+                 + COALESCE((SELECT SUM(c.so_luong*c.don_gia) FROM CHI_TIET_HOA_DON_BONG_NUOC c WHERE c.don_hang_id=?),0)
             """,
             BigDecimal.class,
             maDon,
@@ -242,26 +219,22 @@ public class OrderRepository {
         Integer sai = truyVan.queryForObject(
             """
             SELECT
-            (SELECT COUNT(*) FROM VE v JOIN HOA_DON_VE h ON h.hoa_don_ve_id=v.hoa_don_ve_id
+            (SELECT COUNT(*) FROM VE v
              JOIN SUAT_CHIEU s ON s.suat_chieu_id=v.suat_chieu_id JOIN GHE g ON g.ghe_id=v.ghe_id
              JOIN PHONG_CHIEU r ON r.phong_id=s.phong_id JOIN PHIM p ON p.phim_id=s.phim_id
-             WHERE h.don_hang_id=? AND (v.trang_thai<>'CHO_THANH_TOAN' OR h.trang_thai<>'CHO_THANH_TOAN' OR s.trang_thai<>'SAP_CHIEU' OR s.bat_dau<=? OR g.phong_id<>s.phong_id OR g.trang_thai<>'HOAT_DONG' OR r.trang_thai<>'HOAT_DONG' OR p.trang_thai<>'DANG_CHIEU'))
-            + (SELECT COUNT(*) FROM CHI_TIET_HOA_DON_BONG_NUOC c JOIN HOA_DON_BONG_NUOC h ON h.hoa_don_bong_nuoc_id=c.hoa_don_bong_nuoc_id
-               WHERE h.don_hang_id=? AND (c.trang_thai_phuc_vu<>'CHO_THANH_TOAN' OR h.trang_thai<>'CHO_THANH_TOAN'))
-            + (SELECT COUNT(*) FROM HOA_DON_VE h WHERE h.don_hang_id=? AND h.tong_tien<>COALESCE((SELECT SUM(v.don_gia) FROM VE v WHERE v.hoa_don_ve_id=h.hoa_don_ve_id),-1))
-            + (SELECT COUNT(*) FROM HOA_DON_BONG_NUOC h WHERE h.don_hang_id=? AND h.tong_tien<>COALESCE((SELECT SUM(c.so_luong*c.don_gia) FROM CHI_TIET_HOA_DON_BONG_NUOC c WHERE c.hoa_don_bong_nuoc_id=h.hoa_don_bong_nuoc_id),-1))
+             WHERE v.don_hang_id=? AND (v.trang_thai<>'CHO_THANH_TOAN' OR s.trang_thai<>'SAP_CHIEU' OR s.bat_dau<=? OR g.phong_id<>s.phong_id OR g.trang_thai<>'HOAT_DONG' OR r.trang_thai<>'HOAT_DONG' OR p.trang_thai<>'DANG_CHIEU'))
+            + (SELECT COUNT(*) FROM CHI_TIET_HOA_DON_BONG_NUOC c
+               WHERE c.don_hang_id=? AND c.trang_thai_phuc_vu<>'CHO_THANH_TOAN')
             """,
             Integer.class,
             maDon,
             luc,
-            maDon,
-            maDon,
             maDon
         );
         Integer n = truyVan.queryForObject(
             """
-            SELECT (SELECT COUNT(*) FROM VE v JOIN HOA_DON_VE h ON h.hoa_don_ve_id=v.hoa_don_ve_id WHERE h.don_hang_id=?)
-                 + (SELECT COUNT(*) FROM CHI_TIET_HOA_DON_BONG_NUOC c JOIN HOA_DON_BONG_NUOC h ON h.hoa_don_bong_nuoc_id=c.hoa_don_bong_nuoc_id WHERE h.don_hang_id=?)
+            SELECT (SELECT COUNT(*) FROM VE v WHERE v.don_hang_id=?)
+                 + (SELECT COUNT(*) FROM CHI_TIET_HOA_DON_BONG_NUOC c WHERE c.don_hang_id=?)
             """,
             Integer.class,
             maDon,
@@ -285,26 +258,16 @@ public class OrderRepository {
 
     public void dongChiTiet(long maDon, String trangThai) {
         doiChiTiet(maDon, trangThai, trangThai);
-        truyVan.update(
-            "UPDATE HOA_DON_VE SET trang_thai=? WHERE don_hang_id=? AND trang_thai='CHO_THANH_TOAN'",
-            trangThai,
-            maDon
-        );
-        truyVan.update(
-            "UPDATE HOA_DON_BONG_NUOC SET trang_thai=? WHERE don_hang_id=? AND trang_thai='CHO_THANH_TOAN'",
-            trangThai,
-            maDon
-        );
     }
 
     private void doiChiTiet(long maDon, String ve, String bap) {
         truyVan.update(
-            "UPDATE VE SET trang_thai=? WHERE hoa_don_ve_id IN(SELECT hoa_don_ve_id FROM HOA_DON_VE WHERE don_hang_id=?) AND trang_thai='CHO_THANH_TOAN'",
+            "UPDATE VE SET trang_thai=? WHERE don_hang_id=? AND trang_thai='CHO_THANH_TOAN'",
             ve,
             maDon
         );
         truyVan.update(
-            "UPDATE CHI_TIET_HOA_DON_BONG_NUOC SET trang_thai_phuc_vu=? WHERE hoa_don_bong_nuoc_id IN(SELECT hoa_don_bong_nuoc_id FROM HOA_DON_BONG_NUOC WHERE don_hang_id=?) AND trang_thai_phuc_vu='CHO_THANH_TOAN'",
+            "UPDATE CHI_TIET_HOA_DON_BONG_NUOC SET trang_thai_phuc_vu=? WHERE don_hang_id=? AND trang_thai_phuc_vu='CHO_THANH_TOAN'",
             bap,
             maDon
         );

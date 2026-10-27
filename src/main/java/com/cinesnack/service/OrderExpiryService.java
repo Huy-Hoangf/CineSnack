@@ -35,8 +35,8 @@ public class OrderExpiryService {
                         "CHO_THANH_TOAN".equals(donHang.trangThai()) &&
                         donHang.hetHanLuc() != null &&
                         !donHang.hetHanLuc().isAfter(hienTai) &&
-                        khoDonHang.doiTrangThai(donHang.maSo(), "CHO_THANH_TOAN", "HET_HAN") == 1) {
-                    khoDonHang.dongChiTiet(donHang.maSo(), "HET_HAN");
+                        khoDonHang.doiTrangThai(donHang.maSo(), "CHO_THANH_TOAN", "HUY") == 1) {
+                    khoDonHang.dongChiTiet(donHang.maSo(), "HUY");
                 }
             });
         }
