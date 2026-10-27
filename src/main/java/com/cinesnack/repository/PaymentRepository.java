@@ -34,6 +34,13 @@ public class PaymentRepository {
         return new Payment(maSo, maDonHang, ma, "TIEN_MAT", soTien, "THANH_CONG", hienTai);
     }
 
+    public Payment taoThanhToanChuyenKhoan(long maDonHang, BigDecimal soTien, String maGiaoDich, LocalDateTime hienTai) {
+        long maSo = Sql.themVaLayMa(truyVan,
+            "INSERT INTO THANH_TOAN(don_hang_id,nha_cung_cap,ma_giao_dich,phuong_thuc,so_tien,trang_thai,thanh_toan_luc) OUTPUT INSERTED.thanh_toan_id VALUES(?,'DOI_SOAT_TAI_QUAY',?,'CHUYEN_KHOAN',?,'THANH_CONG',?)",
+            maDonHang, maGiaoDich, soTien, hienTai);
+        return new Payment(maSo, maDonHang, maGiaoDich, "CHUYEN_KHOAN", soTien, "THANH_CONG", hienTai);
+    }
+
     public List<Payment> layDanhSach(long maDonHang) {
         return truyVan.query(
             "SELECT * FROM THANH_TOAN WHERE don_hang_id = ? ORDER BY thanh_toan_id",

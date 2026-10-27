@@ -40,9 +40,9 @@ class OrderExpiryServiceTest {
     @Test
     void dongVeVaBapNuocDungHan() {
         when(khoDonHang.timVaKhoa("DH01")).thenReturn(donHang("CHO_THANH_TOAN", hienTai));
-        when(khoDonHang.doiTrangThai(1, "CHO_THANH_TOAN", "HET_HAN")).thenReturn(1);
+        when(khoDonHang.doiTrangThai(1, "CHO_THANH_TOAN", "HUY")).thenReturn(1);
         dichVu.xuLyHetHan();
-        verify(khoDonHang).dongChiTiet(1, "HET_HAN");
+        verify(khoDonHang).dongChiTiet(1, "HUY");
     }
 
     @Test

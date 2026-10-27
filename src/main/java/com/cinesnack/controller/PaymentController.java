@@ -1,6 +1,7 @@
 package com.cinesnack.controller;
 
 import com.cinesnack.dto.CashPaymentRequest;
+import com.cinesnack.dto.TransferConfirmRequest;
 import com.cinesnack.entity.Payment;
 import com.cinesnack.service.PaymentService;
 import jakarta.validation.Valid;
@@ -32,6 +33,15 @@ public class PaymentController {
             yeuCau.tienKhachDua(),
             nguoiDung.getName()
         );
+    }
+
+    @PostMapping("/transfer")
+    public Payment xacNhanChuyenKhoan(
+        @PathVariable("code") @Pattern(regexp = "[A-Za-z0-9]{1,30}") String maDonHang,
+        @Valid @RequestBody TransferConfirmRequest yeuCau,
+        Principal nguoiDung
+    ) {
+        return dichVuThanhToan.xacNhanChuyenKhoan(maDonHang, yeuCau.maGiaoDich(), yeuCau.soTienNhan(), nguoiDung.getName());
     }
 
     @GetMapping

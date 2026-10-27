@@ -96,7 +96,7 @@
   border: 0;
   border-radius: 20px;
   color: var(--chu);
-  box-shadow: 0 24px 80px #152b4033;
+  box-shadow: 0 20px 52px rgb(0 0 0 / 18%);
 }
 
 .welcome-dialog::backdrop {
@@ -238,7 +238,7 @@ body:has(.welcome-dialog[open]) {
   margin-top: 16px;
   padding: 12px;
   background: var(--nen);
-  border-left: 3px solid var(--xanh);
+  border: 1px solid var(--vien);
   border-radius: 6px;
   font-size: 14px;
 }

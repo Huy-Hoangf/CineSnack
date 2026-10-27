@@ -59,6 +59,14 @@ public class OrderService {
         return taoDonHang(yeuCau, (Long) null);
     }
 
+    @Transactional
+    public Order taoDonTaiQuay(CreateOrderRequest yeuCau, String thuDienTuNhanVien) {
+        if (!"NHAN_VIEN".equals(dichVuNguoiDung.layTaiKhoanHoatDong(thuDienTuNhanVien).vaiTro())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Chỉ nhân viên được tạo đơn tại quầy");
+        }
+        return taoDonHang(yeuCau, (Long) null);
+    }
+
     private Order taoDonHang(CreateOrderRequest yeuCau, Long maNguoiDung) {
         kiemTraLuaChon(yeuCau);
         var suatChieu = yeuCau.dsMaGhe().isEmpty()
@@ -130,19 +138,6 @@ public class OrderService {
             yeuCau.thuDienTu(),
             tongTien,
             hetHan,
-            hienTai
-        );
-        BigDecimal tienVe = giaVe.multiply(BigDecimal.valueOf(yeuCau.dsMaGhe().size()));
-        if (!yeuCau.dsMaGhe().isEmpty()) khoDonHang.taoHoaDonVe(
-            maSo,
-            tienVe,
-            yeuCau.thuDienTu(),
-            hienTai
-        );
-        if (!dsMatHang.isEmpty()) khoDonHang.taoHoaDonBapNuoc(
-            maSo,
-            tongTien.subtract(tienVe),
-            yeuCau.thuDienTu(),
             hienTai
         );
         for (long maGhe : yeuCau.dsMaGhe())
@@ -267,27 +262,22 @@ public class OrderService {
 
     private Order huyDonDaKhoa(Order donHang) {
         if (
-            "HUY".equals(donHang.trangThai()) || "HET_HAN".equals(donHang.trangThai())
+            "HUY".equals(donHang.trangThai())
         ) return donHang;
         if (!"CHO_THANH_TOAN".equals(donHang.trangThai())) throw loiXungDot(
             "Chỉ được hủy đơn chưa thanh toán"
         );
-        LocalDateTime hienTai = LocalDateTime.now(dongHo).truncatedTo(ChronoUnit.SECONDS);
-        String trangThai =
-            donHang.hetHanLuc() != null && !donHang.hetHanLuc().isAfter(hienTai)
-                ? "HET_HAN"
-                : "HUY";
         if (
-            khoDonHang.doiTrangThai(donHang.maSo(), "CHO_THANH_TOAN", trangThai) != 1
+            khoDonHang.doiTrangThai(donHang.maSo(), "CHO_THANH_TOAN", "HUY") != 1
         ) throw loiXungDot("Đơn hàng đã thay đổi");
-        khoDonHang.dongChiTiet(donHang.maSo(), trangThai);
+        khoDonHang.dongChiTiet(donHang.maSo(), "HUY");
         return new Order(
             donHang.maSo(),
             donHang.maNguoiDung(),
             donHang.ma(),
             donHang.thuDienTu(),
             donHang.tongTien(),
-            trangThai,
+            "HUY",
             donHang.hetHanLuc(),
             donHang.taoLuc()
         );

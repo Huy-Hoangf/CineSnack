@@ -24,7 +24,7 @@
   font-size: 14px;
 }
 .workspace-account small {
-  color: #65768a;
+  color: #596b79;
   font-size: 12px;
 }
 .workspace {
@@ -45,7 +45,7 @@
   align-self: start;
 }
 .workspace-caption {
-  color: #65768a;
+  color: #596b79;
   font-size: 11px;
   letter-spacing: 1px;
   font-weight: 600;
@@ -94,7 +94,7 @@
 }
 .workspace-subtitle,
 .workspace-hint {
-  color: #65768a;
+  color: #596b79;
 }
 .workspace-hint {
   font-size: 13px;
@@ -154,7 +154,7 @@
 }
 .workspace-stat span {
   display: block;
-  color: #65768a;
+  color: #596b79;
   font-size: 13px;
 }
 .workspace-stat strong {
@@ -171,7 +171,7 @@
   font-size: 14px;
 }
 .workspace-table th {
-  color: #65768a;
+  color: #596b79;
   background: #f7f9fc;
   font-size: 12px;
   font-weight: 600;
@@ -189,7 +189,7 @@
 }
 .workspace-table td small {
   font-size: 12px;
-  color: #65768a;
+  color: #596b79;
   margin: 5px 0;
   overflow-wrap: anywhere;
 }

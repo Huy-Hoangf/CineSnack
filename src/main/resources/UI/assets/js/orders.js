@@ -10,7 +10,6 @@ window.CineSnackOrders = (() => {
     CHO_THANH_TOAN: "Chờ thanh toán",
     DA_THANH_TOAN: "Đã thanh toán",
     HUY: "Đã hủy",
-    HET_HAN: "Hết hạn",
   };
   const e = (tag, text, cls) => {
     const n = document.createElement(tag);
@@ -78,7 +77,7 @@ window.CineSnackOrders = (() => {
         e("li", `${s.quantity} × ${s.name} · ${CineSnack.dinhDangTien(s.quantity * s.unitPrice)}`),
       );
     root.append(list);
-    if (data.tickets.length) {
+    if (data.tickets.length && d.status === "DA_THANH_TOAN") {
       const codes = e("details", undefined, "ticket-codes"),
         values = e("ul");
       for (const ticket of data.tickets)
@@ -188,6 +187,69 @@ window.CineSnackOrders = (() => {
         });
       });
       root.append(form);
+      const transfer = e("form", undefined, "cash-form");
+      const transferLabel = e("label", "Mã giao dịch đã đối chiếu trên tài khoản ngân hàng");
+      const transferCode = e("input");
+      transferCode.required = true;
+      transferCode.minLength = 4;
+      transferCode.maxLength = 100;
+      transferCode.pattern = "[A-Za-z0-9_-]{4,100}";
+      transferLabel.append(transferCode);
+      const amountLabel = e("label", "Số tiền thực nhận (VND)");
+      const amountInput = e("input");
+      amountInput.type = "number";
+      amountInput.min = "1";
+      amountInput.step = "1";
+      amountInput.required = true;
+      amountInput.inputMode = "numeric";
+      amountLabel.append(amountInput);
+      const confirmTransfer = e("button", "Xác nhận chuyển khoản", "nut");
+      confirmTransfer.type = "submit";
+      transfer.append(e("h3", "Đối chiếu chuyển khoản"),
+        e("p", "Chỉ xác nhận sau khi kiểm tra đúng số tiền và mã đơn trong tài khoản nhận tiền."),
+        transferLabel, amountLabel, confirmTransfer);
+      transfer.addEventListener("submit", (event) => {
+        event.preventDefault();
+        run(confirmTransfer, async () => {
+          await CineSnackApi.goi(`/api/orders/${encodeURIComponent(code)}/payments/transfer`, {
+            method: "POST", body: {
+              transactionCode: transferCode.value.trim(), amountReceived: Number(amountInput.value),
+            },
+          });
+          await hienChiTiet(box, code, user, thayDoi, hopLe, guestMode);
+          await thayDoi();
+        });
+      });
+      root.append(transfer);
+    }
+    if (d.status === "CHO_THANH_TOAN") {
+      const qrBox = e("section", undefined, "invoice");
+      qrBox.append(e("h3", "QR chuyển khoản đúng tổng tiền"));
+      try {
+        const qr = await CineSnackApi.goi(`${prefix}/${encodeURIComponent(code)}/payment-qr`);
+        const img = e("img");
+        img.src = qr.imageUrl;
+        img.alt = `QR chuyển khoản ${CineSnack.dinhDangTien(qr.amount)}, nội dung ${qr.content}`;
+        img.width = 260;
+        img.height = 260;
+        img.loading = "lazy";
+        img.addEventListener("error", () => {
+          img.remove();
+          qrBox.append(e("p", "Không tải được ảnh QR. Vui lòng cập nhật đơn để thử lại.", "loi"));
+        });
+        qrBox.append(img,
+          e("p", `Số tiền: ${CineSnack.dinhDangTien(qr.amount)} · Nội dung: ${qr.content}`),
+          e("p", "Sau khi chuyển tiền, chờ nhân viên đối chiếu và xác nhận. Quét QR không tự hoàn tất đơn."));
+      } catch (error) {
+        qrBox.append(e("p", error.message, "loi"));
+      }
+      root.append(qrBox);
+      if (d.expiresAt) {
+        const conLai = Date.parse(d.expiresAt) - Date.now();
+        setTimeout(() => {
+          qrBox.replaceChildren(e("p", "Đã hết thời gian giữ chỗ. Cập nhật đơn để xem trạng thái mới.", "loi"));
+        }, Math.max(0, conLai));
+      }
     }
     const invoices = e("div");
     invoices.id = "hoa-don";

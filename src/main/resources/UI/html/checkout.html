@@ -12,9 +12,11 @@
     <script src="../assets/js/booking-summary.js" defer></script>
     <script src="../assets/js/checkout.js" defer></script>
     <link rel="stylesheet" href="../assets/css/authentication.css" />
+    <link rel="stylesheet" href="../assets/css/checkout.css" />
+    <link rel="stylesheet" href="../assets/css/cinema-theme.css?v=2" />
     <script src="../assets/js/authentication.js" defer></script>
   </head>
-  <body class="ung-dung-trang account-enabled">
+  <body class="ung-dung-trang account-enabled checkout-page">
     <a class="bo-qua-lien-ket" href="#noi-dung">Bỏ qua điều hướng</a>
     <div class="thanh-tren">
       <div class="bao thanh-tren-trong">
@@ -61,7 +63,6 @@
             <a href="index.html">Trang chủ</a><span aria-hidden="true">/</span
             ><span>Hoàn tất cuộc hẹn</span>
           </nav>
-          <span class="nhan-dau">SẮP ĐẾN GIỜ XEM PHIM</span>
           <h1>Hoàn tất cuộc hẹn</h1>
           <p>Kiểm tra lựa chọn và thông tin liên hệ của bạn trước khi xác nhận.</p>
         </div>
@@ -93,11 +94,8 @@
             <p class="goi-y">Email được lưu cùng đơn hàng để tra cứu.</p>
           </section>
           <section class="khung">
-            <h2>Thanh toán tại quầy</h2>
-            <p>
-              Đơn giữ chỗ tối đa 15 phút, không vượt giờ bắt đầu suất chiếu. Nhân viên xác nhận sau
-              khi nhận đủ tiền.
-            </p>
+            <h2 id="checkout-payment-title">Thanh toán bằng QR</h2>
+            <p id="checkout-payment-note">Sau khi tạo đơn, quét QR và chuyển đúng số tiền. Nhân viên sẽ đối chiếu và xác nhận thanh toán.</p>
           </section>
           <section class="khung xac-nhan-khung">
             <label class="nhan-dong-y"
@@ -114,7 +112,7 @@
               hidden
               >Đăng nhập nếu bạn đã có tài khoản</a
             >
-            <button type="submit" class="nut rong">Tạo đơn chờ thanh toán</button>
+            <button type="submit" class="nut rong">Tiếp tục thanh toán</button>
             <a class="chu-lien-ket" href="orders.html">Đơn của tôi</a>
           </section>
         </form>

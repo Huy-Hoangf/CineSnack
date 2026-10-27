@@ -1,0 +1,43 @@
+.checkout-page .thanh-tren {
+  padding: 8px 16px;
+}
+
+.checkout-page .thanh-tren-trong {
+  min-height: 32px;
+  gap: 16px;
+  font-size: 12px;
+}
+
+.checkout-page .thuong-hieu small,
+.checkout-page .ung-dung-chinh .nhan-dau {
+  font-size: 12px;
+}
+
+.checkout-page .goi-y,
+.checkout-page .tom-tat-phim p,
+.checkout-page .tom-tat-ghi-chu,
+.checkout-page .chan-trong p,
+.checkout-page .nhan-dong-y,
+.checkout-page .tom-tat-chi-tiet {
+  font-size: 14px;
+}
+
+.checkout-page .chu-lien-ket,
+.checkout-page .chan-trong > a:not(.thuong-hieu),
+.checkout-page .chan-trong > span {
+  font-size: 12px;
+}
+
+@media (max-width: 600px) {
+  .checkout-page .tien-trinh-buoc li {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 480px) {
+  .checkout-page .thanh-tren-trong {
+    flex-wrap: wrap;
+    gap: 0 12px;
+  }
+}

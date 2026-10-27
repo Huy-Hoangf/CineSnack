@@ -1,0 +1,698 @@
+{
+  ".impeccable/config.json": {
+    "mtime": 1793069854.7045043,
+    "seen": 1793083954.3376338,
+    "ast_hash": "09d85f8bfd7cf38e6caaae76a9d4db66",
+    "semantic_hash": "09d85f8bfd7cf38e6caaae76a9d4db66"
+  },
+  "pom.xml": {
+    "mtime": 1791971472.646314,
+    "seen": 1793083954.3376338,
+    "ast_hash": "340720cb6452f06589c20b112d4da1d5",
+    "semantic_hash": "340720cb6452f06589c20b112d4da1d5"
+  },
+  "src/main/java/com/cinesnack/CineSnackApplication.java": {
+    "mtime": 1791971442.6785412,
+    "seen": 1793083954.3376338,
+    "ast_hash": "85adbdf31e336c3087c6cfd1adf9f451",
+    "semantic_hash": "85adbdf31e336c3087c6cfd1adf9f451"
+  },
+  "src/main/java/com/cinesnack/config/ApiSecurityConfig.java": {
+    "mtime": 1793002337.789088,
+    "seen": 1793083954.3376338,
+    "ast_hash": "6d330ea3dc03c109d2ea9825407d054f",
+    "semantic_hash": "6d330ea3dc03c109d2ea9825407d054f"
+  },
+  "src/main/java/com/cinesnack/config/PaymentConfig.java": {
+    "mtime": 1791971442.7467616,
+    "seen": 1793083954.3376338,
+    "ast_hash": "48d77e5b424e6394c9e134b5592ad5e4",
+    "semantic_hash": "48d77e5b424e6394c9e134b5592ad5e4"
+  },
+  "src/main/java/com/cinesnack/config/WebConfig.java": {
+    "mtime": 1791971442.7548034,
+    "seen": 1793083954.3376338,
+    "ast_hash": "92bf08aad788a75c2c797d0951076931",
+    "semantic_hash": "92bf08aad788a75c2c797d0951076931"
+  },
+  "src/main/java/com/cinesnack/controller/AdminCatalogController.java": {
+    "mtime": 1792033205.5801978,
+    "seen": 1793083954.3376338,
+    "ast_hash": "a05f6e4929465c869a9d66cc83f0bc0d",
+    "semantic_hash": "a05f6e4929465c869a9d66cc83f0bc0d"
+  },
+  "src/main/java/com/cinesnack/controller/AdminOrderController.java": {
+    "mtime": 1793002337.770084,
+    "seen": 1793083954.3376338,
+    "ast_hash": "6919e05606e0bcfadda90d3e38463288",
+    "semantic_hash": "6919e05606e0bcfadda90d3e38463288"
+  },
+  "src/main/java/com/cinesnack/controller/ApiExceptionHandler.java": {
+    "mtime": 1791971442.7782996,
+    "seen": 1793083954.3376338,
+    "ast_hash": "3711a99b43f4f5306ed34fe0aef2a466",
+    "semantic_hash": "3711a99b43f4f5306ed34fe0aef2a466"
+  },
+  "src/main/java/com/cinesnack/controller/BookingController.java": {
+    "mtime": 1791879995.8868556,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/controller/CatalogController.java": {
+    "mtime": 1791971442.7912936,
+    "seen": 1793083954.3376338,
+    "ast_hash": "526f660698c9fb002dbcdd90e0d22bb4",
+    "semantic_hash": "526f660698c9fb002dbcdd90e0d22bb4"
+  },
+  "src/main/java/com/cinesnack/controller/CsrfController.java": {
+    "mtime": 1791971442.796257,
+    "seen": 1793083954.3376338,
+    "ast_hash": "f94c02a623f101b307129ca3bce96ae1",
+    "semantic_hash": "f94c02a623f101b307129ca3bce96ae1"
+  },
+  "src/main/java/com/cinesnack/controller/GuestOrderController.java": {
+    "mtime": 1792490442.5445907,
+    "seen": 1793083954.3376338,
+    "ast_hash": "5768c6bfc0ea44d6dd9b1f19a6887403",
+    "semantic_hash": "5768c6bfc0ea44d6dd9b1f19a6887403"
+  },
+  "src/main/java/com/cinesnack/controller/InvoiceController.java": {
+    "mtime": 1791971442.8043177,
+    "seen": 1793083954.3376338,
+    "ast_hash": "bbef098c2acc2bf5348e353491fb284f",
+    "semantic_hash": "bbef098c2acc2bf5348e353491fb284f"
+  },
+  "src/main/java/com/cinesnack/controller/MovieController.java": {
+    "mtime": 1791879995.8928993,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/controller/OrderController.java": {
+    "mtime": 1791971442.8181853,
+    "seen": 1793083954.3376338,
+    "ast_hash": "7d89238e3e2ad328d9eea72fe81c63e6",
+    "semantic_hash": "7d89238e3e2ad328d9eea72fe81c63e6"
+  },
+  "src/main/java/com/cinesnack/controller/PaymentController.java": {
+    "mtime": 1792999289.026669,
+    "seen": 1793083954.3376338,
+    "ast_hash": "cf0cfd12d398ef54ec62deb40f20b9d3",
+    "semantic_hash": "cf0cfd12d398ef54ec62deb40f20b9d3"
+  },
+  "src/main/java/com/cinesnack/controller/QrPaymentController.java": {
+    "mtime": 1792998867.9770339,
+    "seen": 1793083954.3376338,
+    "ast_hash": "a926f975e9ea52795480b4b79be177a7",
+    "semantic_hash": "a926f975e9ea52795480b4b79be177a7"
+  },
+  "src/main/java/com/cinesnack/controller/ShowTimeController.java": {
+    "mtime": 1791879995.8939087,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/controller/SnackController.java": {
+    "mtime": 1791879995.885854,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/controller/UserController.java": {
+    "mtime": 1791971442.828163,
+    "seen": 1793083954.3376338,
+    "ast_hash": "8b8ef0813ac197d48d0a2b3dd16d8d93",
+    "semantic_hash": "8b8ef0813ac197d48d0a2b3dd16d8d93"
+  },
+  "src/main/java/com/cinesnack/dto/AdminCatalog.java": {
+    "mtime": 1792033205.589179,
+    "seen": 1793083954.3376338,
+    "ast_hash": "2510f5e65a19ae39f2ee245975eb1a20",
+    "semantic_hash": "2510f5e65a19ae39f2ee245975eb1a20"
+  },
+  "src/main/java/com/cinesnack/dto/CashPaymentRequest.java": {
+    "mtime": 1791971442.8418167,
+    "seen": 1793083954.3376338,
+    "ast_hash": "a8c24e47763ccdf96bf6fba0b2b1dfda",
+    "semantic_hash": "a8c24e47763ccdf96bf6fba0b2b1dfda"
+  },
+  "src/main/java/com/cinesnack/dto/Catalog.java": {
+    "mtime": 1791971442.8510964,
+    "seen": 1793083954.3376338,
+    "ast_hash": "e164d5c21755f1914bb888da447789c0",
+    "semantic_hash": "e164d5c21755f1914bb888da447789c0"
+  },
+  "src/main/java/com/cinesnack/dto/CreateOrderRequest.java": {
+    "mtime": 1791971442.858096,
+    "seen": 1793083954.3376338,
+    "ast_hash": "f6ca10446fdcd428d3b11666639b694b",
+    "semantic_hash": "f6ca10446fdcd428d3b11666639b694b"
+  },
+  "src/main/java/com/cinesnack/dto/TransferConfirmRequest.java": {
+    "mtime": 1793071385.9488068,
+    "seen": 1793083954.3376338,
+    "ast_hash": "b779bec743ee093d18eb341bc9d15c28",
+    "semantic_hash": "b779bec743ee093d18eb341bc9d15c28"
+  },
+  "src/main/java/com/cinesnack/entity/Combo.java": {
+    "mtime": 1791879995.9124835,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/entity/ComboItem.java": {
+    "mtime": 1791879995.9104798,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/entity/Invoice.java": {
+    "mtime": 1791971442.8690944,
+    "seen": 1793083954.3376338,
+    "ast_hash": "3d93eca37c254b3100300a78e7f44ad6",
+    "semantic_hash": "3d93eca37c254b3100300a78e7f44ad6"
+  },
+  "src/main/java/com/cinesnack/entity/Movie.java": {
+    "mtime": 1791879995.9164777,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/entity/Order.java": {
+    "mtime": 1791971442.8760946,
+    "seen": 1793083954.3376338,
+    "ast_hash": "7b780999ca90c75a8d7bdee1aca76b10",
+    "semantic_hash": "7b780999ca90c75a8d7bdee1aca76b10"
+  },
+  "src/main/java/com/cinesnack/entity/OrderItem.java": {
+    "mtime": 1791971442.881096,
+    "seen": 1793083954.3376338,
+    "ast_hash": "cb6265c0f01a9dd7150c6843ad648a4e",
+    "semantic_hash": "cb6265c0f01a9dd7150c6843ad648a4e"
+  },
+  "src/main/java/com/cinesnack/entity/Payment.java": {
+    "mtime": 1791971442.8861024,
+    "seen": 1793083954.3376338,
+    "ast_hash": "c18457173cd6e0cc6d343f93edae80f6",
+    "semantic_hash": "c18457173cd6e0cc6d343f93edae80f6"
+  },
+  "src/main/java/com/cinesnack/entity/Product.java": {
+    "mtime": 1791879995.9179878,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/entity/Room.java": {
+    "mtime": 1791879995.9164777,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/entity/Seat.java": {
+    "mtime": 1791879995.9134748,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/entity/ShowTime.java": {
+    "mtime": 1791879995.9185224,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/entity/Ticket.java": {
+    "mtime": 1792032342.379702,
+    "seen": 1793083954.3376338,
+    "ast_hash": "bdc89be0ad8cb6df375f936cade9c02f",
+    "semantic_hash": "bdc89be0ad8cb6df375f936cade9c02f"
+  },
+  "src/main/java/com/cinesnack/entity/User.java": {
+    "mtime": 1791971442.904095,
+    "seen": 1793083954.3376338,
+    "ast_hash": "62677863f8ddedd84be58dada5ff48c4",
+    "semantic_hash": "62677863f8ddedd84be58dada5ff48c4"
+  },
+  "src/main/java/com/cinesnack/repository/AdminCatalogRepository.java": {
+    "mtime": 1792748857.0140972,
+    "seen": 1793083954.3376338,
+    "ast_hash": "61ad2166661608e95538523e1d5f0d2d",
+    "semantic_hash": "61ad2166661608e95538523e1d5f0d2d"
+  },
+  "src/main/java/com/cinesnack/repository/BookingCatalogRepository.java": {
+    "mtime": 1792470600.3818884,
+    "seen": 1793083954.3376338,
+    "ast_hash": "e55d1bb9cfe830b4df47eaa43e7ac60c",
+    "semantic_hash": "e55d1bb9cfe830b4df47eaa43e7ac60c"
+  },
+  "src/main/java/com/cinesnack/repository/CatalogRepository.java": {
+    "mtime": 1791971442.9310944,
+    "seen": 1793083954.3376338,
+    "ast_hash": "cce15617d8260d884898f163cfccdf2b",
+    "semantic_hash": "cce15617d8260d884898f163cfccdf2b"
+  },
+  "src/main/java/com/cinesnack/repository/ComboRepository.java": {
+    "mtime": 1791879995.8999362,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/repository/InvoiceRepository.java": {
+    "mtime": 1793075316.72601,
+    "seen": 1793083954.3376338,
+    "ast_hash": "43382478257f42d3955bfdba2f5e86b5",
+    "semantic_hash": "43382478257f42d3955bfdba2f5e86b5"
+  },
+  "src/main/java/com/cinesnack/repository/MovieRepository.java": {
+    "mtime": 1791879995.903947,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/repository/OrderRepository.java": {
+    "mtime": 1792999222.3747907,
+    "seen": 1793083954.3376338,
+    "ast_hash": "3713e900d24009b4e8afdba50633cbf0",
+    "semantic_hash": "3713e900d24009b4e8afdba50633cbf0"
+  },
+  "src/main/java/com/cinesnack/repository/PaymentRepository.java": {
+    "mtime": 1792998806.6908839,
+    "seen": 1793083954.3376338,
+    "ast_hash": "84a85cbaf55645f48ada17f9e3e5b096",
+    "semantic_hash": "84a85cbaf55645f48ada17f9e3e5b096"
+  },
+  "src/main/java/com/cinesnack/repository/ProductRepository.java": {
+    "mtime": 1791879995.9059477,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/repository/RoomRepository.java": {
+    "mtime": 1791879995.9049475,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/repository/SeatRepository.java": {
+    "mtime": 1791879995.9019475,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/repository/ShowTimeRepository.java": {
+    "mtime": 1791879995.9069467,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/repository/TicketRepository.java": {
+    "mtime": 1791879995.9084556,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/repository/UserRepository.java": {
+    "mtime": 1791971443.0080996,
+    "seen": 1793083954.3376338,
+    "ast_hash": "38cafef7c6c64debd0b64c761a932200",
+    "semantic_hash": "38cafef7c6c64debd0b64c761a932200"
+  },
+  "src/main/java/com/cinesnack/security/GuestOrderAccess.java": {
+    "mtime": 1792470600.3868954,
+    "seen": 1793083954.3376338,
+    "ast_hash": "36c37c50d34cdac4e90e386effca3ddc",
+    "semantic_hash": "36c37c50d34cdac4e90e386effca3ddc"
+  },
+  "src/main/java/com/cinesnack/service/AdminCatalogService.java": {
+    "mtime": 1792033205.6221774,
+    "seen": 1793083954.3376338,
+    "ast_hash": "629f9e2376eb848e85e79e4b81aec1ed",
+    "semantic_hash": "629f9e2376eb848e85e79e4b81aec1ed"
+  },
+  "src/main/java/com/cinesnack/service/BookingService.java": {
+    "mtime": 1791879995.9225528,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/service/CatalogService.java": {
+    "mtime": 1791971443.0180962,
+    "seen": 1793083954.3376338,
+    "ast_hash": "ecff820b72fc6d1534e433423a8f9687",
+    "semantic_hash": "ecff820b72fc6d1534e433423a8f9687"
+  },
+  "src/main/java/com/cinesnack/service/InvoiceService.java": {
+    "mtime": 1792032342.3777046,
+    "seen": 1793083954.3376338,
+    "ast_hash": "de033e339de515728ac24e08158f2957",
+    "semantic_hash": "de033e339de515728ac24e08158f2957"
+  },
+  "src/main/java/com/cinesnack/service/MovieService.java": {
+    "mtime": 1791879995.9255526,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/service/OrderExpiryService.java": {
+    "mtime": 1793002337.765085,
+    "seen": 1793083954.3376338,
+    "ast_hash": "57b3793ec0ba8ed81f9e0d0b06cd3c1f",
+    "semantic_hash": "57b3793ec0ba8ed81f9e0d0b06cd3c1f"
+  },
+  "src/main/java/com/cinesnack/service/OrderService.java": {
+    "mtime": 1793002694.5922554,
+    "seen": 1793083954.3376338,
+    "ast_hash": "a7519bf002fa1c5e9ed5c1b298ce9cf7",
+    "semantic_hash": "a7519bf002fa1c5e9ed5c1b298ce9cf7"
+  },
+  "src/main/java/com/cinesnack/service/PaymentService.java": {
+    "mtime": 1793070320.2689514,
+    "seen": 1793083954.3376338,
+    "ast_hash": "53776eed770088ea961e117597356ad0",
+    "semantic_hash": "53776eed770088ea961e117597356ad0"
+  },
+  "src/main/java/com/cinesnack/service/QrPaymentService.java": {
+    "mtime": 1792999472.130146,
+    "seen": 1793083954.3376338,
+    "ast_hash": "22f35e7630b254f5294abed4ddc7790d",
+    "semantic_hash": "22f35e7630b254f5294abed4ddc7790d"
+  },
+  "src/main/java/com/cinesnack/service/ShowTimeService.java": {
+    "mtime": 1791879995.9265525,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/service/SnackService.java": {
+    "mtime": 1791879995.921551,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "src/main/java/com/cinesnack/service/UserService.java": {
+    "mtime": 1791971443.0870948,
+    "seen": 1793083954.3376338,
+    "ast_hash": "3c6f4a5789d85224ffd30f74f4c3ec1a",
+    "semantic_hash": "3c6f4a5789d85224ffd30f74f4c3ec1a"
+  },
+  "src/main/java/com/cinesnack/support/Codes.java": {
+    "mtime": 1791971443.0920997,
+    "seen": 1793083954.3376338,
+    "ast_hash": "7fe7575973b2a9ae7f85273c32d92ed4",
+    "semantic_hash": "7fe7575973b2a9ae7f85273c32d92ed4"
+  },
+  "src/main/java/com/cinesnack/support/Sql.java": {
+    "mtime": 1791971443.0980983,
+    "seen": 1793083954.3376338,
+    "ast_hash": "f53f5d00b52436fa3ee1c5c89ec4f5dc",
+    "semantic_hash": "f53f5d00b52436fa3ee1c5c89ec4f5dc"
+  },
+  "src/main/resources/UI/assets/js/admin.js": {
+    "mtime": 1793002337.8230846,
+    "seen": 1793083954.3376338,
+    "ast_hash": "ac3efa991c4c23127cb99da64e09317b",
+    "semantic_hash": "ac3efa991c4c23127cb99da64e09317b"
+  },
+  "src/main/resources/UI/assets/js/api.js": {
+    "mtime": 1791971444.4826555,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d3466090a4d2831d234dd59ee0733275",
+    "semantic_hash": "d3466090a4d2831d234dd59ee0733275"
+  },
+  "src/main/resources/UI/assets/js/authentication.js": {
+    "mtime": 1793070416.100265,
+    "seen": 1793083954.3376338,
+    "ast_hash": "ae160e1dcc53d182e29f89ebd251f857",
+    "semantic_hash": "ae160e1dcc53d182e29f89ebd251f857"
+  },
+  "src/main/resources/UI/assets/js/booking-summary.js": {
+    "mtime": 1791971444.5446503,
+    "seen": 1793083954.3376338,
+    "ast_hash": "e784cc5137a88de32e8b02d37aaf7976",
+    "semantic_hash": "e784cc5137a88de32e8b02d37aaf7976"
+  },
+  "src/main/resources/UI/assets/js/booking.js": {
+    "mtime": 1792998967.1398473,
+    "seen": 1793083954.3376338,
+    "ast_hash": "7edb0e672d765c4f6986af6a22a830f8",
+    "semantic_hash": "7edb0e672d765c4f6986af6a22a830f8"
+  },
+  "src/main/resources/UI/assets/js/checkout.js": {
+    "mtime": 1793002337.7970848,
+    "seen": 1793083954.3376338,
+    "ast_hash": "944848dcb2d3b79f2d9ca8c8f71b6889",
+    "semantic_hash": "944848dcb2d3b79f2d9ca8c8f71b6889"
+  },
+  "src/main/resources/UI/assets/js/cinema.js": {
+    "mtime": 1791971444.65966,
+    "seen": 1793083954.3376338,
+    "ast_hash": "dd13e91f0d5f8a0c74556b120cdc5158",
+    "semantic_hash": "dd13e91f0d5f8a0c74556b120cdc5158"
+  },
+  "src/main/resources/UI/assets/js/home.js": {
+    "mtime": 1791971444.6696608,
+    "seen": 1793083954.3376338,
+    "ast_hash": "c169dc7050f06e5ea9d80c32d97795fd",
+    "semantic_hash": "c169dc7050f06e5ea9d80c32d97795fd"
+  },
+  "src/main/resources/UI/assets/js/movies.js": {
+    "mtime": 1791971444.7036562,
+    "seen": 1793083954.3376338,
+    "ast_hash": "e77351ecd2a1595d6cdb7232ae78e378",
+    "semantic_hash": "e77351ecd2a1595d6cdb7232ae78e378"
+  },
+  "src/main/resources/UI/assets/js/orders.js": {
+    "mtime": 1793002337.8060822,
+    "seen": 1793083954.3376338,
+    "ast_hash": "f1b13f9e6222ed331f2b29fdddbea2ec",
+    "semantic_hash": "f1b13f9e6222ed331f2b29fdddbea2ec"
+  },
+  "src/test/java/com/cinesnack/controller/ApiSecurityTest.java": {
+    "mtime": 1793002371.7986343,
+    "seen": 1793083954.3376338,
+    "ast_hash": "9140737433b36042b6cfa35734a6bb93",
+    "semantic_hash": "9140737433b36042b6cfa35734a6bb93"
+  },
+  "src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java": {
+    "mtime": 1792470672.5606768,
+    "seen": 1793083954.3376338,
+    "ast_hash": "1a129e2a7340a4dacc7b6547b661df0c",
+    "semantic_hash": "1a129e2a7340a4dacc7b6547b661df0c"
+  },
+  "src/test/java/com/cinesnack/controller/SessionSecurityTest.java": {
+    "mtime": 1791971445.2139213,
+    "seen": 1793083954.3376338,
+    "ast_hash": "efc98534de834ae4431d3af0e9a328a6",
+    "semantic_hash": "efc98534de834ae4431d3af0e9a328a6"
+  },
+  "src/test/java/com/cinesnack/repository/BookingCatalogLockOrderTest.java": {
+    "mtime": 1792470860.961397,
+    "seen": 1793083954.3376338,
+    "ast_hash": "9ad3e25a7ebd255933f55008c6d39371",
+    "semantic_hash": "9ad3e25a7ebd255933f55008c6d39371"
+  },
+  "src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java": {
+    "mtime": 1791971445.2229254,
+    "seen": 1793083954.3376338,
+    "ast_hash": "0c8c6b2910be8fe6bb0b1e8ec0b4d801",
+    "semantic_hash": "0c8c6b2910be8fe6bb0b1e8ec0b4d801"
+  },
+  "src/test/java/com/cinesnack/repository/GuestOrderListTest.java": {
+    "mtime": 1792470822.7829413,
+    "seen": 1793083954.3376338,
+    "ast_hash": "7f38a0e6eeb744072d190b923163940d",
+    "semantic_hash": "7f38a0e6eeb744072d190b923163940d"
+  },
+  "src/test/java/com/cinesnack/repository/InvoiceRepositoryTest.java": {
+    "mtime": 1792999111.2973495,
+    "seen": 1793083954.3376338,
+    "ast_hash": "e7cea3956e1ae3b384abc853b1f571a3",
+    "semantic_hash": "e7cea3956e1ae3b384abc853b1f571a3"
+  },
+  "src/test/java/com/cinesnack/repository/OrderAdminSearchTest.java": {
+    "mtime": 1792033205.6481738,
+    "seen": 1793083954.3376338,
+    "ast_hash": "bd4049445887b0fb751c4658462ec1fe",
+    "semantic_hash": "bd4049445887b0fb751c4658462ec1fe"
+  },
+  "src/test/java/com/cinesnack/repository/OrderAvailabilityTest.java": {
+    "mtime": 1792999111.3003416,
+    "seen": 1793083954.3376338,
+    "ast_hash": "ddf2ae62708072f70f7bc1f919ee85ae",
+    "semantic_hash": "ddf2ae62708072f70f7bc1f919ee85ae"
+  },
+  "src/test/java/com/cinesnack/repository/OrderTicketDetailsTest.java": {
+    "mtime": 1792999111.2993517,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d0032d81861823be8e423071838158c5",
+    "semantic_hash": "d0032d81861823be8e423071838158c5"
+  },
+  "src/test/java/com/cinesnack/security/GuestOrderAccessTest.java": {
+    "mtime": 1792470566.49858,
+    "seen": 1793083954.3376338,
+    "ast_hash": "48623cbfb2b3aec1788ec98443417ef0",
+    "semantic_hash": "48623cbfb2b3aec1788ec98443417ef0"
+  },
+  "src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java": {
+    "mtime": 1792033205.6641822,
+    "seen": 1793083954.3376338,
+    "ast_hash": "8985c57c0431bd4bcc79b5fa06eab403",
+    "semantic_hash": "8985c57c0431bd4bcc79b5fa06eab403"
+  },
+  "src/test/java/com/cinesnack/service/AdminCatalogValidationTest.java": {
+    "mtime": 1792033205.66918,
+    "seen": 1793083954.3376338,
+    "ast_hash": "9ee36bc9b3a4f26a9d56335ca9d6c4cc",
+    "semantic_hash": "9ee36bc9b3a4f26a9d56335ca9d6c4cc"
+  },
+  "src/test/java/com/cinesnack/service/CatalogMovieServiceTest.java": {
+    "mtime": 1791971445.2479208,
+    "seen": 1793083954.3376338,
+    "ast_hash": "31aa160a676bcd66f7d35b1a7bdc83a0",
+    "semantic_hash": "31aa160a676bcd66f7d35b1a7bdc83a0"
+  },
+  "src/test/java/com/cinesnack/service/GuestOrderServiceTest.java": {
+    "mtime": 1792033205.6761742,
+    "seen": 1793083954.3376338,
+    "ast_hash": "dc18e750f223c1b36e1a4f62e971ac00",
+    "semantic_hash": "dc18e750f223c1b36e1a4f62e971ac00"
+  },
+  "src/test/java/com/cinesnack/service/OrderClockRegressionTest.java": {
+    "mtime": 1791971445.2599263,
+    "seen": 1793083954.3376338,
+    "ast_hash": "e4ab69fe26ed2bb046256aa0ece19438",
+    "semantic_hash": "e4ab69fe26ed2bb046256aa0ece19438"
+  },
+  "src/test/java/com/cinesnack/service/OrderExpiryServiceTest.java": {
+    "mtime": 1793002244.801135,
+    "seen": 1793083954.3376338,
+    "ast_hash": "f568ebbbe73e262e95632d5e5eb632fb",
+    "semantic_hash": "f568ebbbe73e262e95632d5e5eb632fb"
+  },
+  "src/test/java/com/cinesnack/service/OrderServiceTest.java": {
+    "mtime": 1793002244.805139,
+    "seen": 1793083954.3376338,
+    "ast_hash": "c004d091aaddd4f739cf5ec4f8056017",
+    "semantic_hash": "c004d091aaddd4f739cf5ec4f8056017"
+  },
+  "src/test/java/com/cinesnack/service/PaymentServiceTest.java": {
+    "mtime": 1793070416.1012497,
+    "seen": 1793083954.3376338,
+    "ast_hash": "a78bde4e851fb020a4ef8c102e8b1542",
+    "semantic_hash": "a78bde4e851fb020a4ef8c102e8b1542"
+  },
+  "src/test/java/com/cinesnack/service/PaymentTransactionTest.java": {
+    "mtime": 1791971445.318924,
+    "seen": 1793083954.3376338,
+    "ast_hash": "43fb8301c60674445e472878c48d00ee",
+    "semantic_hash": "43fb8301c60674445e472878c48d00ee"
+  },
+  "src/test/java/com/cinesnack/service/QrPaymentServiceTest.java": {
+    "mtime": 1792999191.2393155,
+    "seen": 1793083954.3376338,
+    "ast_hash": "1c2dd0acc5b220590e3dad787a672ca3",
+    "semantic_hash": "1c2dd0acc5b220590e3dad787a672ca3"
+  },
+  "src/test/java/com/cinesnack/service/SqlServerPaymentIT.java": {
+    "mtime": 1792999326.2681463,
+    "seen": 1793083954.3376338,
+    "ast_hash": "45bc0a69ae0b2feac06ed6604a476214",
+    "semantic_hash": "45bc0a69ae0b2feac06ed6604a476214"
+  },
+  "src/test/java/com/cinesnack/service/UserServiceTest.java": {
+    "mtime": 1791971445.3389251,
+    "seen": 1793083954.3376338,
+    "ast_hash": "3306fde693638805238ce325511b2070",
+    "semantic_hash": "3306fde693638805238ce325511b2070"
+  },
+  "src/test/java/com/cinesnack/support/CodesTest.java": {
+    "mtime": 1791971445.34393,
+    "seen": 1793083954.3376338,
+    "ast_hash": "35338a7cf053458b6ec039ee4affca5b",
+    "semantic_hash": "35338a7cf053458b6ec039ee4affca5b"
+  },
+  "src/test/js/authentication.test.cjs": {
+    "mtime": 1793070368.8132553,
+    "seen": 1793083954.3376338,
+    "ast_hash": "8b7b57c9d8e90bfd2fad8960bda8904b",
+    "semantic_hash": "8b7b57c9d8e90bfd2fad8960bda8904b"
+  },
+  "tests/database/catalog-idempotency.ps1": {
+    "mtime": 1791971534.2723217,
+    "seen": 1793083954.3376338,
+    "ast_hash": "d5ae9322e8cfd66830ef24496abbbe43",
+    "semantic_hash": "d5ae9322e8cfd66830ef24496abbbe43"
+  },
+  "tests/database/p2-atomicity.ps1": {
+    "mtime": 1791971534.3468926,
+    "seen": 1793083954.3376338,
+    "ast_hash": "6287988b0bbd7a39bcc9cdae208b8ba5",
+    "semantic_hash": "6287988b0bbd7a39bcc9cdae208b8ba5"
+  },
+  "tests/frontend/browser/authentication.test.cjs": {
+    "mtime": 1792636458.0882337,
+    "seen": 1793083954.3376338,
+    "ast_hash": "070325c0fad4996d2cdfe1a1858531f2",
+    "semantic_hash": "070325c0fad4996d2cdfe1a1858531f2"
+  },
+  "tests/frontend/browser/four-roles.test.cjs": {
+    "mtime": 1792033484.4987643,
+    "seen": 1793083954.3376338,
+    "ast_hash": "7527579757af312f9bec0f768383bba9",
+    "semantic_hash": "7527579757af312f9bec0f768383bba9"
+  },
+  "tests/frontend/browser/helpers.cjs": {
+    "mtime": 1791971445.3679204,
+    "seen": 1793083954.3376338,
+    "ast_hash": "6a9078fffc9bd321de06f487c9ba9e8a",
+    "semantic_hash": "6a9078fffc9bd321de06f487c9ba9e8a"
+  },
+  "tests/frontend/browser/p2-regression.test.cjs": {
+    "mtime": 1791971445.387935,
+    "seen": 1793083954.3376338,
+    "ast_hash": "1738e5929dbb92716632dcf5ba0645c4",
+    "semantic_hash": "1738e5929dbb92716632dcf5ba0645c4"
+  },
+  "tests/frontend/browser/seat-states.test.cjs": {
+    "mtime": 1791971445.5093307,
+    "seen": 1793083954.3376338,
+    "ast_hash": "30d8340a6a5b17361a5c3a81bd21f78d",
+    "semantic_hash": "30d8340a6a5b17361a5c3a81bd21f78d"
+  },
+  "tests/frontend/browser/site.test.cjs": {
+    "mtime": 1792032357.8764286,
+    "seen": 1793083954.3376338,
+    "ast_hash": "69ab7894263ad5f7a7a22df648c255b0",
+    "semantic_hash": "69ab7894263ad5f7a7a22df648c255b0"
+  },
+  "tests/frontend/fixtures/api-server.cjs": {
+    "mtime": 1792033205.5741978,
+    "seen": 1793083954.3376338,
+    "ast_hash": "bede5951ada45517fd604756c7c51ebd",
+    "semantic_hash": "bede5951ada45517fd604756c7c51ebd"
+  },
+  "tests/frontend/integration/accounts.test.cjs": {
+    "mtime": 1791971445.6133313,
+    "seen": 1793083954.3376338,
+    "ast_hash": "82b3a770e5673276193ae23b2f1f594f",
+    "semantic_hash": "82b3a770e5673276193ae23b2f1f594f"
+  },
+  "tests/frontend/integration/catalog.test.cjs": {
+    "mtime": 1791971445.6273272,
+    "seen": 1793083954.3376338,
+    "ast_hash": "1328040873fd603bad8bbd48a95d3349",
+    "semantic_hash": "1328040873fd603bad8bbd48a95d3349"
+  },
+  "tests/frontend/unit/cart.test.cjs": {
+    "mtime": 1791971445.6373286,
+    "seen": 1793083954.3376338,
+    "ast_hash": "168a4a242279e58d3de152cff62ffcf2",
+    "semantic_hash": "168a4a242279e58d3de152cff62ffcf2"
+  },
+  "tests/frontend/unit/cinema.test.cjs": {
+    "mtime": 1791971445.6503248,
+    "seen": 1793083954.3376338,
+    "ast_hash": "afa49e23bc672c850561c879620ee7b4",
+    "semantic_hash": "afa49e23bc672c850561c879620ee7b4"
+  }
+}

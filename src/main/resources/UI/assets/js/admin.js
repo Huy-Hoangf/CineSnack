@@ -196,6 +196,7 @@
     section = id;
     const titles = {
       don: ["Đơn toàn rạp", "Tra cứu đơn của user và guest, đối chiếu trước khi nhận tiền."],
+      monitor: ["Theo dõi thanh toán", "Các đơn chờ thanh toán, cập nhật mỗi 10 giây."],
       "hoa-don": ["Hóa đơn đã thanh toán", "Mở chi tiết đơn để xem hóa đơn vé và bắp nước."],
       phim: ["Phim tại rạp", "Quản lý danh mục, nội dung và trạng thái phim."],
       suat: ["Lịch chiếu", "Xếp lịch theo phòng, giữ nguyên sơ đồ ghế có sẵn."],
@@ -205,7 +206,7 @@
     o("quan-tri-phu").textContent = titles[id][1];
     document
       .querySelectorAll(".quan-tri-muc")
-      .forEach((x) => (x.hidden = x.id !== "muc-" + (id === "hoa-don" ? "don" : id)));
+      .forEach((x) => (x.hidden = x.id !== "muc-" + (["hoa-don", "monitor"].includes(id) ? "don" : id)));
     document
       .querySelectorAll("[data-muc]")
       .forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.muc === id)));
@@ -214,9 +215,9 @@
     else {
       if (previous !== id) {
         page = 0;
-        o("don-trang-thai").value = id === "hoa-don" ? "DA_THANH_TOAN" : "";
+        o("don-trang-thai").value = id === "hoa-don" ? "DA_THANH_TOAN" : id === "monitor" ? "CHO_THANH_TOAN" : "";
       }
-      o("don-trang-thai").disabled = id === "hoa-don";
+      o("don-trang-thai").disabled = id === "hoa-don" || id === "monitor";
       await loadOrders();
     }
   }
@@ -384,6 +385,9 @@
     loadOrders().catch(error);
   });
   o("admin-refresh").addEventListener("click", () => loadOrders().catch(error));
+  setInterval(() => {
+    if (section === "monitor" && !document.hidden && user) loadOrders().catch(error);
+  }, 10000);
   for (const [id, delta] of [
     ["admin-truoc", -1],
     ["admin-sau", 1],
@@ -439,8 +443,14 @@
       timeZone: "Asia/Ho_Chi_Minh",
     }).format(new Date());
     document.querySelectorAll("[data-admin-only]").forEach((node) => (node.hidden = !isAdmin()));
+    document.querySelectorAll("[data-staff-only]").forEach((node) => (node.hidden = user.role !== "NHAN_VIEN"));
     o("admin-workspace").hidden = false;
     await openSection(isAdmin() ? "phim" : "don");
+    const code = new URLSearchParams(location.search).get("code");
+    if (code && /^[A-Za-z0-9]{1,30}$/.test(code)) {
+      await openSection("don");
+      await showOrder(code);
+    }
   } catch (err) {
     error(err);
   }

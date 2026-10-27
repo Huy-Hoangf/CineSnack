@@ -29,7 +29,7 @@
   }
   function capNhat() {
     CineSnack.hienTomTat(g);
-    o("tiep-dat-ve").disabled = dangTai || !CineSnack.gioHopLe(g);
+    o("tiep-dat-ve").disabled = dangTai || !o("chon-phim").value || !CineSnack.gioHopLe(g);
     o("tiep-goi-y").textContent = g.ghe.length
       ? `${g.ghe.length} ghế đã chọn.`
       : "Chọn ghế hoặc bắp nước để tiếp tục.";
@@ -120,7 +120,7 @@
   function hienGio(ngay, maUuTien = null) {
     o("chon-gio").replaceChildren();
     const ds = suat.filter((s) => CineSnack.ngaySuat(s.startsAt) === ngay);
-    const daChon = maUuTien ? ds.find((s) => s.id === maUuTien) : ds[0];
+    const daChon = maUuTien ? ds.find((s) => s.id === maUuTien) : null;
     for (const s of ds)
       o("chon-gio").append(
         radio(
@@ -145,7 +145,8 @@
     o("chon-gio").replaceChildren();
     o("hang-ghe").replaceChildren();
     o("ghe-loi").textContent = "";
-    hienTrangThaiGhe(g.phim ? "Đang tải suất chiếu…" : "Chỉ mua bắp nước: không cần chọn ghế.");
+    hienTrangThaiGhe(g.phim ? "Đang tải suất chiếu…" :
+      o("chon-phim").value === "snacks" ? "Chỉ mua bắp nước: không cần chọn ghế." : "Chọn phim trước để xem suất chiếu.");
     loi("");
     if (!g.phim) {
       dangTai = false;
@@ -265,8 +266,12 @@
     o("chon-phim").replaceChildren();
     const empty = document.createElement("option");
     empty.value = "";
-    empty.textContent = "Chỉ mua bắp nước";
+    empty.textContent = "Chọn phim";
     o("chon-phim").append(empty);
+    const onlySnacks = document.createElement("option");
+    onlySnacks.value = "snacks";
+    onlySnacks.textContent = "Chỉ mua bắp nước";
+    o("chon-phim").append(onlySnacks);
     for (const p of phim) {
       const option = document.createElement("option");
       option.value = p.id;
@@ -274,9 +279,8 @@
       o("chon-phim").append(option);
     }
     const ma = khoiPhuc ? luu.phim?.id : maYeuCau;
-    o("chon-phim").value = String(
-      phim.find((p) => p.id === ma)?.id || (!ma && !khoiPhuc ? phim[0]?.id : "") || "",
-    );
+    o("chon-phim").value = String(phim.find((p) => p.id === ma)?.id ||
+      (khoiPhuc && !luu.phim ? "snacks" : ""));
     if (khoiPhuc) {
       for (const [key, idKey, ds] of [
         ["combos", "comboId", food.combos],

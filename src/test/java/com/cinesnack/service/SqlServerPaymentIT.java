@@ -162,6 +162,9 @@ class SqlServerPaymentIT {
         var ownedCodes = Set.of(order.ma());
         var details = dichVuDonHang.layChiTietKhach(order.ma(), ownedCodes);
         assertEquals(movie.ten(), details.dsVe().get(0).tenPhim());
+        assertEquals(0, truyVan.queryForObject(
+            "SELECT (SELECT COUNT(*) FROM HOA_DON_VE WHERE don_hang_id=?) + (SELECT COUNT(*) FROM HOA_DON_BONG_NUOC WHERE don_hang_id=?)",
+            Integer.class, order.maSo(), order.maSo()));
         assertTrue(
             dichVuDonHang
                 .layDanhSachQuanTri(staff, guestEmail, "", 0, 20)
