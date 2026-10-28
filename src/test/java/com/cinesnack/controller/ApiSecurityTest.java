@@ -1,14 +1,29 @@
 package com.cinesnack.controller;
 
+import com.cinesnack.booking.controller.AdminOrderController;
+import com.cinesnack.booking.controller.GuestOrderController;
+import com.cinesnack.booking.controller.OrderController;
+import com.cinesnack.booking.service.OrderExpiryService;
+import com.cinesnack.booking.service.OrderService;
+import com.cinesnack.catalog.controller.AdminCatalogController;
+import com.cinesnack.catalog.controller.CatalogController;
+import com.cinesnack.catalog.service.AdminCatalogService;
+import com.cinesnack.catalog.service.CatalogService;
+import com.cinesnack.common.controller.ApiExceptionHandler;
+import com.cinesnack.common.controller.CsrfController;
+import com.cinesnack.invoice.controller.InvoiceController;
+import com.cinesnack.invoice.service.InvoiceService;
+import com.cinesnack.payment.controller.PaymentController;
+import com.cinesnack.payment.service.PaymentService;
+
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import com.cinesnack.config.ApiSecurityConfig;
-import com.cinesnack.entity.User;
-import com.cinesnack.repository.UserRepository;
-import com.cinesnack.service.*;
+import com.cinesnack.account.config.ApiSecurityConfig;
+import com.cinesnack.account.entity.User;
+import com.cinesnack.account.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,8 +84,8 @@ class ApiSecurityTest {
         }
 
         @Bean
-        com.cinesnack.security.GuestOrderAccess quyenKhach() {
-            return new com.cinesnack.security.GuestOrderAccess();
+        com.cinesnack.booking.security.GuestOrderAccess quyenKhach() {
+            return new com.cinesnack.booking.security.GuestOrderAccess();
         }
 
         @Bean
@@ -127,7 +142,7 @@ class ApiSecurityTest {
             )
             .andExpect(status().isForbidden());
         when(dichVuDonHang.taoDonKhach(any())).thenReturn(
-            new com.cinesnack.entity.Order(
+            new com.cinesnack.booking.entity.Order(
                 7L,
                 null,
                 "DHGUEST",
@@ -239,7 +254,7 @@ class ApiSecurityTest {
 
     @Test
     void nhanVienDuocThuTien() throws Exception {
-        var thanhToan = new com.cinesnack.entity.Payment(
+        var thanhToan = new com.cinesnack.payment.entity.Payment(
             1L,
             1L,
             "TM01",
@@ -271,7 +286,7 @@ class ApiSecurityTest {
 
     @Test
     void doiTenTiengVietVanGiuHopDongJson() throws Exception {
-        var donHang = new com.cinesnack.entity.Order(
+        var donHang = new com.cinesnack.booking.entity.Order(
             1L,
             1L,
             "DH01",

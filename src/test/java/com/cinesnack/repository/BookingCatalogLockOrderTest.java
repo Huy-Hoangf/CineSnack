@@ -1,5 +1,7 @@
 package com.cinesnack.repository;
 
+import com.cinesnack.catalog.repository.BookingCatalogRepository;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;

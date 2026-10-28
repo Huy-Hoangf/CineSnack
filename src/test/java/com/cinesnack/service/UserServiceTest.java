@@ -1,10 +1,13 @@
 package com.cinesnack.service;
 
+import com.cinesnack.account.entity.User;
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.booking.entity.Order;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.cinesnack.entity.*;
-import com.cinesnack.repository.UserRepository;
+import com.cinesnack.account.repository.UserRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;

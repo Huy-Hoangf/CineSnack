@@ -1,9 +1,12 @@
 package com.cinesnack.service;
 
+import com.cinesnack.booking.service.OrderService;
+import com.cinesnack.payment.service.QrPaymentService;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.cinesnack.entity.Order;
+import com.cinesnack.booking.entity.Order;
 import java.math.BigDecimal;
 import java.time.*;
 import org.junit.jupiter.api.Test;

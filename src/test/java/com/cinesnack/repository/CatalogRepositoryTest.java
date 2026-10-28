@@ -1,5 +1,7 @@
 package com.cinesnack.repository;
 
+import com.cinesnack.catalog.repository.CatalogRepository;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDateTime;

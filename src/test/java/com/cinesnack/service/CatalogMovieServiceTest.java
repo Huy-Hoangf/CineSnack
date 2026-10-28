@@ -1,10 +1,12 @@
 package com.cinesnack.service;
 
+import com.cinesnack.catalog.service.CatalogService;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.cinesnack.dto.Catalog;
-import com.cinesnack.repository.CatalogRepository;
+import com.cinesnack.catalog.dto.Catalog;
+import com.cinesnack.catalog.repository.CatalogRepository;
 import java.time.Clock;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;

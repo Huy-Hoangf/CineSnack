@@ -1,8 +1,9 @@
 package com.cinesnack.service;
 
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.cinesnack.dto.AdminCatalog;
+import com.cinesnack.catalog.dto.AdminCatalog;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
