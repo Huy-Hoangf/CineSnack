@@ -1,4 +1,10 @@
 /target/
+/graphify-out/
+/.ua/
+/.impeccable/
+/docs/huong-dan-3-nguoi/_qa/
+**/__pycache__/
+~$*.docx
 /.classpath
 /.project
 /.settings/

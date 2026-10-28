@@ -1,8 +1,10 @@
 package com.cinesnack.security;
 
+import com.cinesnack.booking.security.GuestOrderAccess;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.cinesnack.entity.Order;
+import com.cinesnack.booking.entity.Order;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;

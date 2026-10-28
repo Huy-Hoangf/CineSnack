@@ -1,13 +1,16 @@
 package com.cinesnack.service;
 
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.catalog.service.AdminCatalogService;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.cinesnack.dto.AdminCatalog;
-import com.cinesnack.dto.Catalog;
-import com.cinesnack.entity.User;
-import com.cinesnack.repository.AdminCatalogRepository;
+import com.cinesnack.catalog.dto.AdminCatalog;
+import com.cinesnack.catalog.dto.Catalog;
+import com.cinesnack.account.entity.User;
+import com.cinesnack.catalog.repository.AdminCatalogRepository;
 import java.math.BigDecimal;
 import java.time.*;
 import org.junit.jupiter.api.BeforeEach;

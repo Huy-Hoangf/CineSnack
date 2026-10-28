@@ -1,14 +1,18 @@
 package com.cinesnack.service;
 
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.invoice.service.InvoiceService;
+import com.cinesnack.payment.service.PaymentService;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.cinesnack.entity.Order;
-import com.cinesnack.entity.Payment;
-import com.cinesnack.entity.User;
-import com.cinesnack.repository.OrderRepository;
-import com.cinesnack.repository.PaymentRepository;
+import com.cinesnack.booking.entity.Order;
+import com.cinesnack.payment.entity.Payment;
+import com.cinesnack.account.entity.User;
+import com.cinesnack.booking.repository.OrderRepository;
+import com.cinesnack.payment.repository.PaymentRepository;
 import java.math.BigDecimal;
 import java.time.*;
 import org.junit.jupiter.api.BeforeEach;

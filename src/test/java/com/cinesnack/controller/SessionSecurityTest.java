@@ -1,5 +1,9 @@
 package com.cinesnack.controller;
 
+import com.cinesnack.account.controller.UserController;
+import com.cinesnack.common.controller.ApiExceptionHandler;
+import com.cinesnack.common.controller.CsrfController;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -7,10 +11,10 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.cinesnack.config.ApiSecurityConfig;
-import com.cinesnack.entity.User;
-import com.cinesnack.repository.UserRepository;
-import com.cinesnack.service.UserService;
+import com.cinesnack.account.config.ApiSecurityConfig;
+import com.cinesnack.account.entity.User;
+import com.cinesnack.account.repository.UserRepository;
+import com.cinesnack.account.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,15 +35,7 @@ class SessionSecurityTest {
     @Configuration
     @EnableWebMvc
     @EnableWebSecurity
-    @Import({ ApiSecurityConfig.class, CsrfController.class, ApiExceptionHandler.class })
-    @ComponentScan(
-        basePackages = "com.cinesnack.controller",
-        useDefaultFilters = false,
-        includeFilters = @ComponentScan.Filter(
-            type = FilterType.REGEX,
-            pattern = "com\\.cinesnack\\.controller\\.UserController"
-        )
-    )
+    @Import({ ApiSecurityConfig.class, CsrfController.class, ApiExceptionHandler.class, UserController.class })
     static class Config {
 
         @Bean

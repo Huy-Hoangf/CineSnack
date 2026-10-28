@@ -1,11 +1,22 @@
 package com.cinesnack.service;
 
+import com.cinesnack.account.repository.UserRepository;
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.booking.repository.OrderRepository;
+import com.cinesnack.booking.service.OrderService;
+import com.cinesnack.catalog.repository.AdminCatalogRepository;
+import com.cinesnack.catalog.repository.BookingCatalogRepository;
+import com.cinesnack.catalog.service.AdminCatalogService;
+import com.cinesnack.invoice.repository.InvoiceRepository;
+import com.cinesnack.invoice.service.InvoiceService;
+import com.cinesnack.payment.repository.PaymentRepository;
+import com.cinesnack.payment.service.PaymentService;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.cinesnack.dto.AdminCatalog;
-import com.cinesnack.dto.CreateOrderRequest;
-import com.cinesnack.repository.*;
-import com.cinesnack.support.Sql;
+import com.cinesnack.catalog.dto.AdminCatalog;
+import com.cinesnack.booking.dto.CreateOrderRequest;
+import com.cinesnack.common.support.Sql;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
