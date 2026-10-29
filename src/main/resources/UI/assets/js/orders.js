@@ -205,15 +205,21 @@ window.CineSnackOrders = (() => {
       amountLabel.append(amountInput);
       const confirmTransfer = e("button", "Xác nhận chuyển khoản", "nut");
       confirmTransfer.type = "submit";
-      transfer.append(e("h3", "Đối chiếu chuyển khoản"),
+      transfer.append(
+        e("h3", "Đối chiếu chuyển khoản"),
         e("p", "Chỉ xác nhận sau khi kiểm tra đúng số tiền và mã đơn trong tài khoản nhận tiền."),
-        transferLabel, amountLabel, confirmTransfer);
+        transferLabel,
+        amountLabel,
+        confirmTransfer,
+      );
       transfer.addEventListener("submit", (event) => {
         event.preventDefault();
         run(confirmTransfer, async () => {
           await CineSnackApi.goi(`/api/orders/${encodeURIComponent(code)}/payments/transfer`, {
-            method: "POST", body: {
-              transactionCode: transferCode.value.trim(), amountReceived: Number(amountInput.value),
+            method: "POST",
+            body: {
+              transactionCode: transferCode.value.trim(),
+              amountReceived: Number(amountInput.value),
             },
           });
           await hienChiTiet(box, code, user, thayDoi, hopLe, guestMode);
@@ -237,18 +243,28 @@ window.CineSnackOrders = (() => {
           img.remove();
           qrBox.append(e("p", "Không tải được ảnh QR. Vui lòng cập nhật đơn để thử lại.", "loi"));
         });
-        qrBox.append(img,
+        qrBox.append(
+          img,
           e("p", `Số tiền: ${CineSnack.dinhDangTien(qr.amount)} · Nội dung: ${qr.content}`),
-          e("p", "Sau khi chuyển tiền, chờ nhân viên đối chiếu và xác nhận. Quét QR không tự hoàn tất đơn."));
+          e(
+            "p",
+            "Sau khi chuyển tiền, chờ nhân viên đối chiếu và xác nhận. Quét QR không tự hoàn tất đơn.",
+          ),
+        );
       } catch (error) {
         qrBox.append(e("p", error.message, "loi"));
       }
       root.append(qrBox);
       if (d.expiresAt) {
         const conLai = Date.parse(d.expiresAt) - Date.now();
-        setTimeout(() => {
-          qrBox.replaceChildren(e("p", "Đã hết thời gian giữ chỗ. Cập nhật đơn để xem trạng thái mới.", "loi"));
-        }, Math.max(0, conLai));
+        setTimeout(
+          () => {
+            qrBox.replaceChildren(
+              e("p", "Đã hết thời gian giữ chỗ. Cập nhật đơn để xem trạng thái mới.", "loi"),
+            );
+          },
+          Math.max(0, conLai),
+        );
       }
     }
     const invoices = e("div");
@@ -334,7 +350,11 @@ window.CineSnackOrders = (() => {
     );
     if (n !== lanDanhSach) return;
     list.replaceChildren();
-    if (!ds.length)
+    const rongTrangDau = ds.length === 0 && trang === 0;
+    o("don-trong").hidden = !rongTrangDau;
+    o("don-chi-tiet-khung").hidden = rongTrangDau;
+    o("don-phan-trang").hidden = rongTrangDau;
+    if (!ds.length && trang > 0)
       list.append(
         CineSnackOrders.e(
           "li",

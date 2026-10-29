@@ -105,8 +105,9 @@
               Chọn phim và suất chiếu để xem ghế.
             </p>
             <div id="ghe-so-do-khung" hidden>
-              <div
+              <div class="ghe-khung-cuon" id="ghe-khung-cuon"><div
                 class="ghe-cuon"
+                id="ghe-cuon"
                 tabindex="0"
                 role="region"
                 aria-label="Sơ đồ ghế; cuộn ngang nếu cần"
@@ -115,8 +116,8 @@
                   <div class="man-hinh"><span>MÀN HÌNH</span></div>
                   <div id="hang-ghe"></div>
                 </div>
-              </div>
-              <p class="goi-y">Cuộn ngang sơ đồ nếu chưa thấy đủ các ghế trong hàng.</p>
+              </div></div>
+              <p class="goi-y" id="ghe-goi-y-cuon" hidden>Vuốt hoặc cuộn ngang để xem thêm ghế.</p>
               <div class="ghe-chu-thich">
                 <span><i class="chu-thich-ghe"></i>Thường</span
                 ><span><i class="chu-thich-ghe vip"></i>VIP</span
@@ -147,9 +148,7 @@
               height="120"
             />
             <div>
-              <span class="nhan-tron">2D · Phụ đề</span>
               <h2 id="tom-tat-tieu-de">Chọn phim hoặc bắp nước</h2>
-              <p>CineSnack · Phòng theo suất chiếu</p>
             </div>
           </div>
           <dl class="tom-tat-chi-tiet">
@@ -183,6 +182,10 @@
             Lựa chọn chưa được giữ chỗ. Ghế chỉ được giữ sau khi tạo đơn thành công.
           </p>
         </aside>
+      </div>
+      <div class="dat-ve-di-dong" aria-label="Tóm tắt đặt vé">
+        <div><span id="di-dong-so-ghe">Chưa chọn ghế</span><strong id="di-dong-tong" aria-live="polite">0 ₫</strong></div>
+        <button type="button" class="nut" id="di-dong-tiep" disabled>Tiếp tục</button>
       </div>
     </main>
     <footer class="web-chan">

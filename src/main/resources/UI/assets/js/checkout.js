@@ -11,6 +11,14 @@
   document.querySelector("#sua-dat-ve").href = g.phim
     ? "booking.html?phim=" + g.phim.id
     : "booking.html";
+  document.querySelector("#xac-nhan-phim").textContent = g.phim?.name || "Đơn bắp nước";
+  document.querySelector("#xac-nhan-suat").textContent = g.suat
+    ? CineSnack.dinhDangSuat(g.suat.startsAt) + " · " + g.suat.roomName
+    : "Không đặt vé";
+  document.querySelector("#xac-nhan-ghe").textContent = g.ghe.length
+    ? g.ghe.map((ghe) => ghe.code).join(", ") : "Không đặt vé";
+  document.querySelector("#xac-nhan-tong").textContent = CineSnack.dinhDangTien(CineSnack.tinhTien(g).tong);
+  document.querySelector("#xac-nhan-sua").href = document.querySelector("#sua-dat-ve").href;
   const form = document.querySelector("#thanh-toan-bieu-mau"),
     nut = form.querySelector("button[type=submit]"),
     email = document.querySelector("#khach-email");
@@ -27,8 +35,7 @@
       document.querySelector("#checkout-payment-title").textContent = "Tạo đơn tại quầy";
       document.querySelector("#checkout-payment-note").textContent =
         "Nhập email khách nhận đơn. Sau khi tạo, xác nhận tiền mặt hoặc chuyển khoản tại màn hình nhân viên.";
-    }
-    else {
+    } else if (!user) {
       document.querySelector("#checkout-guest-note").hidden = false;
       document.querySelector("#checkout-guest-note").textContent =
         "Bạn đang đặt với tư cách khách. Nhập email để tiếp tục, không cần đăng nhập.";
@@ -56,10 +63,13 @@
     loi.textContent = "Đang tạo đơn…";
     try {
       const staff = user?.role === "NHAN_VIEN";
-      const d = await CineSnackApi.goi(staff ? "/api/admin/orders" : user ? "/api/orders" : "/api/guest/orders", {
-        method: "POST",
-        body: CineSnack.taoYeuCau(g, email.value.trim()),
-      });
+      const d = await CineSnackApi.goi(
+        staff ? "/api/admin/orders" : user ? "/api/orders" : "/api/guest/orders",
+        {
+          method: "POST",
+          body: CineSnack.taoYeuCau(g, email.value.trim()),
+        },
+      );
       maDaTao = d.code;
       try {
         sessionStorage.removeItem(CineSnack.khoaGio);

@@ -428,9 +428,24 @@
   overflow-x: auto;
   padding: 0 4px 16px;
 }
+.ghe-khung-cuon { position: relative; }
+.ghe-khung-cuon.con-ghe-ben-phai::after {
+  content: ""; position: absolute; inset: 0 0 16px auto; width: 28px;
+  pointer-events: none; background: linear-gradient(to right, transparent, rgb(255 255 255 / 90%));
+}
+.xac-nhan-tom-tat { padding: 16px; border: 1px solid var(--vien); border-radius: 8px; background: var(--nen); }
+.xac-nhan-tom-tat dl { display: grid; gap: 8px; margin: 12px 0; }
+.xac-nhan-tom-tat dl > div { display: flex; justify-content: space-between; gap: 16px; }
+.xac-nhan-tom-tat dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.dat-ve-di-dong { display: none; }
+@media (max-width: 600px) {
+  .dat-ve-di-dong { position: fixed; inset: auto 0 0; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--vien); background: #fff; box-shadow: 0 -6px 20px rgb(21 43 64 / 10%); }
+  .dat-ve-di-dong > div { display: grid; }
+  body:has(.dat-ve-di-dong) { padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+}
 .ghe-so-do {
+  width: max-content;
   min-width: 580px;
-  max-width: 580px;
   margin: auto;
 }
 .man-hinh {
@@ -445,17 +460,18 @@
   background: linear-gradient(#edf7fe, white 60%);
 }
 .hang-ghe {
-  display: grid;
-  grid-template-columns: 18px repeat(10, minmax(0, 1fr));
+  display: flex;
   gap: 6px;
   margin-bottom: 10px;
   align-items: center;
 }
 .hang-ghe > span {
+  flex: 0 0 18px;
   font-size: 11px;
   color: var(--chu-phu);
 }
 .ung-dung-trang .nut-ghe {
+  flex: 0 0 44px;
   height: 44px;
   min-width: 44px;
   padding: 0;
@@ -465,6 +481,10 @@
   color: #335166;
   font-size: 11px;
 }
+
+.xac-nhan-khung { display: grid; gap: 16px; }
+.xac-nhan-khung .authentication-note { margin-top: 0; }
+.xac-nhan-khung > .chu-lien-ket { justify-self: start; min-height: 44px; display: inline-flex; align-items: center; }
 .ung-dung-trang .nut-ghe:nth-child(7) {
   margin-left: 10px;
 }

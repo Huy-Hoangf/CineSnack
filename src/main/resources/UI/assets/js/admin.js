@@ -96,7 +96,7 @@
       cell(row, CineSnack.dinhDangTien(d.total));
       cell(row).append(badge(nhan[d.status] || d.status, d.status === "DA_THANH_TOAN"));
       cell(row).append(
-        button(d.status === "DA_THANH_TOAN" ? "Hóa đơn" : "Chi tiết", () => showOrder(d.code), {
+        button("Xem đơn", () => showOrder(d.code), {
           don: d.code,
         }),
       );
@@ -109,8 +109,8 @@
     o("thong-ke").replaceChildren();
     for (const [label, count] of [
       ["Đơn trên trang", ds.length],
-      ["Chờ thanh toán", ds.filter((d) => d.status === "CHO_THANH_TOAN").length],
-      ["Đã thanh toán", ds.filter((d) => d.status === "DA_THANH_TOAN").length],
+      ["Chờ thanh toán trên trang", ds.filter((d) => d.status === "CHO_THANH_TOAN").length],
+      ["Đã thanh toán trên trang", ds.filter((d) => d.status === "DA_THANH_TOAN").length],
     ]) {
       const card = e("article", undefined, "workspace-stat");
       card.append(e("span", label), e("strong", String(count)));
@@ -131,10 +131,10 @@
       actions.append(
         button("Sửa", () => editMovie(p), { editMovie: p.id }),
         button(
-          "Xóa",
+          "Xóa / ngừng chiếu",
           () =>
             confirmDelete(
-              `Xóa phim “${p.name}”? Phim có lịch được chuyển sang ngừng chiếu; dữ liệu vé và hóa đơn được giữ.`,
+              `Xử lý phim “${p.name}”? Phim đã có lịch chiếu sẽ chuyển sang ngừng chiếu; phim chưa có lịch chiếu sẽ bị xóa.`,
               async () => {
                 await CineSnackApi.goi(`/api/admin/movies/${p.id}`, { method: "DELETE" });
                 await loadMovies();
@@ -192,12 +192,9 @@
   async function openSection(id) {
     if ((id === "phim" || id === "suat") && !isAdmin()) return;
     if (!user) return;
-    const previous = section;
     section = id;
     const titles = {
-      don: ["Đơn toàn rạp", "Tra cứu đơn của user và guest, đối chiếu trước khi nhận tiền."],
-      monitor: ["Theo dõi thanh toán", "Các đơn chờ thanh toán, cập nhật mỗi 10 giây."],
-      "hoa-don": ["Hóa đơn đã thanh toán", "Mở chi tiết đơn để xem hóa đơn vé và bắp nước."],
+      don: ["Đơn hàng", "Tra cứu đơn của user và guest, đối chiếu trước khi nhận tiền."],
       phim: ["Phim tại rạp", "Quản lý danh mục, nội dung và trạng thái phim."],
       suat: ["Lịch chiếu", "Xếp lịch theo phòng, giữ nguyên sơ đồ ghế có sẵn."],
     };
@@ -206,31 +203,67 @@
     o("quan-tri-phu").textContent = titles[id][1];
     document
       .querySelectorAll(".quan-tri-muc")
-      .forEach((x) => (x.hidden = x.id !== "muc-" + (["hoa-don", "monitor"].includes(id) ? "don" : id)));
+      .forEach(
+        (x) => (x.hidden = x.id !== "muc-" + id),
+      );
     document
       .querySelectorAll("[data-muc]")
       .forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.muc === id)));
     if (id === "phim") await loadMovies();
     else if (id === "suat") await loadShows();
     else {
-      if (previous !== id) {
-        page = 0;
-        o("don-trang-thai").value = id === "hoa-don" ? "DA_THANH_TOAN" : id === "monitor" ? "CHO_THANH_TOAN" : "";
-      }
-      o("don-trang-thai").disabled = id === "hoa-don" || id === "monitor";
       await loadOrders();
     }
   }
   function field(form, name) {
     return form.elements.namedItem(name);
   }
+  let posterPreviewUrl = null;
+  function xoaPreviewTam() {
+    if (posterPreviewUrl) URL.revokeObjectURL(posterPreviewUrl);
+    posterPreviewUrl = null;
+  }
+  function hienPoster(src) {
+    const preview = o("poster-preview");
+    preview.replaceChildren();
+    preview.hidden = !src;
+    if (src) {
+      const image = document.createElement("img");
+      image.alt = "Ảnh poster xem trước";
+      image.src = src;
+      preview.append(image);
+    }
+  }
+  function kiemTraFilePoster(file) {
+    if (!["image/jpeg", "image/png"].includes(file.type)) throw new Error("Chỉ hỗ trợ ảnh JPG hoặc PNG.");
+    if (!file.size || file.size > 5 * 1024 * 1024) throw new Error("Ảnh poster phải có dung lượng từ 1 byte đến 5 MB.");
+  }
+  field(o("phim-form"), "posterFile").addEventListener("change", (event) => {
+    const input = event.currentTarget, file = input.files[0];
+    xoaPreviewTam();
+    o("phim-form-error").textContent = "";
+    if (!file) return hienPoster(input.form.dataset.posterUrl || null);
+    try {
+      kiemTraFilePoster(file);
+      posterPreviewUrl = URL.createObjectURL(file);
+      hienPoster(posterPreviewUrl);
+    } catch (err) {
+      input.value = "";
+      hienPoster(input.form.dataset.posterUrl || null);
+      o("phim-form-error").textContent = err.message;
+    }
+  });
+  o("phim-hop").addEventListener("close", () => { xoaPreviewTam(); hienPoster(null); });
   function editMovie(movie) {
     const form = o("phim-form");
+    xoaPreviewTam();
     form.reset();
     o("phim-form-error").textContent = "";
     field(form, "id").value = movie?.id || "";
+    form.dataset.posterUrl = movie?.posterUrl || "";
+    hienPoster(form.dataset.posterUrl || null);
     if (movie)
-      for (const name of ["name", "genre", "duration", "ageRating", "posterUrl", "status"])
+      for (const name of ["name", "genre", "duration", "ageRating", "status"])
         field(form, name).value = movie[name] ?? "";
     o("phim-form-title").textContent = movie ? "Sửa phim" : "Thêm phim";
     o("phim-hop").showModal();
@@ -302,7 +335,10 @@
     const form = event.currentTarget,
       submit = form.querySelector("button[type=submit]");
     if (submit.disabled || !form.reportValidity()) return;
+    const nhanBanDau = submit.textContent;
     submit.disabled = true;
+    submit.textContent = "Đang lưu phim…";
+    submit.setAttribute("aria-busy", "true");
     o("phim-form-error").textContent = "";
     try {
       const id = field(form, "id").value;
@@ -313,10 +349,15 @@
         ]),
       );
       body.duration = Number(field(form, "duration").value);
-      body.posterUrl = field(form, "posterUrl").value.trim() || null;
+      body.posterUrl = form.dataset.posterUrl || null;
+      const file = field(form, "posterFile").files[0];
+      if (file) kiemTraFilePoster(file);
+      const duLieu = new FormData();
+      duLieu.append("movie", new Blob([JSON.stringify(body)], { type: "application/json" }));
+      if (file) duLieu.append("poster", file);
       await CineSnackApi.goi("/api/admin/movies" + (id ? "/" + id : ""), {
         method: id ? "PUT" : "POST",
-        body,
+        body: duLieu,
       });
       o("phim-hop").close();
       await loadMovies();
@@ -325,6 +366,8 @@
       o("phim-form-error").textContent = err.message;
     } finally {
       submit.disabled = false;
+      submit.textContent = nhanBanDau;
+      submit.removeAttribute("aria-busy");
     }
   });
   o("suat-form").addEventListener("submit", async (event) => {
@@ -333,7 +376,10 @@
     const form = event.currentTarget,
       submit = form.querySelector("button[type=submit]");
     if (submit.disabled || !form.reportValidity()) return;
+    const nhanBanDau = submit.textContent;
     submit.disabled = true;
+    submit.textContent = "Đang lưu suất chiếu…";
+    submit.setAttribute("aria-busy", "true");
     o("suat-form-error").textContent = "";
     try {
       const id = field(form, "id").value,
@@ -356,6 +402,8 @@
       o("suat-form-error").textContent = err.message;
     } finally {
       submit.disabled = false;
+      submit.textContent = nhanBanDau;
+      submit.removeAttribute("aria-busy");
     }
   });
   o("them-phim").addEventListener("click", () => {
@@ -382,11 +430,25 @@
   });
   o("don-trang-thai").addEventListener("change", () => {
     page = 0;
+    capNhatBoLocNhanh();
     loadOrders().catch(error);
+  });
+  function capNhatBoLocNhanh() {
+    document.querySelectorAll("[data-loc-don]").forEach((button) => {
+      button.setAttribute("aria-pressed", String(button.dataset.locDon === o("don-trang-thai").value));
+    });
+  }
+  document.querySelectorAll("[data-loc-don]").forEach((button) => {
+    button.addEventListener("click", () => {
+      o("don-trang-thai").value = button.dataset.locDon;
+      page = 0;
+      capNhatBoLocNhanh();
+      loadOrders().catch(error);
+    });
   });
   o("admin-refresh").addEventListener("click", () => loadOrders().catch(error));
   setInterval(() => {
-    if (section === "monitor" && !document.hidden && user) loadOrders().catch(error);
+    if (section === "don" && o("don-trang-thai").value === "CHO_THANH_TOAN" && !document.hidden && user) loadOrders().catch(error);
   }, 10000);
   for (const [id, delta] of [
     ["admin-truoc", -1],
@@ -443,7 +505,9 @@
       timeZone: "Asia/Ho_Chi_Minh",
     }).format(new Date());
     document.querySelectorAll("[data-admin-only]").forEach((node) => (node.hidden = !isAdmin()));
-    document.querySelectorAll("[data-staff-only]").forEach((node) => (node.hidden = user.role !== "NHAN_VIEN"));
+    document
+      .querySelectorAll("[data-staff-only]")
+      .forEach((node) => (node.hidden = user.role !== "NHAN_VIEN"));
     o("admin-workspace").hidden = false;
     await openSection(isAdmin() ? "phim" : "don");
     const code = new URLSearchParams(location.search).get("code");

@@ -48,7 +48,7 @@ test("staff login returns to booking, admin login returns to workspace", async (
       reportValidity: () => true,
       addEventListener: (_, handler) => { submit = handler; },
     };
-    const button = { disabled: false };
+    const button = { disabled: false, setAttribute: () => {}, removeAttribute: () => {} };
     const fields = {
       "#bieu-mau-tai-khoan": form,
       "#gui-tai-khoan": button,

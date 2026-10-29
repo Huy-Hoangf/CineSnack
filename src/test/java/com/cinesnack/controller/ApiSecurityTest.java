@@ -6,6 +6,8 @@ import com.cinesnack.booking.controller.OrderController;
 import com.cinesnack.booking.service.OrderExpiryService;
 import com.cinesnack.booking.service.OrderService;
 import com.cinesnack.catalog.controller.AdminCatalogController;
+import com.cinesnack.catalog.controller.MoviePosterController;
+import com.cinesnack.catalog.service.MoviePosterService;
 import com.cinesnack.catalog.controller.CatalogController;
 import com.cinesnack.catalog.service.AdminCatalogService;
 import com.cinesnack.catalog.service.CatalogService;
@@ -52,11 +54,15 @@ class ApiSecurityTest {
         CsrfController.class,
         CatalogController.class,
         AdminCatalogController.class,
+        MoviePosterController.class,
         AdminOrderController.class,
         GuestOrderController.class,
         ApiExceptionHandler.class,
     })
     static class Config {
+
+        @Bean
+        MoviePosterService moviePosterService() { return mock(MoviePosterService.class); }
 
         @Bean
         UserRepository khoNguoiDung() {
@@ -120,6 +126,15 @@ class ApiSecurityTest {
     PasswordEncoder boMaHoa;
 
     private MockMvc kiemThuHttp;
+
+    @Test
+    void multipartMovieRequiresAdminAndCsrf() throws Exception {
+        var movie = new org.springframework.mock.web.MockMultipartFile("movie", "", "application/json",
+            "{\"name\":\"Phim\",\"genre\":\"Drama\",\"duration\":120,\"ageRating\":\"P\",\"status\":\"SAP_CHIEU\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        kiemThuHttp.perform(multipart("/api/admin/movies").file(movie).with(user("staff").roles("NHAN_VIEN")).with(csrf())).andExpect(status().isForbidden());
+        kiemThuHttp.perform(multipart("/api/admin/movies").file(movie).with(user("admin").roles("QUAN_TRI"))).andExpect(status().isForbidden());
+        kiemThuHttp.perform(multipart("/api/admin/movies").file(movie).with(user("admin").roles("QUAN_TRI")).with(csrf())).andExpect(status().isCreated());
+    }
 
     @BeforeEach
     void chuanBi() {

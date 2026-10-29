@@ -6,7 +6,20 @@
   --chu-phu: #596b79;
   --vien: #dfe6ec;
   --nen: #f7f9fb;
+  --nen-noi-dung: #fff;
+  --bo-goc-nut: 6px;
+  --bo-goc-khung: 8px;
 }
+.nut, .account-button { min-height: 44px; border-radius: var(--bo-goc-nut); font-weight: 600; }
+.khung, .workspace-card, .authentication-card { background: var(--nen-noi-dung); border: 1px solid var(--vien); border-radius: var(--bo-goc-khung); }
+.nut:focus-visible, .account-button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid #e69d22; outline-offset: 3px; }
+.workspace-table { width: 100%; border-collapse: collapse; }
+.workspace-table th, .workspace-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--vien); }
+.workspace-table th { color: var(--chu-phu); font-size: 13px; font-weight: 600; }
+.workspace-content, .workspace-card { min-width: 0; }
+.loc-nhanh { display: flex; min-width: 0; max-width: 100%; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--vien); }
+.loc-nhanh button { min-height: 44px; padding: 8px 14px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--chu); font: inherit; cursor: pointer; white-space: nowrap; }
+.loc-nhanh button[aria-pressed="true"] { border-bottom-color: var(--xanh); color: var(--xanh); font-weight: 600; }
 
 ::selection {
   background: #cce8fa;
@@ -105,6 +118,10 @@ select {
   color: #dceefa;
   font-size: 13px;
 }
+.banner-dieu-khien { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.banner-dieu-khien[hidden] { display: none; }
+.banner-dieu-khien button { min-height: 44px; padding: 8px 12px; border: 1px solid #fff; border-radius: 6px; background: #123b5b; color: #fff; font: inherit; cursor: pointer; }
+.banner-dieu-khien button:focus-visible { outline: 3px solid #e69d22; outline-offset: 3px; }
 
 .noi-bat-thong-tin {
   font-size: 12px;
@@ -351,17 +368,20 @@ select {
 @media (max-width: 480px) {
   .chinh-dieu-huong,
   .account-enabled .chinh-dieu-huong {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0 8px;
-    overflow: visible;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 4px;
   }
 
   .chinh-dieu-huong a,
   .account-enabled .chinh-dieu-huong a {
     min-height: 44px;
     height: auto;
-    white-space: normal;
+    flex: 0 0 auto;
+    white-space: nowrap;
     text-align: center;
     justify-items: center;
     line-height: 1.25;
@@ -407,6 +427,18 @@ select {
     padding: 28px 12px;
   }
 }
+
+@media (max-width: 600px) {
+  .muc-tieu-de > .chu-lien-ket, .uu-dai-lien-ket { display: inline-flex; align-items: center; min-height: 44px; padding-block: 10px; }
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+  select, textarea { font-size: 16px; }
+}
+.dieu-huong-khung { position: relative; display: contents; }
+@media (max-width: 480px) {
+  .account-enabled .dieu-huong-khung { display: block; position: relative; order: 4; width: 100%; }
+  .dieu-huong-khung.con-noi-dung::after { content: ""; position: absolute; inset: 0 0 0 auto; width: 24px; pointer-events: none; background: linear-gradient(to right, transparent, #fff); }
+}
+.mat-khau-hien { min-height: 44px; }
 
 @media (prefers-reduced-motion: reduce) {
   .anh img,

@@ -1,6 +1,8 @@
 package com.cinesnack.controller;
 
 import com.cinesnack.account.controller.UserController;
+import com.cinesnack.account.controller.RegistrationController;
+import com.cinesnack.account.service.RegistrationService;
 import com.cinesnack.common.controller.ApiExceptionHandler;
 import com.cinesnack.common.controller.CsrfController;
 
@@ -35,7 +37,7 @@ class SessionSecurityTest {
     @Configuration
     @EnableWebMvc
     @EnableWebSecurity
-    @Import({ ApiSecurityConfig.class, CsrfController.class, ApiExceptionHandler.class, UserController.class })
+    @Import({ ApiSecurityConfig.class, CsrfController.class, ApiExceptionHandler.class, UserController.class, RegistrationController.class, RegistrationService.class })
     static class Config {
 
         @Bean
@@ -62,6 +64,19 @@ class SessionSecurityTest {
     PasswordEncoder boMaHoa;
 
     private MockMvc http;
+
+    @Test
+    void dangKyCongKhaiNhungCanCsrfVaDuLieuHopLe() throws Exception {
+        String valid = "{\"hoTen\":\"An\",\"email\":\"an@example.com\",\"matKhau\":\"matkhau123\"}";
+        http.perform(post("/api/auth/register").contentType("application/json").content(valid))
+            .andExpect(status().isForbidden());
+        http.perform(post("/api/auth/register").with(csrf()).contentType("application/json").content(valid))
+            .andExpect(status().isCreated());
+        verify(khoNguoiDung).taoKhachHang(eq("An"), eq("an@example.com"), anyString());
+        http.perform(post("/api/auth/register").with(csrf()).contentType("application/json")
+            .content("{\"hoTen\":\"An\",\"email\":\"bad\",\"matKhau\":\"123\"}"))
+            .andExpect(status().isBadRequest());
+    }
 
     @BeforeEach
     void chuanBi() {

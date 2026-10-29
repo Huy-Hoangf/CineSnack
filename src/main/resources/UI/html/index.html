@@ -53,18 +53,10 @@
       </div>
     </header>
     <main id="noi-dung">
-      <section class="noi-bat" aria-labelledby="noi-bat-tieu-de">
+      <section class="noi-bat" id="phim-noi-bat" aria-labelledby="noi-bat-tieu-de" hidden>
         <picture>
-          <source
-            type="image/webp"
-            srcset="
-              ../assets/images/banners/dune-hero-480.webp   480w,
-              ../assets/images/banners/dune-hero-960.webp   960w,
-              ../assets/images/banners/dune-hero-1600.webp 1600w
-            "
-            sizes="100vw"
-          />
           <img
+            id="noi-bat-anh"
             class="noi-bat-anh"
             src="../assets/images/banners/dune-hero.jpg"
             alt="Các nhân vật trong Dune: Hành tinh cát – Phần hai"
@@ -75,16 +67,16 @@
         </picture>
         <div class="bao noi-bat-trong">
           <div class="noi-bat-loi">
-            <p class="noi-bat-nhan">Phim nổi bật</p>
-            <h1 id="noi-bat-tieu-de">DUNE<span>Hành tinh cát · Phần hai</span></h1>
-            <p class="noi-bat-mo-ta">
-              Paul Atreides tiếp tục hành trình cùng người Fremen trên hành tinh Arrakis.
-            </p>
-            <div class="noi-bat-thong-tin">
-              <span class="noi-bat-tuoi">T16</span><span>166 phút</span>
-              <span>Phiêu lưu · Khoa học viễn tưởng</span>
+            <p class="noi-bat-nhan">Phim đang chiếu</p>
+            <h1 id="noi-bat-tieu-de"></h1>
+            <p id="noi-bat-thong-tin" class="noi-bat-thong-tin"></p>
+            <a id="noi-bat-dat-ve" href="movies.html" class="nut noi-bat-nut">Đặt vé</a>
+            <div class="banner-dieu-khien" id="banner-dieu-khien" hidden>
+              <button type="button" id="banner-truoc" aria-label="Phim trước">Trước</button>
+              <span id="banner-vi-tri" aria-live="off"></span>
+              <button type="button" id="banner-sau" aria-label="Phim tiếp theo">Sau</button>
+              <button type="button" id="banner-dung" aria-pressed="false">Dừng slide</button>
             </div>
-            <a href="movies.html" class="nut noi-bat-nut"> Chọn suất chiếu </a>
           </div>
         </div>
       </section>

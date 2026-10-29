@@ -46,20 +46,9 @@
               aria-controls="muc-don"
               aria-pressed="true"
             >
-              Đơn toàn rạp
+              Đơn hàng
             </button>
             <a class="workspace-nav" href="booking.html" data-staff-only hidden>Tạo đơn tại quầy</a>
-            <button type="button" class="workspace-nav" data-muc="monitor"
-              aria-controls="muc-don" aria-pressed="false">Theo dõi thanh toán</button>
-            <button
-              type="button"
-              class="workspace-nav"
-              data-muc="hoa-don"
-              aria-controls="muc-don"
-              aria-pressed="false"
-            >
-              Hóa đơn
-            </button>
             <button
               type="button"
               class="workspace-nav"
@@ -99,6 +88,11 @@
           <section id="muc-don" class="quan-tri-muc">
             <div id="thong-ke" class="workspace-stats"></div>
             <section class="workspace-card">
+              <div class="loc-nhanh" role="group" aria-label="Lọc đơn hàng">
+                <button type="button" data-loc-don="" aria-pressed="true">Tất cả</button>
+                <button type="button" data-loc-don="CHO_THANH_TOAN" aria-pressed="false">Chờ thanh toán</button>
+                <button type="button" data-loc-don="DA_THANH_TOAN" aria-pressed="false">Đã thanh toán / Hóa đơn</button>
+              </div>
               <div class="workspace-toolbar">
                 <form id="don-search-form" class="workspace-search">
                   <label class="doc-rieng" for="quan-tri-don-tim">Tìm mã đơn hoặc email</label
@@ -247,12 +241,12 @@
               </select></label
             >
           </div>
-          <label
-            >Đường dẫn poster<input
-              name="posterUrl"
-              maxlength="500"
-              placeholder="/assets/images/movies/ten-phim.jpg" /></label
-          ><label
+          <div class="workspace-poster">
+            <label for="poster-file">Ảnh poster</label>
+            <input id="poster-file" name="posterFile" type="file" accept="image/jpeg,image/png" aria-describedby="poster-hint" />
+            <p id="poster-hint" class="workspace-hint">Chọn ảnh JPG hoặc PNG, tối đa 5 MB.</p>
+            <div id="poster-preview" hidden></div>
+          </div><label
             >Trạng thái<select name="status">
               <option value="SAP_CHIEU">Sắp chiếu</option>
               <option value="DANG_CHIEU">Đang chiếu</option>

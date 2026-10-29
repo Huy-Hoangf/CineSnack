@@ -30,10 +30,23 @@
   function capNhat() {
     CineSnack.hienTomTat(g);
     o("tiep-dat-ve").disabled = dangTai || !o("chon-phim").value || !CineSnack.gioHopLe(g);
+    o("di-dong-tiep").disabled = o("tiep-dat-ve").disabled;
+    o("di-dong-so-ghe").textContent = g.ghe.length ? `${g.ghe.length} ghế đã chọn` : "Chưa chọn ghế";
+    o("di-dong-tong").textContent = CineSnack.dinhDangTien(CineSnack.tinhTien(g).tong);
     o("tiep-goi-y").textContent = g.ghe.length
       ? `${g.ghe.length} ghế đã chọn.`
       : "Chọn ghế hoặc bắp nước để tiếp tục.";
   }
+  const vungGhe = o("ghe-cuon");
+  function capNhatGoiYCuon() {
+    const coTheCuon = vungGhe.scrollWidth > vungGhe.clientWidth + 1;
+    const conBenPhai = vungGhe.scrollLeft + vungGhe.clientWidth < vungGhe.scrollWidth - 1;
+    o("ghe-goi-y-cuon").hidden = !coTheCuon;
+    o("ghe-khung-cuon").classList.toggle("con-ghe-ben-phai", coTheCuon && conBenPhai);
+  }
+  vungGhe.addEventListener("scroll", capNhatGoiYCuon);
+  window.addEventListener("resize", capNhatGoiYCuon);
+  o("di-dong-tiep").addEventListener("click", () => o("tiep-dat-ve").click());
   function radio(v, ten, text, checked, change) {
     const label = document.createElement("label");
     label.className = "nhan-lua-chon";
@@ -105,6 +118,7 @@
         });
         hang.get(ma).append(b);
       }
+      capNhatGoiYCuon();
     } catch (e) {
       if (lan === lanTai) {
         hienTrangThaiGhe("Không tải được ghế. Vui lòng chọn lại suất chiếu để thử lại.");
@@ -145,8 +159,13 @@
     o("chon-gio").replaceChildren();
     o("hang-ghe").replaceChildren();
     o("ghe-loi").textContent = "";
-    hienTrangThaiGhe(g.phim ? "Đang tải suất chiếu…" :
-      o("chon-phim").value === "snacks" ? "Chỉ mua bắp nước: không cần chọn ghế." : "Chọn phim trước để xem suất chiếu.");
+    hienTrangThaiGhe(
+      g.phim
+        ? "Đang tải suất chiếu…"
+        : o("chon-phim").value === "snacks"
+          ? "Chỉ mua bắp nước: không cần chọn ghế."
+          : "Chọn phim trước để xem suất chiếu.",
+    );
     loi("");
     if (!g.phim) {
       dangTai = false;
@@ -279,8 +298,9 @@
       o("chon-phim").append(option);
     }
     const ma = khoiPhuc ? luu.phim?.id : maYeuCau;
-    o("chon-phim").value = String(phim.find((p) => p.id === ma)?.id ||
-      (khoiPhuc && !luu.phim ? "snacks" : ""));
+    o("chon-phim").value = String(
+      phim.find((p) => p.id === ma)?.id || (khoiPhuc && !luu.phim ? "snacks" : ""),
+    );
     if (khoiPhuc) {
       for (const [key, idKey, ds] of [
         ["combos", "comboId", food.combos],

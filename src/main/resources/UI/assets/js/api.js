@@ -17,7 +17,8 @@ window.CineSnackApi = (() => {
       const token = csrf || (await layCsrf());
       headers[token.headerName] = token.token;
     }
-    if (body !== undefined)
+    const laFormData = body instanceof FormData;
+    if (body !== undefined && !laFormData)
       headers["Content-Type"] = form ? "application/x-www-form-urlencoded" : "application/json";
     let ph;
     try {
@@ -26,7 +27,7 @@ window.CineSnackApi = (() => {
         headers,
         credentials: "same-origin",
         body:
-          body === undefined ? undefined : form ? new URLSearchParams(body) : JSON.stringify(body),
+          body === undefined ? undefined : laFormData ? body : form ? new URLSearchParams(body) : JSON.stringify(body),
       });
     } catch {
       throw new Error("Mất kết nối. Nếu đang tạo đơn, hãy kiểm tra Đơn của tôi trước khi đặt lại.");
@@ -70,5 +71,8 @@ window.CineSnackApi = (() => {
     await goi("/api/auth/logout", { method: "POST" });
     csrf = undefined;
   }
-  return { goi, taiKhoan, dangNhap, dangXuat };
+  async function dangKy(body) {
+    return goi("/api/auth/register", { method: "POST", body });
+  }
+  return { goi, taiKhoan, dangNhap, dangXuat, dangKy };
 })();

@@ -61,7 +61,8 @@ test("4 role: default login, customer next, styled header and privileged navigat
         .filter({ hasText: role === "Admin" ? "Quản trị viên" : "Nhân viên quầy" })
         .waitFor({ timeout: 5000 });
       assert.equal(await p.locator('[data-muc="don"]').isVisible(), true);
-      assert.equal(await p.locator('[data-muc="hoa-don"]').isVisible(), true);
+      await p.locator('[data-muc="don"]').click();
+      assert.equal(await p.locator('[data-loc-don="DA_THANH_TOAN"]').isVisible(), true);
       assert.equal(await p.locator('[data-muc="phim"]').isVisible(), role === "Admin");
       assert.equal(await p.locator('[data-muc="suat"]').isVisible(), role === "Admin");
       assert.equal(await p.locator('[data-muc="ghe"]').count(), 0);

@@ -45,6 +45,7 @@ public class ApiSecurityConfig {
                 .securityMatcher("/api/**")
                 .authorizeHttpRequests(quyTac ->
                     quyTac
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
                         .requestMatchers("/api/csrf", "/api/auth/login")
                         .permitAll()
                         .requestMatchers(

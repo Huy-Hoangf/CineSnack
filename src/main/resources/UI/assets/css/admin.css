@@ -322,6 +322,8 @@
   }
 }
 @media (max-width: 600px) {
+  .quan-tri-dieu-huong { flex-wrap: nowrap; overflow-x: auto; }
+  .quan-tri-dieu-huong .workspace-nav { width: auto; flex: 0 0 auto; margin: 0; white-space: nowrap; }
   .workspace-header {
     padding: 18px 16px;
     flex-wrap: wrap;
@@ -393,3 +395,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+.workspace-poster { display: grid; gap: 8px; }
+#poster-preview img { display: block; width: min(160px, 100%); max-height: 240px; object-fit: contain; border-radius: 8px; }
+#poster-preview[hidden] { display: none; }

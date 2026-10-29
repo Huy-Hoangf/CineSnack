@@ -13,6 +13,13 @@ public class UserRepository {
         this.truyVan = truyVan;
     }
 
+    public void taoKhachHang(String hoTen, String email, String matKhauHash) {
+        truyVan.update("""
+            INSERT INTO NGUOI_DUNG (ho_ten, email, mat_khau_hash, vai_tro, trang_thai)
+            VALUES (?, ?, ?, 'KHACH_HANG', 'HOAT_DONG')
+            """, hoTen, email, matKhauHash);
+    }
+
     public User timTheoThuDienTu(String thuDienTu) {
         var dsNguoiDung = truyVan.query(
             """

@@ -123,6 +123,10 @@ public class AdminCatalogService {
         );
     }
 
+    public void kiemTraQuyenQuanTri(String email) {
+        requireAdmin(email);
+    }
+
     private Catalog.Movie requireMovie(long id) {
         Catalog.Movie movie = repo.lockMovie(id);
         if (movie == null) throw new ResponseStatusException(
