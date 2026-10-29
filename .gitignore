@@ -1,4 +1,5 @@
 /target/
+/.codex/hooks.json
 /uploads/
 /graphify-out/
 /.ua/
