@@ -18,7 +18,9 @@ public class PaymentConfig {
     }
 
     @Bean
-    public TransactionTemplate mauGiaoDich(PlatformTransactionManager boQuanLyGiaoDich) {
+    public TransactionTemplate mauGiaoDich(
+        PlatformTransactionManager boQuanLyGiaoDich
+    ) {
         return new TransactionTemplate(boQuanLyGiaoDich);
     }
 }

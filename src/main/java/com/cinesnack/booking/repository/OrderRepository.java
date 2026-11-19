@@ -50,10 +50,17 @@ public class OrderRepository {
         );
     }
 
-    public List<Order> layDanhSachKhach(Set<String> maDon, int trang, int kichThuoc) {
+    public List<Order> layDanhSachKhach(
+        Set<String> maDon,
+        int trang,
+        int kichThuoc
+    ) {
         if (maDon.isEmpty()) return List.of();
 
-        String placeholders = String.join(",", Collections.nCopies(maDon.size(), "?"));
+        String placeholders = String.join(
+            ",",
+            Collections.nCopies(maDon.size(), "?")
+        );
         List<Object> thamSo = new ArrayList<>(maDon);
         thamSo.add((long) trang * kichThuoc);
         thamSo.add(kichThuoc);
@@ -70,7 +77,12 @@ public class OrderRepository {
         return layTatCa("", "", trang, kichThuoc);
     }
 
-    public List<Order> layTatCa(String tuTim, String trangThai, int trang, int kichThuoc) {
+    public List<Order> layTatCa(
+        String tuTim,
+        String trangThai,
+        int trang,
+        int kichThuoc
+    ) {
         return truyVan.query(
             """
             SELECT * FROM DON_HANG
@@ -156,7 +168,9 @@ public class OrderRepository {
             soLuong,
             gia
         );
-        if (n != 1) throw new IllegalStateException("Không tạo được chi tiết bắp nước");
+        if (n != 1) throw new IllegalStateException(
+            "Không tạo được chi tiết bắp nước"
+        );
     }
 
     public List<Ticket> layVe(long maDon) {
@@ -180,7 +194,10 @@ public class OrderRepository {
                     d.getString("trang_thai"),
                     d.getString("ten_phim"),
                     d.getString("ten_phong"),
-                    Sql.docThoiGian(d, "bat_dau").atOffset(ZoneOffset.ofHours(7))
+                    Sql.docThoiGian(d, "bat_dau").atOffset(
+                        ZoneOffset.ofHours(7)
+                    ),
+                    d.getTimestamp("in_ve_luc") != null
                 ),
             maDon
         );
@@ -254,6 +271,72 @@ public class OrderRepository {
 
     public void xacNhanChiTietDaThanhToan(long maDon) {
         doiChiTiet(maDon, "DA_THANH_TOAN", "CHO_NHAN");
+    }
+
+    public int giaoBapNuoc(
+        String maDon,
+        long chiTietId,
+        long nhanVienId,
+        LocalDateTime luc
+    ) {
+        return truyVan.update(
+            """
+            UPDATE c SET trang_thai_phuc_vu='DA_NHAN',nhan_luc=?,nhan_vien_giao_id=?
+            FROM CHI_TIET_HOA_DON_BONG_NUOC c
+            JOIN DON_HANG d ON d.don_hang_id=c.don_hang_id
+            JOIN HOA_DON_BONG_NUOC h ON h.hoa_don_bong_nuoc_id=c.hoa_don_bong_nuoc_id
+            WHERE d.ma_don_hang=? AND c.chi_tiet_id=? AND c.trang_thai_phuc_vu='CHO_NHAN'
+              AND d.trang_thai='DA_THANH_TOAN' AND h.trang_thai='DA_THANH_TOAN'
+            """,
+            luc,
+            nhanVienId,
+            maDon,
+            chiTietId
+        );
+    }
+
+    public int giaoTheoHoaDon(String code, long staffId, LocalDateTime now) {
+        return truyVan.update(
+            """
+            UPDATE c SET trang_thai_phuc_vu='DA_NHAN',nhan_luc=?,nhan_vien_giao_id=?
+            FROM CHI_TIET_HOA_DON_BONG_NUOC c
+            JOIN HOA_DON_BONG_NUOC h ON h.hoa_don_bong_nuoc_id=c.hoa_don_bong_nuoc_id
+            JOIN DON_HANG d ON d.don_hang_id=c.don_hang_id AND d.don_hang_id=h.don_hang_id
+            WHERE h.ma_hoa_don=? AND c.trang_thai_phuc_vu='CHO_NHAN'
+              AND h.trang_thai='DA_THANH_TOAN' AND d.trang_thai='DA_THANH_TOAN'
+            """,
+            now, staffId, code
+        );
+    }
+
+    public record Pickup(
+        String orderCode,
+        String email,
+        long itemId,
+        String name,
+        int quantity
+    ) {}
+
+    public List<Pickup> choNhanBapNuoc() {
+        return truyVan.query(
+            """
+            SELECT TOP(100) d.ma_don_hang,d.email_nhan_ve,c.chi_tiet_id,c.ten_luc_mua,c.so_luong
+            FROM CHI_TIET_HOA_DON_BONG_NUOC c
+            JOIN DON_HANG d ON d.don_hang_id=c.don_hang_id
+            JOIN HOA_DON_BONG_NUOC h ON h.hoa_don_bong_nuoc_id=c.hoa_don_bong_nuoc_id
+            WHERE c.trang_thai_phuc_vu='CHO_NHAN' AND d.trang_thai='DA_THANH_TOAN'
+              AND h.trang_thai='DA_THANH_TOAN'
+            ORDER BY d.tao_luc,c.chi_tiet_id
+            """,
+            (r, i) ->
+                new Pickup(
+                    r.getString(1),
+                    r.getString(2),
+                    r.getLong(3),
+                    r.getString(4),
+                    r.getInt(5)
+                )
+        );
     }
 
     public void dongChiTiet(long maDon, String trangThai) {

@@ -6,6 +6,7 @@ import com.cinesnack.catalog.service.AdminCatalogService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -51,7 +52,10 @@ public class AdminCatalogController {
 
     @DeleteMapping("/movies/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteMovie(@PathVariable @Positive long id, Principal principal) {
+    public void deleteMovie(
+        @PathVariable @Positive long id,
+        Principal principal
+    ) {
         service.deleteMovie(id, principal.getName());
     }
 
@@ -62,6 +66,16 @@ public class AdminCatalogController {
         Principal principal
     ) {
         return service.shows(principal.getName(), page, size);
+    }
+
+    @GetMapping("/showtimes/timeline")
+    public List<Catalog.Show> timeline(
+        @RequestParam LocalDate date,
+        @RequestParam(required = false) @Positive Long roomId,
+        @RequestParam(defaultValue = "") @Pattern(regexp = "|SAP_CHIEU|DANG_CHIEU|DA_CHIEU|HUY") String status,
+        Principal principal
+    ) {
+        return service.timeline(principal.getName(), date, roomId, status);
     }
 
     @PostMapping("/showtimes")
@@ -84,7 +98,10 @@ public class AdminCatalogController {
 
     @DeleteMapping("/showtimes/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteShow(@PathVariable @Positive long id, Principal principal) {
+    public void deleteShow(
+        @PathVariable @Positive long id,
+        Principal principal
+    ) {
         service.deleteShow(id, principal.getName());
     }
 

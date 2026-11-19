@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phòng, ghế & vé | CineSnack</title>
+    <link rel="stylesheet" href="../assets/css/site.css" />
+    <link rel="stylesheet" href="../assets/css/app.css" />
+    <link rel="stylesheet" href="../assets/css/authentication.css" />
+    <link rel="stylesheet" href="../assets/css/admin.css" />
+    <link rel="stylesheet" href="../assets/css/theater.css?v=2" />
+    <link rel="stylesheet" href="../assets/css/ticket-print.css?v=1" />
+    <script src="../assets/js/api.js" defer></script>
+    <script src="../assets/js/cinema.js" defer></script>
+    <script
+      src="../assets/vendor/JsBarcode.code128-3.11.6.min.js"
+      defer
+    ></script>
+    <script src="../assets/vendor/zxing-browser-0.2.1.min.js" defer></script>
+    <script src="../assets/js/ticket-code.js" defer></script>
+    <script src="../assets/js/ticket-print.js?v=3" defer></script>
+    <script src="../assets/js/theater-settings.js" defer></script>
+    <script src="../assets/js/theater.js?v=4" defer></script>
+    <link rel="stylesheet" href="../assets/css/operations.css" media="screen" />
+    <link rel="stylesheet" href="../assets/css/shared-theme.css?v=1" media="screen" />
+  </head>
+  <body class="ung-dung-trang quan-tri-trang ops">
+    <a class="bo-qua-lien-ket" href="#noi-dung">Bỏ qua điều hướng</a>
+    <header class="workspace-header">
+      <a class="thuong-hieu" href="admin.html">CineSnack · Vận hành rạp</a>
+      <a class="account-button" href="admin.html">← Không gian làm việc</a>
+    </header>
+    <main class="workspace" id="noi-dung">
+      <h1>Phòng, ghế & vé</h1>
+      <p id="theater-error" class="loi" role="alert" tabindex="-1"></p>
+      <p id="theater-status" role="status"></p>
+      <a
+        id="theater-login"
+        class="nut"
+        href="authentication.html?next=theater.html"
+        hidden
+        >Đăng nhập nhân viên / quản trị</a
+      >
+      <noscript><p>Bật JavaScript để sử dụng trang vận hành.</p></noscript>
+      <div id="theater-workspace" hidden>
+        <nav class="theater-tabs" aria-label="Chức năng vận hành">
+          <button
+            type="button"
+            id="tab-rooms"
+            class="account-button"
+            aria-controls="rooms-panel"
+            aria-pressed="false"
+            hidden
+          >
+            Phòng & ghế
+          </button>
+          <button
+            type="button"
+            id="tab-checkin"
+            class="account-button"
+            aria-controls="checkin-panel"
+            aria-pressed="false"
+          >
+            Nhận vé / Soát vé
+          </button>
+        </nav>
+        <section id="rooms-panel" hidden>
+          <div class="workspace-toolbar">
+            <h2>Phòng chiếu</h2>
+            <button type="button" id="room-add" class="nut">
+              + Thêm phòng
+            </button>
+          </div>
+          <div
+            class="workspace-card bang-cuon"
+            tabindex="0"
+            role="region"
+            aria-label="Danh sách phòng chiếu"
+          >
+            <table class="workspace-table">
+              <thead>
+                <tr>
+                  <th>Phòng</th>
+                  <th>Loại</th>
+                  <th>Số ghế</th>
+                  <th>Trạng thái</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="rooms-list"></tbody>
+            </table>
+          </div>
+          <p id="rooms-empty" hidden>Chưa có phòng trên trang này.</p>
+          <details class="workspace-card">
+            <summary>Phòng đã lưu trữ</summary>
+            <p class="workspace-hint">
+              Phòng từng có lịch chiếu được giữ lại để bảo toàn lịch sử. Khôi
+              phục sẽ đưa phòng về trạng thái ngừng hoạt động.
+            </p>
+            <button id="archived-refresh" type="button" class="account-button">
+              Tải danh sách lưu trữ
+            </button>
+            <div id="archived-rooms" role="status"></div>
+          </details>
+          <div class="phan-trang">
+            <button id="rooms-prev" type="button" class="account-button">
+              Trang trước
+            </button>
+            <span id="rooms-page"></span>
+            <button id="rooms-next" type="button" class="account-button">
+              Trang sau
+            </button>
+          </div>
+          <section id="room-pricing-panel" class="workspace-card" aria-labelledby="room-pricing-title" hidden>
+            <h2 id="room-pricing-title" tabindex="-1">Bảng giá phòng</h2>
+            <p class="workspace-hint">VND nguyên. Ngày thường: thứ Hai–thứ Sáu; cuối tuần: thứ Bảy–Chủ nhật theo giờ Việt Nam. Giá VIP không thấp hơn giá thường.</p>
+            <form id="room-pricing-form" class="workspace-form">
+              <div class="workspace-form-row">
+                <label>Ngày thường · ghế thường<input name="weekdayRegular" type="number" min="0" max="9999999999" step="1" required /></label>
+                <label>Ngày thường · ghế VIP<input name="weekdayVip" type="number" min="0" max="9999999999" step="1" required /></label>
+              </div>
+              <div class="workspace-form-row">
+                <label>Cuối tuần · ghế thường<input name="weekendRegular" type="number" min="0" max="9999999999" step="1" required /></label>
+                <label>Cuối tuần · ghế VIP<input name="weekendVip" type="number" min="0" max="9999999999" step="1" required /></label>
+              </div>
+              <p class="workspace-hint">Chỉ lấy giá khi lưu suất với chế độ bảng giá. Sửa bảng giá không tự đổi giá suất đã tạo, đơn hoặc vé cũ.</p>
+              <button type="submit" class="nut">Lưu bảng giá</button>
+              <p id="room-pricing-status" role="status"></p>
+            </form>
+          </section>
+          <section
+            id="seats-panel"
+            class="workspace-card"
+            aria-labelledby="seats-title"
+            hidden
+          >
+            <h2 id="seats-title" tabindex="-1">Sơ đồ ghế</h2>
+            <p class="workspace-hint">
+              Chọn một ghế để sửa. Ghế có lịch sử vé hoặc phòng còn lịch chiếu
+              sẽ được bảo vệ.
+            </p>
+            <form id="seat-setup" class="theater-setup" hidden>
+              <label
+                >Số hàng (A–Z)<input
+                  name="rows"
+                  type="number"
+                  min="1"
+                  max="26"
+                  value="8"
+                  required
+              /></label>
+              <label
+                >Ghế mỗi hàng<input
+                  name="columns"
+                  type="number"
+                  min="1"
+                  max="30"
+                  value="12"
+                  required
+              /></label>
+              <label
+                >Loại ghế<select name="type">
+                  <option value="THUONG">Thường</option>
+                  <option value="VIP">VIP</option>
+                </select></label
+              >
+              <button class="nut" type="submit">Tạo sơ đồ ghế</button>
+            </form>
+            <p id="seat-summary" role="status"></p>
+            <p class="theater-screen">MÀN HÌNH</p>
+            <div
+              class="theater-map-scroll"
+              tabindex="0"
+              role="region"
+              aria-label="Sơ đồ ghế theo hàng và cột"
+            >
+              <div id="seat-map" class="theater-map"></div>
+            </div>
+            <p class="workspace-hint">
+              Thường · VIP (viền đậm) · Ghế khóa (gạch chéo)
+            </p>
+          </section>
+          <section id="theater-policy-panel" class="workspace-card" aria-labelledby="theater-policy-title" hidden>
+            <h2 id="theater-policy-title">Chính sách soát vé toàn rạp</h2>
+            <p class="workspace-hint">Áp dụng cho các lần soát tiếp theo của mọi suất. Mở cổng từ 30 phút trước giờ chiếu; luôn đóng trước giờ kết thúc.</p>
+            <form id="theater-policy-form" class="workspace-form">
+              <label>Cho phép đến muộn (phút sau giờ bắt đầu)<input name="lateCheckInMinutes" type="number" min="0" max="600" step="1" aria-describedby="late-policy-hint" /></label>
+              <p id="late-policy-hint" class="workspace-hint">Để trống: không giới hạn muộn, vẫn phải trước giờ kết thúc. 0: chấp nhận đến đúng giờ bắt đầu. Có số: chấp nhận cả đúng mốc giới hạn.</p>
+              <button type="submit" class="nut">Lưu chính sách soát vé</button>
+              <p id="theater-policy-status" role="status"></p>
+            </form>
+          </section>
+        </section>
+        <section
+          id="checkin-panel"
+          class="workspace-card"
+          aria-label="Nhận và soát vé"
+          hidden
+        >
+          <div id="ticket-modes" class="ops-switch" role="group" aria-label="Thao tác với vé" hidden>
+            <button type="button" id="choose-issue" aria-pressed="true" aria-controls="issue-panel">Cấp vé</button>
+            <button type="button" id="choose-scan" aria-pressed="false" aria-controls="scan-panel">Soát vé</button>
+          </div>
+          <div id="issue-panel">
+            <h2 id="checkin-title">Nhận và in vé</h2>
+            <p>
+              Nhân viên được in vé đã thanh toán một lần, vào bất kỳ lúc nào.
+              Nếu hủy hộp thoại in, lượt in vẫn đã sử dụng.
+            </p>
+            <form id="issue-form" class="theater-checkin">
+              <label for="issue-code">Mã vé</label>
+              <input
+                id="issue-code"
+                name="code"
+                maxlength="30"
+                pattern="[A-Za-z0-9]{1,30}"
+                autocomplete="off"
+                spellcheck="false"
+                required
+                placeholder="Quét hoặc nhập mã vé"
+              />
+              <button
+                id="issue-camera-start"
+                type="button"
+                class="account-button"
+              >
+                Mở camera
+              </button>
+              <button type="submit" class="nut">Cấp và in vé</button>
+            </form>
+            <p class="loi" id="issue-error" role="alert"></p>
+            <div
+              id="issue-result"
+              class="theater-checkin-result"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </div>
+          <div id="scan-panel">
+            <h2>Soát vé vào rạp</h2>
+            <p>
+              Mỗi vé chỉ được vào rạp một lần, từ 30 phút trước giờ chiếu đến
+              trước khi suất chiếu kết thúc.
+            </p>
+            <form id="checkin-form" class="theater-checkin">
+              <label for="ticket-code">Mã vé</label>
+              <input
+                id="ticket-code"
+                name="code"
+                maxlength="30"
+                pattern="[A-Za-z0-9]{1,30}"
+                autocomplete="off"
+                spellcheck="false"
+                required
+                placeholder="Quét hoặc nhập mã vé"
+              />
+              <button
+                id="checkin-camera-start"
+                type="button"
+                class="account-button"
+              >
+                Mở camera
+              </button>
+              <button type="submit" class="nut">Soát vé vào rạp</button>
+            </form>
+            <p class="loi" id="checkin-error" role="alert"></p>
+            <div
+              id="checkin-result"
+              class="theater-checkin-result"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </div>
+          <div id="ticket-camera" class="ticket-camera" hidden>
+            <video
+              id="ticket-camera-video"
+              autoplay
+              muted
+              playsinline
+              aria-label="Hình ảnh camera quét mã vé"
+            ></video>
+            <button
+              id="ticket-camera-stop"
+              type="button"
+              class="account-button"
+            >
+              Đóng camera
+            </button>
+          </div>
+          <p id="ticket-camera-status" role="status" aria-live="polite"></p>
+        </section>
+      </div>
+      <dialog
+        id="room-dialog"
+        class="workspace-dialog"
+        aria-labelledby="room-title"
+      >
+        <h2 id="room-title">Thêm phòng</h2>
+        <form id="room-form" class="workspace-form">
+          <label>Tên phòng<input name="name" maxlength="50" required /></label>
+          <label
+            >Loại phòng<input
+              name="type"
+              maxlength="30"
+              required
+              placeholder="Ví dụ: 2D, 3D"
+          /></label>
+          <label
+            >Trạng thái<select name="status">
+              <option value="HOAT_DONG">Hoạt động</option>
+              <option value="NGUNG_HOAT_DONG">Ngừng hoạt động</option>
+            </select></label
+          >
+          <p id="room-error" class="loi" role="alert"></p>
+          <div class="order-actions">
+            <button type="submit" class="nut">Lưu phòng</button
+            ><button
+              type="button"
+              class="account-button"
+              data-close="room-dialog"
+            >
+              Quay lại
+            </button>
+          </div>
+        </form>
+      </dialog>
+      <dialog
+        id="seat-dialog"
+        class="workspace-dialog"
+        aria-labelledby="seat-title"
+      >
+        <h2 id="seat-title">Sửa ghế</h2>
+        <form id="seat-form" class="workspace-form">
+          <label
+            >Mã ghế<input
+              name="code"
+              maxlength="3"
+              pattern="[A-Z]([1-9]|[12][0-9]|30)"
+              required
+          /></label>
+          <label
+            >Loại ghế<select name="type">
+              <option value="THUONG">Thường</option>
+              <option value="VIP">VIP</option>
+            </select></label
+          >
+          <label
+            >Trạng thái<select name="status">
+              <option value="HOAT_DONG">Hoạt động</option>
+              <option value="NGUNG_HOAT_DONG">Khóa ghế</option>
+            </select></label
+          >
+          <p id="seat-error" class="loi" role="alert"></p>
+          <div class="order-actions">
+            <button type="submit" class="nut">Lưu ghế</button
+            ><button
+              type="button"
+              class="account-button"
+              data-close="seat-dialog"
+            >
+              Quay lại
+            </button>
+          </div>
+        </form>
+      </dialog>
+    </main>
+  </body>
+</html>

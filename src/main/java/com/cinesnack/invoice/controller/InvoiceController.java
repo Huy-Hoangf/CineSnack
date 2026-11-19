@@ -19,7 +19,9 @@ public class InvoiceController {
 
     @GetMapping("/api/orders/{code}/invoices")
     public java.util.List<Invoice> layHoaDon(
-        @PathVariable("code") @Pattern(regexp = "[A-Za-z0-9]{1,30}") String maDonHang,
+        @PathVariable("code") @Pattern(
+            regexp = "[A-Za-z0-9]{1,30}"
+        ) String maDonHang,
         Principal nguoiDung
     ) {
         return dichVuHoaDon.layHoaDon(maDonHang, nguoiDung.getName());

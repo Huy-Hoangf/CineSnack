@@ -1,5 +1,9 @@
 package com.cinesnack.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 import com.cinesnack.account.entity.User;
 import com.cinesnack.account.service.UserService;
 import com.cinesnack.booking.entity.Order;
@@ -9,12 +13,9 @@ import com.cinesnack.invoice.repository.InvoiceRepository;
 import com.cinesnack.invoice.service.InvoiceService;
 import com.cinesnack.payment.entity.Payment;
 import com.cinesnack.payment.repository.PaymentRepository;
+import com.cinesnack.payment.service.GmailEmailClient;
+import com.cinesnack.payment.service.PaymentConfirmationEmailListener;
 import com.cinesnack.payment.service.PaymentService;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 import java.math.BigDecimal;
 import java.time.*;
 import javax.sql.DataSource;
@@ -80,6 +81,18 @@ class PaymentTransactionTest {
         }
 
         @Bean
+        GmailEmailClient gmailEmailClient() {
+            return mock(GmailEmailClient.class);
+        }
+
+        @Bean
+        PaymentConfirmationEmailListener paymentConfirmationEmailListener(
+            GmailEmailClient client
+        ) {
+            return new PaymentConfirmationEmailListener(client);
+        }
+
+        @Bean
         Clock dongHo() {
             return Clock.fixed(
                 Instant.parse("2026-10-13T03:00:00Z"),
@@ -93,14 +106,16 @@ class PaymentTransactionTest {
             PaymentRepository khoThanhToan,
             InvoiceService dichVuHoaDon,
             UserService dichVuNguoiDung,
-            Clock dongHo
+            Clock dongHo,
+            org.springframework.context.ApplicationEventPublisher events
         ) {
             return new PaymentService(
                 khoDonHang,
                 khoThanhToan,
                 dichVuHoaDon,
                 dichVuNguoiDung,
-                dongHo
+                dongHo,
+                events
             );
         }
     }
@@ -124,16 +139,29 @@ class PaymentTransactionTest {
     UserService dichVuNguoiDung;
 
     @Autowired
+    GmailEmailClient emailClient;
+
+    @Autowired
     Clock dongHo;
 
     @BeforeEach
     void chuanBi() {
-        reset(khoDonHang, khoThanhToan, khoHoaDon, dichVuNguoiDung);
+        reset(
+            khoDonHang,
+            khoThanhToan,
+            khoHoaDon,
+            dichVuNguoiDung,
+            emailClient
+        );
         truyVan.execute(
             "CREATE TABLE IF NOT EXISTS TX_ORDER(id BIGINT PRIMARY KEY, state VARCHAR(30))"
         );
-        truyVan.execute("CREATE TABLE IF NOT EXISTS TX_PAYMENT(id BIGINT PRIMARY KEY)");
-        truyVan.execute("CREATE TABLE IF NOT EXISTS TX_INVOICE(id BIGINT PRIMARY KEY)");
+        truyVan.execute(
+            "CREATE TABLE IF NOT EXISTS TX_PAYMENT(id BIGINT PRIMARY KEY)"
+        );
+        truyVan.execute(
+            "CREATE TABLE IF NOT EXISTS TX_INVOICE(id BIGINT PRIMARY KEY)"
+        );
         truyVan.update("DELETE FROM TX_INVOICE");
         truyVan.update("DELETE FROM TX_PAYMENT");
         truyVan.update("DELETE FROM TX_ORDER");
@@ -156,12 +184,26 @@ class PaymentTransactionTest {
         );
         when(khoDonHang.coTheThanhToan(1, hienTai)).thenReturn(true);
         when(khoDonHang.tinhTongChiTiet(1)).thenReturn(BigDecimal.TEN);
-        when(khoThanhToan.taoThanhToanTienMat(eq(1L), any(), any())).thenAnswer(lanGoi -> {
-            truyVan.update("INSERT INTO TX_PAYMENT VALUES (1)");
-            return new Payment(1, 1, "TM01", "TIEN_MAT", BigDecimal.TEN, "THANH_CONG", hienTai);
-        });
-        when(khoDonHang.doiTrangThai(1, "CHO_THANH_TOAN", "DA_THANH_TOAN")).thenAnswer(lanGoi ->
-            truyVan.update("UPDATE TX_ORDER SET state = 'DA_THANH_TOAN' WHERE id = 1")
+        when(khoThanhToan.taoThanhToanTienMat(eq(1L), any(), any())).thenAnswer(
+            lanGoi -> {
+                truyVan.update("INSERT INTO TX_PAYMENT VALUES (1)");
+                return new Payment(
+                    1,
+                    1,
+                    "TM01",
+                    "TIEN_MAT",
+                    BigDecimal.TEN,
+                    "THANH_CONG",
+                    hienTai
+                );
+            }
+        );
+        when(
+            khoDonHang.doiTrangThai(1, "CHO_THANH_TOAN", "DA_THANH_TOAN")
+        ).thenAnswer(lanGoi ->
+            truyVan.update(
+                "UPDATE TX_ORDER SET state = 'DA_THANH_TOAN' WHERE id = 1"
+            )
         );
         doAnswer(lanGoi -> {
             truyVan.update("INSERT INTO TX_INVOICE VALUES (1)");
@@ -175,29 +217,69 @@ class PaymentTransactionTest {
     void loiHoaDonHoanTacTatCa() {
         doAnswer(lanGoi -> {
             truyVan.update("INSERT INTO TX_INVOICE VALUES (1)");
-            throw new IllegalStateException("invoice failed after inserting header");
+            throw new IllegalStateException(
+                "invoice failed after inserting header"
+            );
         })
             .when(khoHoaDon)
             .taoHoaDon(any(), any());
         assertThrows(IllegalStateException.class, () ->
             dichVu.thanhToanTaiQuay("DH01", BigDecimal.TEN, "staff")
         );
-        assertEquals(0, truyVan.queryForObject("SELECT COUNT(*) FROM TX_PAYMENT", Integer.class));
-        assertEquals(0, truyVan.queryForObject("SELECT COUNT(*) FROM TX_INVOICE", Integer.class));
+        assertEquals(
+            0,
+            truyVan.queryForObject(
+                "SELECT COUNT(*) FROM TX_PAYMENT",
+                Integer.class
+            )
+        );
+        assertEquals(
+            0,
+            truyVan.queryForObject(
+                "SELECT COUNT(*) FROM TX_INVOICE",
+                Integer.class
+            )
+        );
         assertEquals(
             "CHO_THANH_TOAN",
-            truyVan.queryForObject("SELECT state FROM TX_ORDER WHERE id = 1", String.class)
+            truyVan.queryForObject(
+                "SELECT state FROM TX_ORDER WHERE id = 1",
+                String.class
+            )
         );
+        verifyNoInteractions(emailClient);
     }
 
     @Test
     void thanhToanThanhCongLuuTatCa() {
         dichVu.thanhToanTaiQuay("DH01", BigDecimal.TEN, "staff");
-        assertEquals(1, truyVan.queryForObject("SELECT COUNT(*) FROM TX_PAYMENT", Integer.class));
-        assertEquals(1, truyVan.queryForObject("SELECT COUNT(*) FROM TX_INVOICE", Integer.class));
+        assertEquals(
+            1,
+            truyVan.queryForObject(
+                "SELECT COUNT(*) FROM TX_PAYMENT",
+                Integer.class
+            )
+        );
+        assertEquals(
+            1,
+            truyVan.queryForObject(
+                "SELECT COUNT(*) FROM TX_INVOICE",
+                Integer.class
+            )
+        );
         assertEquals(
             "DA_THANH_TOAN",
-            truyVan.queryForObject("SELECT state FROM TX_ORDER WHERE id = 1", String.class)
+            truyVan.queryForObject(
+                "SELECT state FROM TX_ORDER WHERE id = 1",
+                String.class
+            )
+        );
+        verify(emailClient).send(
+            new com.cinesnack.payment.service.PaymentConfirmed(
+                "DH01",
+                "email@example.com",
+                BigDecimal.TEN
+            )
         );
     }
 }

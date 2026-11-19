@@ -1,10 +1,9 @@
 package com.cinesnack.security;
 
-import com.cinesnack.booking.security.GuestOrderAccess;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.cinesnack.booking.entity.Order;
+import com.cinesnack.booking.security.GuestOrderAccess;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
@@ -29,6 +28,15 @@ class GuestOrderAccessTest {
 
     private Order order(String code) {
         var now = LocalDateTime.parse("2026-10-20T10:00:00");
-        return new Order(1, null, code, "guest@example.com", BigDecimal.TEN, "CHO_THANH_TOAN", now, now);
+        return new Order(
+            1,
+            null,
+            code,
+            "guest@example.com",
+            BigDecimal.TEN,
+            "CHO_THANH_TOAN",
+            now,
+            now
+        );
     }
 }

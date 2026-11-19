@@ -1,24 +1,24 @@
 package com.cinesnack.controller;
 
-import com.cinesnack.account.service.UserService;
-import com.cinesnack.booking.controller.GuestOrderController;
-import com.cinesnack.booking.service.OrderExpiryService;
-import com.cinesnack.booking.service.OrderService;
-import com.cinesnack.common.controller.ApiExceptionHandler;
-import com.cinesnack.invoice.service.InvoiceService;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import com.cinesnack.invoice.entity.Invoice;
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.booking.controller.GuestOrderController;
 import com.cinesnack.booking.entity.Order;
-import com.cinesnack.catalog.repository.BookingCatalogRepository;
-import com.cinesnack.invoice.repository.InvoiceRepository;
 import com.cinesnack.booking.repository.OrderRepository;
 import com.cinesnack.booking.security.GuestOrderAccess;
+import com.cinesnack.booking.security.GuestOrderTokenService;
+import com.cinesnack.booking.service.OrderExpiryService;
+import com.cinesnack.booking.service.OrderService;
+import com.cinesnack.catalog.repository.BookingCatalogRepository;
+import com.cinesnack.common.controller.ApiExceptionHandler;
+import com.cinesnack.invoice.entity.Invoice;
+import com.cinesnack.invoice.repository.InvoiceRepository;
+import com.cinesnack.invoice.service.InvoiceService;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.List;
@@ -31,7 +31,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 class GuestOrderControllerTest {
 
     private final OrderRepository orders = mock(OrderRepository.class);
-    private final BookingCatalogRepository catalog = mock(BookingCatalogRepository.class);
+    private final BookingCatalogRepository catalog = mock(
+        BookingCatalogRepository.class
+    );
     private final UserService users = mock(UserService.class);
     private final InvoiceRepository invoices = mock(InvoiceRepository.class);
     private final GuestOrderAccess access = new GuestOrderAccess();
@@ -54,19 +56,40 @@ class GuestOrderControllerTest {
                 service,
                 new InvoiceService(invoices, service),
                 mock(OrderExpiryService.class),
-                access
+                access,
+                new GuestOrderTokenService(
+                    "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=",
+                    clock,
+                    orders
+                )
             )
         )
             .setControllerAdvice(new ApiExceptionHandler())
             .build();
         when(catalog.timCombo(1)).thenReturn(
-            new BookingCatalogRepository.Food(1, "Combo", new BigDecimal("59000"), "HOAT_DONG")
+            new BookingCatalogRepository.Food(
+                1,
+                "Combo",
+                new BigDecimal("59000"),
+                "HOAT_DONG"
+            )
         );
-        when(orders.taoDonHang(isNull(), anyString(), anyString(), any(), any(), any())).thenReturn(
-            7L
+        when(
+            orders.taoDonHang(
+                isNull(),
+                anyString(),
+                anyString(),
+                any(),
+                any(),
+                any()
+            )
+        ).thenReturn(7L);
+        when(orders.timTheoMa("DHGUEST")).thenReturn(
+            order(null, "CHO_THANH_TOAN")
         );
-        when(orders.timTheoMa("DHGUEST")).thenReturn(order(null, "CHO_THANH_TOAN"));
-        when(orders.timVaKhoa("DHGUEST")).thenReturn(order(null, "CHO_THANH_TOAN"));
+        when(orders.timVaKhoa("DHGUEST")).thenReturn(
+            order(null, "CHO_THANH_TOAN")
+        );
         when(orders.layVe(7)).thenReturn(List.of());
         when(orders.layBapNuoc(7)).thenReturn(List.of());
     }
@@ -97,7 +120,8 @@ class GuestOrderControllerTest {
     }
 
     @Test
-    void guestEmailIsMandatoryAndValidatedBeforeCreatingOrder() throws Exception {
+    void guestEmailIsMandatoryAndValidatedBeforeCreatingOrder()
+        throws Exception {
         for (String email : List.of("", "not-an-email")) {
             mvc.perform(
                 post("/api/guest/orders")
@@ -105,11 +129,19 @@ class GuestOrderControllerTest {
                     .content(request.replace("guest@example.com", email))
             ).andExpect(status().isBadRequest());
         }
-        verify(orders, never()).taoDonHang(any(), anyString(), anyString(), any(), any(), any());
+        verify(orders, never()).taoDonHang(
+            any(),
+            anyString(),
+            anyString(),
+            any(),
+            any(),
+            any()
+        );
     }
 
     @Test
-    void guestTicketUsesCatalogPriceAndExistingSeatLockRules() throws Exception {
+    void guestTicketUsesCatalogPriceAndExistingSeatLockRules()
+        throws Exception {
         when(catalog.timVaKhoaSuatChieu(3)).thenReturn(
             new BookingCatalogRepository.Show(
                 3,
@@ -119,7 +151,9 @@ class GuestOrderControllerTest {
                 "SAP_CHIEU"
             )
         );
-        when(catalog.timGhe(4)).thenReturn(new BookingCatalogRepository.Seat(4, 2, "HOAT_DONG"));
+        when(catalog.timGhe(4)).thenReturn(
+            new BookingCatalogRepository.Seat(4, 2, "HOAT_DONG")
+        );
         String withTicket = request.replace(
             "\"showTimeId\":null,\"seatIds\":[]",
             "\"showTimeId\":3,\"seatIds\":[4]"
@@ -143,19 +177,24 @@ class GuestOrderControllerTest {
     }
 
     @Test
-    void anotherSessionCannotReadCancelOrSeeInvoicesEvenWithSameEmail() throws Exception {
+    void anotherSessionCannotReadCancelOrSeeInvoicesEvenWithSameEmail()
+        throws Exception {
         var owner = ownedSession();
-        mvc.perform(get("/api/guest/orders/DHGUEST").session(owner)).andExpect(status().isOk());
+        mvc.perform(get("/api/guest/orders/DHGUEST").session(owner)).andExpect(
+            status().isOk()
+        );
         var stranger = new MockHttpSession();
         mvc.perform(
-            get("/api/guest/orders/DHGUEST").session(stranger).param("email", "guest@example.com")
+            get("/api/guest/orders/DHGUEST")
+                .session(stranger)
+                .param("email", "guest@example.com")
         ).andExpect(status().isForbidden());
-        mvc.perform(post("/api/guest/orders/DHGUEST/cancel").session(stranger)).andExpect(
-            status().isForbidden()
-        );
-        mvc.perform(get("/api/guest/orders/DHGUEST/invoices").session(stranger)).andExpect(
-            status().isForbidden()
-        );
+        mvc.perform(
+            post("/api/guest/orders/DHGUEST/cancel").session(stranger)
+        ).andExpect(status().isForbidden());
+        mvc.perform(
+            get("/api/guest/orders/DHGUEST/invoices").session(stranger)
+        ).andExpect(status().isForbidden());
         verify(orders, never()).timVaKhoa(anyString());
         verifyNoInteractions(invoices);
     }
@@ -163,10 +202,13 @@ class GuestOrderControllerTest {
     @Test
     void guestListCannotExposeAnotherGuestOrUserOrder() throws Exception {
         var owner = ownedSession();
-        when(orders.layDanhSachKhach(anySet(), eq(0), eq(20))).thenAnswer(invocation ->
-            invocation.<java.util.Set<String>>getArgument(0).contains("DHGUEST")
-                ? List.of(order(null, "CHO_THANH_TOAN"))
-                : List.of()
+        when(orders.layDanhSachKhach(anySet(), eq(0), eq(20))).thenAnswer(
+            invocation ->
+                invocation
+                    .<java.util.Set<String>>getArgument(0)
+                    .contains("DHGUEST")
+                    ? List.of(order(null, "CHO_THANH_TOAN"))
+                    : List.of()
         );
         mvc.perform(get("/api/guest/orders").session(owner))
             .andExpect(status().isOk())
@@ -175,17 +217,21 @@ class GuestOrderControllerTest {
         mvc.perform(get("/api/guest/orders").session(new MockHttpSession()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.length()").value(0));
-        when(orders.timTheoMa("DHGUEST")).thenReturn(order(12L, "CHO_THANH_TOAN"));
+        when(orders.timTheoMa("DHGUEST")).thenReturn(
+            order(12L, "CHO_THANH_TOAN")
+        );
         mvc.perform(get("/api/guest/orders/DHGUEST").session(owner)).andExpect(
             status().isForbidden()
         );
-        mvc.perform(get("/api/guest/orders/DHGUEST/invoices").session(owner)).andExpect(
-            status().isForbidden()
+        mvc.perform(
+            get("/api/guest/orders/DHGUEST/invoices").session(owner)
+        ).andExpect(status().isForbidden());
+        when(orders.timVaKhoa("DHGUEST")).thenReturn(
+            order(12L, "CHO_THANH_TOAN")
         );
-        when(orders.timVaKhoa("DHGUEST")).thenReturn(order(12L, "CHO_THANH_TOAN"));
-        mvc.perform(post("/api/guest/orders/DHGUEST/cancel").session(owner)).andExpect(
-            status().isForbidden()
-        );
+        mvc.perform(
+            post("/api/guest/orders/DHGUEST/cancel").session(owner)
+        ).andExpect(status().isForbidden());
     }
 
     @Test
@@ -196,15 +242,19 @@ class GuestOrderControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("HUY"));
         verify(orders).dongChiTiet(7, "HUY");
-        when(orders.timVaKhoa("DHGUEST")).thenReturn(order(null, "DA_THANH_TOAN"));
-        mvc.perform(post("/api/guest/orders/DHGUEST/cancel").session(owner)).andExpect(
-            status().isConflict()
+        when(orders.timVaKhoa("DHGUEST")).thenReturn(
+            order(null, "DA_THANH_TOAN")
         );
+        mvc.perform(
+            post("/api/guest/orders/DHGUEST/cancel").session(owner)
+        ).andExpect(status().isConflict());
     }
 
     @Test
     void ownerCanReadIssuedInvoiceAfterStaffPayment() throws Exception {
-        when(orders.timTheoMa("DHGUEST")).thenReturn(order(null, "DA_THANH_TOAN"));
+        when(orders.timTheoMa("DHGUEST")).thenReturn(
+            order(null, "DA_THANH_TOAN")
+        );
         when(invoices.timTheoDonHang(7)).thenReturn(
             List.of(
                 new Invoice(
@@ -219,9 +269,58 @@ class GuestOrderControllerTest {
                 )
             )
         );
-        mvc.perform(get("/api/guest/orders/DHGUEST/invoices").session(ownedSession()))
+        mvc.perform(
+            get("/api/guest/orders/DHGUEST/invoices").session(ownedSession())
+        )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].code").value("HDB01"));
+    }
+
+    @Test
+    void paidGuestCanReadFromAnotherSessionWithSignedTokenButCannotCancel()
+        throws Exception {
+        Order paid = order(null, "DA_THANH_TOAN");
+        when(orders.timTheoMa("DHGUEST")).thenReturn(paid);
+        String token = new GuestOrderTokenService(
+            "MDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWY=",
+            clock
+        ).tao(paid);
+        mvc.perform(
+            get("/api/guest/orders/DHGUEST")
+                .session(new MockHttpSession())
+                .header("X-Guest-Access-Token", token)
+        ).andExpect(status().isOk());
+        when(invoices.timTheoDonHang(7)).thenReturn(
+            List.of(
+                new Invoice(
+                    8,
+                    7,
+                    "HDB01",
+                    "BONG_NUOC",
+                    "guest@example.com",
+                    new BigDecimal("118000"),
+                    now,
+                    List.of()
+                )
+            )
+        );
+        mvc.perform(
+            get("/api/guest/orders/DHGUEST/invoices")
+                .session(new MockHttpSession())
+                .header("X-Guest-Access-Token", token)
+        )
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$[0].code").value("HDB01"));
+        mvc.perform(
+            get("/api/guest/orders/DHGUEST")
+                .session(new MockHttpSession())
+                .header("X-Guest-Access-Token", token + "x")
+        ).andExpect(status().isForbidden());
+        mvc.perform(
+            post("/api/guest/orders/DHGUEST/cancel")
+                .session(new MockHttpSession())
+                .header("X-Guest-Access-Token", token)
+        ).andExpect(status().isForbidden());
     }
 
     private MockHttpSession ownedSession() {

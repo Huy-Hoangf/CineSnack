@@ -1,0 +1,3995 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "CineSnack",
+    "languages": [
+      "Java",
+      "JavaScript",
+      "HTML",
+      "CSS",
+      "SQL"
+    ],
+    "frameworks": [
+      "Spring Boot"
+    ],
+    "description": "Bản đồ mã nguồn phục vụ review nghiệp vụ rạp chiếu phim",
+    "analyzedAt": "2026-11-04T03:16:44.928Z"
+  },
+  "nodes": [
+    {
+      "id": "file:database/add-eight-rooms.sql",
+      "type": "file",
+      "name": "add-eight-rooms.sql",
+      "filePath": "database/add-eight-rooms.sql",
+      "summary": "data, sql, 31 lines",
+      "tags": [
+        "data",
+        "sql"
+      ]
+    },
+    {
+      "id": "file:database/cinesnack.sql",
+      "type": "file",
+      "name": "cinesnack.sql",
+      "filePath": "database/cinesnack.sql",
+      "summary": "data, sql, 1097 lines",
+      "tags": [
+        "data",
+        "sql"
+      ]
+    },
+    {
+      "id": "file:database/optional-counter-email.sql",
+      "type": "file",
+      "name": "optional-counter-email.sql",
+      "filePath": "database/optional-counter-email.sql",
+      "summary": "data, sql, 17 lines",
+      "tags": [
+        "data",
+        "sql"
+      ]
+    },
+    {
+      "id": "file:database/order-invoice-migration.sql",
+      "type": "file",
+      "name": "order-invoice-migration.sql",
+      "filePath": "database/order-invoice-migration.sql",
+      "summary": "data, sql, 141 lines",
+      "tags": [
+        "data",
+        "sql"
+      ]
+    },
+    {
+      "id": "file:database/remove-expired-order-status.sql",
+      "type": "file",
+      "name": "remove-expired-order-status.sql",
+      "filePath": "database/remove-expired-order-status.sql",
+      "summary": "data, sql, 59 lines",
+      "tags": [
+        "data",
+        "sql"
+      ]
+    },
+    {
+      "id": "file:database/seed-demo-showtimes.sql",
+      "type": "file",
+      "name": "seed-demo-showtimes.sql",
+      "filePath": "database/seed-demo-showtimes.sql",
+      "summary": "data, sql, 98 lines",
+      "tags": [
+        "data",
+        "sql"
+      ]
+    },
+    {
+      "id": "file:docs/code-review-va-cau-truc.md",
+      "type": "document",
+      "name": "code-review-va-cau-truc.md",
+      "filePath": "docs/code-review-va-cau-truc.md",
+      "summary": "docs, markdown, 31 lines",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
+    },
+    {
+      "id": "file:docs/huong-dan-3-nguoi/01-bap-nuoc-thanh-toan-bao-cao.docx",
+      "type": "file",
+      "name": "01-bap-nuoc-thanh-toan-bao-cao.docx",
+      "filePath": "docs/huong-dan-3-nguoi/01-bap-nuoc-thanh-toan-bao-cao.docx",
+      "summary": "code, docx, 189 lines",
+      "tags": [
+        "code",
+        "docx"
+      ]
+    },
+    {
+      "id": "file:docs/huong-dan-3-nguoi/02-dat-ve-don-hang-hoa-don.docx",
+      "type": "file",
+      "name": "02-dat-ve-don-hang-hoa-don.docx",
+      "filePath": "docs/huong-dan-3-nguoi/02-dat-ve-don-hang-hoa-don.docx",
+      "summary": "code, docx, 196 lines",
+      "tags": [
+        "code",
+        "docx"
+      ]
+    },
+    {
+      "id": "file:docs/huong-dan-3-nguoi/03-tai-khoan-dang-nhap-phan-quyen.docx",
+      "type": "file",
+      "name": "03-tai-khoan-dang-nhap-phan-quyen.docx",
+      "filePath": "docs/huong-dan-3-nguoi/03-tai-khoan-dang-nhap-phan-quyen.docx",
+      "summary": "code, docx, 178 lines",
+      "tags": [
+        "code",
+        "docx"
+      ]
+    },
+    {
+      "id": "file:docs/payment-invoice.md",
+      "type": "document",
+      "name": "payment-invoice.md",
+      "filePath": "docs/payment-invoice.md",
+      "summary": "docs, markdown, 34 lines",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
+    },
+    {
+      "id": "file:docs/theater-operations.md",
+      "type": "document",
+      "name": "theater-operations.md",
+      "filePath": "docs/theater-operations.md",
+      "summary": "docs, markdown, 25 lines",
+      "tags": [
+        "docs",
+        "markdown"
+      ]
+    },
+    {
+      "id": "file:pom.xml",
+      "type": "file",
+      "name": "pom.xml",
+      "filePath": "pom.xml",
+      "summary": "config, xml, 70 lines",
+      "tags": [
+        "config",
+        "xml"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/CineSnackApplication.java",
+      "type": "file",
+      "name": "CineSnackApplication.java",
+      "filePath": "src/main/java/com/cinesnack/CineSnackApplication.java",
+      "summary": "code, java, 12 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java",
+      "type": "file",
+      "name": "ApiSecurityConfig.java",
+      "filePath": "src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java",
+      "summary": "code, java, 89 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/account/controller/RegistrationController.java",
+      "type": "file",
+      "name": "RegistrationController.java",
+      "filePath": "src/main/java/com/cinesnack/account/controller/RegistrationController.java",
+      "summary": "code, java, 22 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/account/controller/UserController.java",
+      "type": "file",
+      "name": "UserController.java",
+      "filePath": "src/main/java/com/cinesnack/account/controller/UserController.java",
+      "summary": "code, java, 22 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/account/dto/RegisterRequest.java",
+      "type": "file",
+      "name": "RegisterRequest.java",
+      "filePath": "src/main/java/com/cinesnack/account/dto/RegisterRequest.java",
+      "summary": "code, java, 11 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "file",
+      "name": "User.java",
+      "filePath": "src/main/java/com/cinesnack/account/entity/User.java",
+      "summary": "code, java, 14 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "file",
+      "name": "UserRepository.java",
+      "filePath": "src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "summary": "code, java, 38 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/account/service/RegistrationService.java",
+      "type": "file",
+      "name": "RegistrationService.java",
+      "filePath": "src/main/java/com/cinesnack/account/service/RegistrationService.java",
+      "summary": "code, java, 34 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "file",
+      "name": "UserService.java",
+      "filePath": "src/main/java/com/cinesnack/account/service/UserService.java",
+      "summary": "code, java, 38 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/controller/AdminOrderController.java",
+      "type": "file",
+      "name": "AdminOrderController.java",
+      "filePath": "src/main/java/com/cinesnack/booking/controller/AdminOrderController.java",
+      "summary": "code, java, 47 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "type": "file",
+      "name": "GuestOrderController.java",
+      "filePath": "src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "summary": "code, java, 93 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/controller/OrderController.java",
+      "type": "file",
+      "name": "OrderController.java",
+      "filePath": "src/main/java/com/cinesnack/booking/controller/OrderController.java",
+      "summary": "code, java, 59 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/controller/TicketCheckInController.java",
+      "type": "file",
+      "name": "TicketCheckInController.java",
+      "filePath": "src/main/java/com/cinesnack/booking/controller/TicketCheckInController.java",
+      "summary": "code, java, 20 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "type": "file",
+      "name": "CreateOrderRequest.java",
+      "filePath": "src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "summary": "code, java, 24 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "file",
+      "name": "Order.java",
+      "filePath": "src/main/java/com/cinesnack/booking/entity/Order.java",
+      "summary": "code, java, 20 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/entity/OrderItem.java",
+      "type": "file",
+      "name": "OrderItem.java",
+      "filePath": "src/main/java/com/cinesnack/booking/entity/OrderItem.java",
+      "summary": "code, java, 14 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/entity/Ticket.java",
+      "type": "file",
+      "name": "Ticket.java",
+      "filePath": "src/main/java/com/cinesnack/booking/entity/Ticket.java",
+      "summary": "code, java, 18 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "file",
+      "name": "OrderRepository.java",
+      "filePath": "src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "summary": "code, java, 296 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+      "type": "file",
+      "name": "TicketCheckInRepository.java",
+      "filePath": "src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+      "summary": "code, java, 40 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/security/GuestOrderAccess.java",
+      "type": "file",
+      "name": "GuestOrderAccess.java",
+      "filePath": "src/main/java/com/cinesnack/booking/security/GuestOrderAccess.java",
+      "summary": "code, java, 41 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "type": "file",
+      "name": "GuestOrderTokenService.java",
+      "filePath": "src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "summary": "code, java, 77 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "type": "file",
+      "name": "OrderExpiryService.java",
+      "filePath": "src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "summary": "code, java, 44 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "file",
+      "name": "OrderService.java",
+      "filePath": "src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "summary": "code, java, 345 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+      "type": "file",
+      "name": "TicketCheckInService.java",
+      "filePath": "src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+      "summary": "code, java, 32 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java",
+      "type": "file",
+      "name": "AdminCatalogController.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java",
+      "summary": "code, java, 95 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/controller/CatalogController.java",
+      "type": "file",
+      "name": "CatalogController.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/controller/CatalogController.java",
+      "summary": "code, java, 58 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/controller/MoviePosterController.java",
+      "type": "file",
+      "name": "MoviePosterController.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/controller/MoviePosterController.java",
+      "summary": "code, java, 35 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/controller/RoomManagementController.java",
+      "type": "file",
+      "name": "RoomManagementController.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/controller/RoomManagementController.java",
+      "summary": "code, java, 60 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "file",
+      "name": "AdminCatalog.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "summary": "code, java, 37 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "file",
+      "name": "Catalog.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "summary": "code, java, 54 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/dto/RoomManagement.java",
+      "type": "file",
+      "name": "RoomManagement.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/dto/RoomManagement.java",
+      "summary": "code, java, 28 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+      "type": "file",
+      "name": "AdminCatalogRepository.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+      "summary": "code, java, 209 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "type": "file",
+      "name": "BookingCatalogRepository.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "summary": "code, java, 109 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+      "type": "file",
+      "name": "CatalogRepository.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+      "summary": "code, java, 138 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/repository/RoomManagementRepository.java",
+      "type": "file",
+      "name": "RoomManagementRepository.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/repository/RoomManagementRepository.java",
+      "summary": "code, java, 91 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "type": "file",
+      "name": "AdminCatalogService.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "summary": "code, java, 151 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/service/CatalogService.java",
+      "type": "file",
+      "name": "CatalogService.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/service/CatalogService.java",
+      "summary": "code, java, 52 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+      "type": "file",
+      "name": "MoviePosterService.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+      "summary": "code, java, 42 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/service/PosterService.java",
+      "type": "file",
+      "name": "PosterService.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/service/PosterService.java",
+      "summary": "code, java, 67 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/catalog/service/RoomManagementService.java",
+      "type": "file",
+      "name": "RoomManagementService.java",
+      "filePath": "src/main/java/com/cinesnack/catalog/service/RoomManagementService.java",
+      "summary": "code, java, 99 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/common/config/WebConfig.java",
+      "type": "file",
+      "name": "WebConfig.java",
+      "filePath": "src/main/java/com/cinesnack/common/config/WebConfig.java",
+      "summary": "code, java, 22 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/common/controller/ApiExceptionHandler.java",
+      "type": "file",
+      "name": "ApiExceptionHandler.java",
+      "filePath": "src/main/java/com/cinesnack/common/controller/ApiExceptionHandler.java",
+      "summary": "code, java, 62 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/common/controller/CsrfController.java",
+      "type": "file",
+      "name": "CsrfController.java",
+      "filePath": "src/main/java/com/cinesnack/common/controller/CsrfController.java",
+      "summary": "code, java, 13 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/common/support/Codes.java",
+      "type": "file",
+      "name": "Codes.java",
+      "filePath": "src/main/java/com/cinesnack/common/support/Codes.java",
+      "summary": "code, java, 19 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "file",
+      "name": "Sql.java",
+      "filePath": "src/main/java/com/cinesnack/common/support/Sql.java",
+      "summary": "code, java, 22 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/config/DatabaseConnection.java.example",
+      "type": "file",
+      "name": "DatabaseConnection.java.example",
+      "filePath": "src/main/java/com/cinesnack/config/DatabaseConnection.java.example",
+      "summary": "code, example, 32 lines",
+      "tags": [
+        "code",
+        "example"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/config/hướng dẫn kết nối db",
+      "type": "file",
+      "name": "hướng dẫn kết nối db",
+      "filePath": "src/main/java/com/cinesnack/config/hướng dẫn kết nối db",
+      "summary": "code, unknown, 16 lines",
+      "tags": [
+        "code",
+        "unknown"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/invoice/controller/InvoiceController.java",
+      "type": "file",
+      "name": "InvoiceController.java",
+      "filePath": "src/main/java/com/cinesnack/invoice/controller/InvoiceController.java",
+      "summary": "code, java, 27 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/invoice/entity/Invoice.java",
+      "type": "file",
+      "name": "Invoice.java",
+      "filePath": "src/main/java/com/cinesnack/invoice/entity/Invoice.java",
+      "summary": "code, java, 26 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "type": "file",
+      "name": "InvoiceRepository.java",
+      "filePath": "src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "summary": "code, java, 125 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "file",
+      "name": "InvoiceService.java",
+      "filePath": "src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "summary": "code, java, 50 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/config/PaymentConfig.java",
+      "type": "file",
+      "name": "PaymentConfig.java",
+      "filePath": "src/main/java/com/cinesnack/payment/config/PaymentConfig.java",
+      "summary": "code, java, 24 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/controller/PaymentController.java",
+      "type": "file",
+      "name": "PaymentController.java",
+      "filePath": "src/main/java/com/cinesnack/payment/controller/PaymentController.java",
+      "summary": "code, java, 54 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/controller/QrPaymentController.java",
+      "type": "file",
+      "name": "QrPaymentController.java",
+      "filePath": "src/main/java/com/cinesnack/payment/controller/QrPaymentController.java",
+      "summary": "code, java, 42 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/dto/CashPaymentRequest.java",
+      "type": "file",
+      "name": "CashPaymentRequest.java",
+      "filePath": "src/main/java/com/cinesnack/payment/dto/CashPaymentRequest.java",
+      "summary": "code, java, 13 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/dto/TransferConfirmRequest.java",
+      "type": "file",
+      "name": "TransferConfirmRequest.java",
+      "filePath": "src/main/java/com/cinesnack/payment/dto/TransferConfirmRequest.java",
+      "summary": "code, java, 13 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/entity/Payment.java",
+      "type": "file",
+      "name": "Payment.java",
+      "filePath": "src/main/java/com/cinesnack/payment/entity/Payment.java",
+      "summary": "code, java, 17 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "type": "file",
+      "name": "PaymentRepository.java",
+      "filePath": "src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "summary": "code, java, 68 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/service/GmailEmailClient.java",
+      "type": "file",
+      "name": "GmailEmailClient.java",
+      "filePath": "src/main/java/com/cinesnack/payment/service/GmailEmailClient.java",
+      "summary": "code, java, 149 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/service/PaymentConfirmationEmailListener.java",
+      "type": "file",
+      "name": "PaymentConfirmationEmailListener.java",
+      "filePath": "src/main/java/com/cinesnack/payment/service/PaymentConfirmationEmailListener.java",
+      "summary": "code, java, 19 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/service/PaymentConfirmed.java",
+      "type": "file",
+      "name": "PaymentConfirmed.java",
+      "filePath": "src/main/java/com/cinesnack/payment/service/PaymentConfirmed.java",
+      "summary": "code, java, 10 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "type": "file",
+      "name": "PaymentService.java",
+      "filePath": "src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "summary": "code, java, 187 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/java/com/cinesnack/payment/service/QrPaymentService.java",
+      "type": "file",
+      "name": "QrPaymentService.java",
+      "filePath": "src/main/java/com/cinesnack/payment/service/QrPaymentService.java",
+      "summary": "code, java, 92 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/admin.css",
+      "type": "file",
+      "name": "admin.css",
+      "filePath": "src/main/resources/UI/assets/css/admin.css",
+      "summary": "markup, css, 406 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/app.css",
+      "type": "file",
+      "name": "app.css",
+      "filePath": "src/main/resources/UI/assets/css/app.css",
+      "summary": "markup, css, 862 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "file",
+      "name": "authentication.css",
+      "filePath": "src/main/resources/UI/assets/css/authentication.css",
+      "summary": "markup, css, 334 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/checkout.css",
+      "type": "file",
+      "name": "checkout.css",
+      "filePath": "src/main/resources/UI/assets/css/checkout.css",
+      "summary": "markup, css, 114 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/cinema-theme.css",
+      "type": "file",
+      "name": "cinema-theme.css",
+      "filePath": "src/main/resources/UI/assets/css/cinema-theme.css",
+      "summary": "markup, css, 622 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/movies.css",
+      "type": "file",
+      "name": "movies.css",
+      "filePath": "src/main/resources/UI/assets/css/movies.css",
+      "summary": "markup, css, 189 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/orders.css",
+      "type": "file",
+      "name": "orders.css",
+      "filePath": "src/main/resources/UI/assets/css/orders.css",
+      "summary": "markup, css, 181 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "file",
+      "name": "site.css",
+      "filePath": "src/main/resources/UI/assets/css/site.css",
+      "summary": "markup, css, 758 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/theater.css",
+      "type": "file",
+      "name": "theater.css",
+      "filePath": "src/main/resources/UI/assets/css/theater.css",
+      "summary": "markup, css, 124 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/css/ticket-print.css",
+      "type": "file",
+      "name": "ticket-print.css",
+      "filePath": "src/main/resources/UI/assets/css/ticket-print.css",
+      "summary": "markup, css, 51 lines",
+      "tags": [
+        "markup",
+        "css"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/images/banners/dune-hero-1600.webp",
+      "type": "file",
+      "name": "dune-hero-1600.webp",
+      "filePath": "src/main/resources/UI/assets/images/banners/dune-hero-1600.webp",
+      "summary": "code, webp, 2565 lines",
+      "tags": [
+        "code",
+        "webp"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/images/banners/dune-hero-480.webp",
+      "type": "file",
+      "name": "dune-hero-480.webp",
+      "filePath": "src/main/resources/UI/assets/images/banners/dune-hero-480.webp",
+      "summary": "code, webp, 195 lines",
+      "tags": [
+        "code",
+        "webp"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/images/banners/dune-hero-960.webp",
+      "type": "file",
+      "name": "dune-hero-960.webp",
+      "filePath": "src/main/resources/UI/assets/images/banners/dune-hero-960.webp",
+      "summary": "code, webp, 658 lines",
+      "tags": [
+        "code",
+        "webp"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/admin.js",
+      "type": "file",
+      "name": "admin.js",
+      "filePath": "src/main/resources/UI/assets/js/admin.js",
+      "summary": "code, javascript, 578 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "file",
+      "name": "api.js",
+      "filePath": "src/main/resources/UI/assets/js/api.js",
+      "summary": "code, javascript, 94 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/authentication.js",
+      "type": "file",
+      "name": "authentication.js",
+      "filePath": "src/main/resources/UI/assets/js/authentication.js",
+      "summary": "code, javascript, 244 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/booking-summary.js",
+      "type": "file",
+      "name": "booking-summary.js",
+      "filePath": "src/main/resources/UI/assets/js/booking-summary.js",
+      "summary": "code, javascript, 22 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/booking.js",
+      "type": "file",
+      "name": "booking.js",
+      "filePath": "src/main/resources/UI/assets/js/booking.js",
+      "summary": "code, javascript, 370 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/checkout.js",
+      "type": "file",
+      "name": "checkout.js",
+      "filePath": "src/main/resources/UI/assets/js/checkout.js",
+      "summary": "code, javascript, 173 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/cinema.js",
+      "type": "file",
+      "name": "cinema.js",
+      "filePath": "src/main/resources/UI/assets/js/cinema.js",
+      "summary": "code, javascript, 172 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/home.js",
+      "type": "file",
+      "name": "home.js",
+      "filePath": "src/main/resources/UI/assets/js/home.js",
+      "summary": "code, javascript, 155 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/movies.js",
+      "type": "file",
+      "name": "movies.js",
+      "filePath": "src/main/resources/UI/assets/js/movies.js",
+      "summary": "code, javascript, 149 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/orders.js",
+      "type": "file",
+      "name": "orders.js",
+      "filePath": "src/main/resources/UI/assets/js/orders.js",
+      "summary": "code, javascript, 552 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/theater.js",
+      "type": "file",
+      "name": "theater.js",
+      "filePath": "src/main/resources/UI/assets/js/theater.js",
+      "summary": "code, javascript, 277 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/assets/js/ticket-print.js",
+      "type": "file",
+      "name": "ticket-print.js",
+      "filePath": "src/main/resources/UI/assets/js/ticket-print.js",
+      "summary": "code, javascript, 144 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/html/admin.html",
+      "type": "file",
+      "name": "admin.html",
+      "filePath": "src/main/resources/UI/html/admin.html",
+      "summary": "markup, html, 428 lines",
+      "tags": [
+        "markup",
+        "html"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/html/authentication.html",
+      "type": "file",
+      "name": "authentication.html",
+      "filePath": "src/main/resources/UI/html/authentication.html",
+      "summary": "markup, html, 156 lines",
+      "tags": [
+        "markup",
+        "html"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/html/booking.html",
+      "type": "file",
+      "name": "booking.html",
+      "filePath": "src/main/resources/UI/html/booking.html",
+      "summary": "markup, html, 282 lines",
+      "tags": [
+        "markup",
+        "html"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/html/checkout.html",
+      "type": "file",
+      "name": "checkout.html",
+      "filePath": "src/main/resources/UI/html/checkout.html",
+      "summary": "markup, html, 337 lines",
+      "tags": [
+        "markup",
+        "html"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/html/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "src/main/resources/UI/html/index.html",
+      "summary": "markup, html, 258 lines",
+      "tags": [
+        "markup",
+        "html"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/html/movies.html",
+      "type": "file",
+      "name": "movies.html",
+      "filePath": "src/main/resources/UI/html/movies.html",
+      "summary": "markup, html, 188 lines",
+      "tags": [
+        "markup",
+        "html"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/html/orders.html",
+      "type": "file",
+      "name": "orders.html",
+      "filePath": "src/main/resources/UI/html/orders.html",
+      "summary": "markup, html, 88 lines",
+      "tags": [
+        "markup",
+        "html"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/UI/html/theater.html",
+      "type": "file",
+      "name": "theater.html",
+      "filePath": "src/main/resources/UI/html/theater.html",
+      "summary": "markup, html, 257 lines",
+      "tags": [
+        "markup",
+        "html"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/application.properties",
+      "type": "file",
+      "name": "application.properties",
+      "filePath": "src/main/resources/application.properties",
+      "summary": "config, properties, 14 lines",
+      "tags": [
+        "config",
+        "properties"
+      ]
+    },
+    {
+      "id": "file:src/main/resources/payment.properties",
+      "type": "file",
+      "name": "payment.properties",
+      "filePath": "src/main/resources/payment.properties",
+      "summary": "config, properties, 16 lines",
+      "tags": [
+        "config",
+        "properties"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/catalog/service/PosterServiceTest.java",
+      "type": "file",
+      "name": "PosterServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/catalog/service/PosterServiceTest.java",
+      "summary": "code, java, 35 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "type": "file",
+      "name": "ApiSecurityTest.java",
+      "filePath": "src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "summary": "code, java, 393 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "type": "file",
+      "name": "GuestOrderControllerTest.java",
+      "filePath": "src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "summary": "code, java, 277 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "type": "file",
+      "name": "SessionSecurityTest.java",
+      "filePath": "src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "summary": "code, java, 197 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "type": "file",
+      "name": "TheaterSecurityTest.java",
+      "filePath": "src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "summary": "code, java, 73 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/payment/service/GmailEmailClientTest.java",
+      "type": "file",
+      "name": "GmailEmailClientTest.java",
+      "filePath": "src/test/java/com/cinesnack/payment/service/GmailEmailClientTest.java",
+      "summary": "code, java, 91 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/repository/BookingCatalogLockOrderTest.java",
+      "type": "file",
+      "name": "BookingCatalogLockOrderTest.java",
+      "filePath": "src/test/java/com/cinesnack/repository/BookingCatalogLockOrderTest.java",
+      "summary": "code, java, 48 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java",
+      "type": "file",
+      "name": "CatalogRepositoryTest.java",
+      "filePath": "src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java",
+      "summary": "code, java, 70 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/repository/GuestOrderListTest.java",
+      "type": "file",
+      "name": "GuestOrderListTest.java",
+      "filePath": "src/test/java/com/cinesnack/repository/GuestOrderListTest.java",
+      "summary": "code, java, 55 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/repository/InvoiceRepositoryTest.java",
+      "type": "file",
+      "name": "InvoiceRepositoryTest.java",
+      "filePath": "src/test/java/com/cinesnack/repository/InvoiceRepositoryTest.java",
+      "summary": "code, java, 75 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/repository/OrderAdminSearchTest.java",
+      "type": "file",
+      "name": "OrderAdminSearchTest.java",
+      "filePath": "src/test/java/com/cinesnack/repository/OrderAdminSearchTest.java",
+      "summary": "code, java, 42 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/repository/OrderAvailabilityTest.java",
+      "type": "file",
+      "name": "OrderAvailabilityTest.java",
+      "filePath": "src/test/java/com/cinesnack/repository/OrderAvailabilityTest.java",
+      "summary": "code, java, 54 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/repository/OrderTicketDetailsTest.java",
+      "type": "file",
+      "name": "OrderTicketDetailsTest.java",
+      "filePath": "src/test/java/com/cinesnack/repository/OrderTicketDetailsTest.java",
+      "summary": "code, java, 43 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java",
+      "type": "file",
+      "name": "TicketCheckInRepositoryTest.java",
+      "filePath": "src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java",
+      "summary": "code, java, 61 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/security/GuestOrderAccessTest.java",
+      "type": "file",
+      "name": "GuestOrderAccessTest.java",
+      "filePath": "src/test/java/com/cinesnack/security/GuestOrderAccessTest.java",
+      "summary": "code, java, 34 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/security/GuestOrderTokenServiceTest.java",
+      "type": "file",
+      "name": "GuestOrderTokenServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/security/GuestOrderTokenServiceTest.java",
+      "summary": "code, java, 39 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+      "type": "file",
+      "name": "AdminCatalogServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+      "summary": "code, java, 180 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/AdminCatalogValidationTest.java",
+      "type": "file",
+      "name": "AdminCatalogValidationTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/AdminCatalogValidationTest.java",
+      "summary": "code, java, 108 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/CatalogMovieServiceTest.java",
+      "type": "file",
+      "name": "CatalogMovieServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/CatalogMovieServiceTest.java",
+      "summary": "code, java, 42 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "type": "file",
+      "name": "GuestOrderServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "summary": "code, java, 90 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/MoviePosterServiceTest.java",
+      "type": "file",
+      "name": "MoviePosterServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/MoviePosterServiceTest.java",
+      "summary": "code, java, 44 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+      "type": "file",
+      "name": "OrderClockRegressionTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+      "summary": "code, java, 101 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/OrderExpiryServiceTest.java",
+      "type": "file",
+      "name": "OrderExpiryServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/OrderExpiryServiceTest.java",
+      "summary": "code, java, 79 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "type": "file",
+      "name": "OrderServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "summary": "code, java, 265 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "type": "file",
+      "name": "PaymentServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "summary": "code, java, 251 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "type": "file",
+      "name": "PaymentTransactionTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "summary": "code, java, 224 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/QrPaymentServiceTest.java",
+      "type": "file",
+      "name": "QrPaymentServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/QrPaymentServiceTest.java",
+      "summary": "code, java, 51 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/RegistrationServiceTest.java",
+      "type": "file",
+      "name": "RegistrationServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/RegistrationServiceTest.java",
+      "summary": "code, java, 34 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/RoomManagementServiceTest.java",
+      "type": "file",
+      "name": "RoomManagementServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/RoomManagementServiceTest.java",
+      "summary": "code, java, 79 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "type": "file",
+      "name": "SqlServerPaymentIT.java",
+      "filePath": "src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "summary": "code, java, 365 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java",
+      "type": "file",
+      "name": "TicketCheckInServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java",
+      "summary": "code, java, 37 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/service/UserServiceTest.java",
+      "type": "file",
+      "name": "UserServiceTest.java",
+      "filePath": "src/test/java/com/cinesnack/service/UserServiceTest.java",
+      "summary": "code, java, 79 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/java/com/cinesnack/support/CodesTest.java",
+      "type": "file",
+      "name": "CodesTest.java",
+      "filePath": "src/test/java/com/cinesnack/support/CodesTest.java",
+      "summary": "code, java, 20 lines",
+      "tags": [
+        "code",
+        "java"
+      ]
+    },
+    {
+      "id": "file:src/test/js/authentication.test.cjs",
+      "type": "file",
+      "name": "authentication.test.cjs",
+      "filePath": "src/test/js/authentication.test.cjs",
+      "summary": "code, javascript, 76 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:src/test/js/theater-fixture-server.cjs",
+      "type": "file",
+      "name": "theater-fixture-server.cjs",
+      "filePath": "src/test/js/theater-fixture-server.cjs",
+      "summary": "code, javascript, 56 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/database/catalog-idempotency.ps1",
+      "type": "file",
+      "name": "catalog-idempotency.ps1",
+      "filePath": "tests/database/catalog-idempotency.ps1",
+      "summary": "script, powershell, 60 lines",
+      "tags": [
+        "script",
+        "powershell"
+      ]
+    },
+    {
+      "id": "file:tests/database/p2-atomicity.ps1",
+      "type": "file",
+      "name": "p2-atomicity.ps1",
+      "filePath": "tests/database/p2-atomicity.ps1",
+      "summary": "script, powershell, 49 lines",
+      "tags": [
+        "script",
+        "powershell"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/browser/authentication.test.cjs",
+      "type": "file",
+      "name": "authentication.test.cjs",
+      "filePath": "tests/frontend/browser/authentication.test.cjs",
+      "summary": "code, javascript, 66 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/browser/four-roles.test.cjs",
+      "type": "file",
+      "name": "four-roles.test.cjs",
+      "filePath": "tests/frontend/browser/four-roles.test.cjs",
+      "summary": "code, javascript, 235 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/browser/helpers.cjs",
+      "type": "file",
+      "name": "helpers.cjs",
+      "filePath": "tests/frontend/browser/helpers.cjs",
+      "summary": "code, javascript, 39 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/browser/p2-regression.test.cjs",
+      "type": "file",
+      "name": "p2-regression.test.cjs",
+      "filePath": "tests/frontend/browser/p2-regression.test.cjs",
+      "summary": "code, javascript, 112 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/browser/seat-states.test.cjs",
+      "type": "file",
+      "name": "seat-states.test.cjs",
+      "filePath": "tests/frontend/browser/seat-states.test.cjs",
+      "summary": "code, javascript, 56 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/browser/site.test.cjs",
+      "type": "file",
+      "name": "site.test.cjs",
+      "filePath": "tests/frontend/browser/site.test.cjs",
+      "summary": "code, javascript, 180 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/fixtures/api-server.cjs",
+      "type": "file",
+      "name": "api-server.cjs",
+      "filePath": "tests/frontend/fixtures/api-server.cjs",
+      "summary": "code, javascript, 564 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/integration/accounts.test.cjs",
+      "type": "file",
+      "name": "accounts.test.cjs",
+      "filePath": "tests/frontend/integration/accounts.test.cjs",
+      "summary": "code, javascript, 71 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/integration/catalog.test.cjs",
+      "type": "file",
+      "name": "catalog.test.cjs",
+      "filePath": "tests/frontend/integration/catalog.test.cjs",
+      "summary": "code, javascript, 76 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/unit/cart.test.cjs",
+      "type": "file",
+      "name": "cart.test.cjs",
+      "filePath": "tests/frontend/unit/cart.test.cjs",
+      "summary": "code, javascript, 59 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    },
+    {
+      "id": "file:tests/frontend/unit/cinema.test.cjs",
+      "type": "file",
+      "name": "cinema.test.cjs",
+      "filePath": "tests/frontend/unit/cinema.test.cjs",
+      "summary": "code, javascript, 30 lines",
+      "tags": [
+        "code",
+        "javascript"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/controller/RegistrationController.java",
+      "target": "file:src/main/java/com/cinesnack/account/dto/RegisterRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/controller/RegistrationController.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/RegistrationService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/controller/UserController.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/service/RegistrationService.java",
+      "target": "file:src/main/java/com/cinesnack/account/dto/RegisterRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/service/RegistrationService.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/AdminOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/AdminOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/AdminOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/AdminOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/entity/Invoice.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderAccess.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/OrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/OrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/OrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/OrderController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/controller/TicketCheckInController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Codes.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Ticket.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/security/GuestOrderAccess.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Codes.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Ticket.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/CatalogController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/CatalogController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/CatalogService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/CatalogController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/MoviePosterController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/MoviePosterController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/MoviePosterController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/controller/RoomManagementController.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/RoomManagementService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/repository/RoomManagementRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/CatalogService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/CatalogService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/RoomManagementService.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/catalog/service/RoomManagementService.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/RoomManagementRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/controller/InvoiceController.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/entity/Invoice.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/controller/InvoiceController.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/entity/Invoice.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Codes.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/entity/Invoice.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/controller/PaymentController.java",
+      "target": "file:src/main/java/com/cinesnack/payment/dto/CashPaymentRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/controller/PaymentController.java",
+      "target": "file:src/main/java/com/cinesnack/payment/dto/TransferConfirmRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/controller/PaymentController.java",
+      "target": "file:src/main/java/com/cinesnack/payment/entity/Payment.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/controller/PaymentController.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/controller/QrPaymentController.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderAccess.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/controller/QrPaymentController.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/QrPaymentService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "target": "file:src/main/java/com/cinesnack/payment/entity/Payment.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Codes.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/payment/entity/Payment.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/QrPaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/java/com/cinesnack/payment/service/QrPaymentService.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/css/app.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/css/orders.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/css/admin.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/css/cinema-theme.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/js/cinema.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/css/ticket-print.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/js/ticket-print.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/js/orders.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/admin.html",
+      "target": "file:src/main/resources/UI/assets/js/admin.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/authentication.html",
+      "target": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/authentication.html",
+      "target": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/authentication.html",
+      "target": "file:src/main/resources/UI/assets/css/cinema-theme.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/authentication.html",
+      "target": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/authentication.html",
+      "target": "file:src/main/resources/UI/assets/js/authentication.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/css/app.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/js/cinema.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/js/booking-summary.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/js/booking.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/css/cinema-theme.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/booking.html",
+      "target": "file:src/main/resources/UI/assets/js/authentication.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/css/app.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/js/cinema.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/js/booking-summary.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/js/checkout.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/css/checkout.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/css/cinema-theme.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/checkout.html",
+      "target": "file:src/main/resources/UI/assets/js/authentication.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/index.html",
+      "target": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/index.html",
+      "target": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/index.html",
+      "target": "file:src/main/resources/UI/assets/css/cinema-theme.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/index.html",
+      "target": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/index.html",
+      "target": "file:src/main/resources/UI/assets/js/authentication.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/index.html",
+      "target": "file:src/main/resources/UI/assets/js/cinema.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/index.html",
+      "target": "file:src/main/resources/UI/assets/js/home.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/css/app.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/css/movies.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/js/cinema.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/js/booking-summary.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/js/movies.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/css/cinema-theme.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/movies.html",
+      "target": "file:src/main/resources/UI/assets/js/authentication.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/css/app.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/css/orders.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/js/cinema.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/css/ticket-print.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/js/ticket-print.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/js/orders.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/js/authentication.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/orders.html",
+      "target": "file:src/main/resources/UI/assets/css/cinema-theme.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/theater.html",
+      "target": "file:src/main/resources/UI/assets/css/site.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/theater.html",
+      "target": "file:src/main/resources/UI/assets/css/app.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/theater.html",
+      "target": "file:src/main/resources/UI/assets/css/authentication.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/theater.html",
+      "target": "file:src/main/resources/UI/assets/css/admin.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/theater.html",
+      "target": "file:src/main/resources/UI/assets/css/theater.css",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/theater.html",
+      "target": "file:src/main/resources/UI/assets/js/api.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/theater.html",
+      "target": "file:src/main/resources/UI/assets/js/cinema.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/main/resources/UI/html/theater.html",
+      "target": "file:src/main/resources/UI/assets/js/theater.js",
+      "type": "depends_on",
+      "weight": 0.5
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/controller/AdminOrderController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/controller/OrderController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/controller/MoviePosterController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/controller/CatalogController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/CatalogService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/common/controller/ApiExceptionHandler.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/common/controller/CsrfController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/controller/InvoiceController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/controller/PaymentController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/common/controller/ApiExceptionHandler.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/entity/Invoice.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderAccess.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/controller/UserController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/controller/RegistrationController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/RegistrationService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/common/controller/ApiExceptionHandler.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/common/controller/CsrfController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/controller/TicketCheckInController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/controller/RoomManagementController.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/RoomManagementService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+      "target": "file:src/main/java/com/cinesnack/common/controller/ApiExceptionHandler.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/BookingCatalogLockOrderTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/GuestOrderListTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/InvoiceRepositoryTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/InvoiceRepositoryTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/OrderAdminSearchTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/OrderAvailabilityTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/OrderTicketDetailsTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/security/GuestOrderAccessTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderAccess.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/security/GuestOrderAccessTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/security/GuestOrderTokenServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/security/GuestOrderTokenServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/AdminCatalogValidationTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/CatalogMovieServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/CatalogService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/CatalogMovieServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/CatalogMovieServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/entity/Payment.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/MoviePosterServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/MoviePosterServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/MoviePosterServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/MoviePosterServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/PosterService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderExpiryServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderExpiryServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderExpiryServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/PaymentConfirmed.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/entity/Payment.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/entity/Payment.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/GmailEmailClient.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/PaymentConfirmationEmailListener.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/QrPaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/QrPaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/QrPaymentService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/QrPaymentServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/RegistrationServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/dto/RegisterRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/RegistrationServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/RegistrationServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/RegistrationService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/RoomManagementServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/RoomManagementServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/RoomManagementServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/RoomManagement.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/RoomManagementServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/RoomManagementRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/RoomManagementServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/RoomManagementService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Sql.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/UserServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/entity/User.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/UserServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/service/UserService.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/UserServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/service/UserServiceTest.java",
+      "target": "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+      "type": "imports",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/test/java/com/cinesnack/support/CodesTest.java",
+      "target": "file:src/main/java/com/cinesnack/common/support/Codes.java",
+      "type": "imports",
+      "weight": 0.7
+    }
+  ],
+  "layers": [
+    {
+      "id": "layer:account",
+      "name": "Tài khoản và phân quyền",
+      "description": "Tài khoản và phân quyền",
+      "nodeIds": [
+        "file:src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java",
+        "file:src/main/java/com/cinesnack/account/controller/RegistrationController.java",
+        "file:src/main/java/com/cinesnack/account/controller/UserController.java",
+        "file:src/main/java/com/cinesnack/account/dto/RegisterRequest.java",
+        "file:src/main/java/com/cinesnack/account/entity/User.java",
+        "file:src/main/java/com/cinesnack/account/repository/UserRepository.java",
+        "file:src/main/java/com/cinesnack/account/service/RegistrationService.java",
+        "file:src/main/java/com/cinesnack/account/service/UserService.java"
+      ]
+    },
+    {
+      "id": "layer:catalog",
+      "name": "Phim, lịch chiếu, phòng và danh mục",
+      "description": "Phim, lịch chiếu, phòng và danh mục",
+      "nodeIds": [
+        "file:src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java",
+        "file:src/main/java/com/cinesnack/catalog/controller/CatalogController.java",
+        "file:src/main/java/com/cinesnack/catalog/controller/MoviePosterController.java",
+        "file:src/main/java/com/cinesnack/catalog/controller/RoomManagementController.java",
+        "file:src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+        "file:src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+        "file:src/main/java/com/cinesnack/catalog/dto/RoomManagement.java",
+        "file:src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+        "file:src/main/java/com/cinesnack/catalog/repository/BookingCatalogRepository.java",
+        "file:src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+        "file:src/main/java/com/cinesnack/catalog/repository/RoomManagementRepository.java",
+        "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+        "file:src/main/java/com/cinesnack/catalog/service/CatalogService.java",
+        "file:src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+        "file:src/main/java/com/cinesnack/catalog/service/PosterService.java",
+        "file:src/main/java/com/cinesnack/catalog/service/RoomManagementService.java"
+      ]
+    },
+    {
+      "id": "layer:booking",
+      "name": "Đặt vé và đơn hàng",
+      "description": "Đặt vé và đơn hàng",
+      "nodeIds": [
+        "file:src/main/java/com/cinesnack/booking/controller/AdminOrderController.java",
+        "file:src/main/java/com/cinesnack/booking/controller/GuestOrderController.java",
+        "file:src/main/java/com/cinesnack/booking/controller/OrderController.java",
+        "file:src/main/java/com/cinesnack/booking/controller/TicketCheckInController.java",
+        "file:src/main/java/com/cinesnack/booking/dto/CreateOrderRequest.java",
+        "file:src/main/java/com/cinesnack/booking/entity/Order.java",
+        "file:src/main/java/com/cinesnack/booking/entity/OrderItem.java",
+        "file:src/main/java/com/cinesnack/booking/entity/Ticket.java",
+        "file:src/main/java/com/cinesnack/booking/repository/OrderRepository.java",
+        "file:src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+        "file:src/main/java/com/cinesnack/booking/security/GuestOrderAccess.java",
+        "file:src/main/java/com/cinesnack/booking/security/GuestOrderTokenService.java",
+        "file:src/main/java/com/cinesnack/booking/service/OrderExpiryService.java",
+        "file:src/main/java/com/cinesnack/booking/service/OrderService.java",
+        "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java"
+      ]
+    },
+    {
+      "id": "layer:payment",
+      "name": "Thanh toán",
+      "description": "Thanh toán",
+      "nodeIds": [
+        "file:src/main/java/com/cinesnack/payment/config/PaymentConfig.java",
+        "file:src/main/java/com/cinesnack/payment/controller/PaymentController.java",
+        "file:src/main/java/com/cinesnack/payment/controller/QrPaymentController.java",
+        "file:src/main/java/com/cinesnack/payment/dto/CashPaymentRequest.java",
+        "file:src/main/java/com/cinesnack/payment/dto/TransferConfirmRequest.java",
+        "file:src/main/java/com/cinesnack/payment/entity/Payment.java",
+        "file:src/main/java/com/cinesnack/payment/repository/PaymentRepository.java",
+        "file:src/main/java/com/cinesnack/payment/service/GmailEmailClient.java",
+        "file:src/main/java/com/cinesnack/payment/service/PaymentConfirmationEmailListener.java",
+        "file:src/main/java/com/cinesnack/payment/service/PaymentConfirmed.java",
+        "file:src/main/java/com/cinesnack/payment/service/PaymentService.java",
+        "file:src/main/java/com/cinesnack/payment/service/QrPaymentService.java"
+      ]
+    },
+    {
+      "id": "layer:invoice",
+      "name": "Hóa đơn",
+      "description": "Hóa đơn",
+      "nodeIds": [
+        "file:src/main/java/com/cinesnack/invoice/controller/InvoiceController.java",
+        "file:src/main/java/com/cinesnack/invoice/entity/Invoice.java",
+        "file:src/main/java/com/cinesnack/invoice/repository/InvoiceRepository.java",
+        "file:src/main/java/com/cinesnack/invoice/service/InvoiceService.java"
+      ]
+    },
+    {
+      "id": "layer:ui",
+      "name": "Giao diện khách và vận hành",
+      "description": "Giao diện khách và vận hành",
+      "nodeIds": [
+        "file:src/main/resources/UI/assets/css/admin.css",
+        "file:src/main/resources/UI/assets/css/app.css",
+        "file:src/main/resources/UI/assets/css/authentication.css",
+        "file:src/main/resources/UI/assets/css/checkout.css",
+        "file:src/main/resources/UI/assets/css/cinema-theme.css",
+        "file:src/main/resources/UI/assets/css/movies.css",
+        "file:src/main/resources/UI/assets/css/orders.css",
+        "file:src/main/resources/UI/assets/css/site.css",
+        "file:src/main/resources/UI/assets/css/theater.css",
+        "file:src/main/resources/UI/assets/css/ticket-print.css",
+        "file:src/main/resources/UI/assets/images/banners/dune-hero-1600.webp",
+        "file:src/main/resources/UI/assets/images/banners/dune-hero-480.webp",
+        "file:src/main/resources/UI/assets/images/banners/dune-hero-960.webp",
+        "file:src/main/resources/UI/assets/js/admin.js",
+        "file:src/main/resources/UI/assets/js/api.js",
+        "file:src/main/resources/UI/assets/js/authentication.js",
+        "file:src/main/resources/UI/assets/js/booking-summary.js",
+        "file:src/main/resources/UI/assets/js/booking.js",
+        "file:src/main/resources/UI/assets/js/checkout.js",
+        "file:src/main/resources/UI/assets/js/cinema.js",
+        "file:src/main/resources/UI/assets/js/home.js",
+        "file:src/main/resources/UI/assets/js/movies.js",
+        "file:src/main/resources/UI/assets/js/orders.js",
+        "file:src/main/resources/UI/assets/js/theater.js",
+        "file:src/main/resources/UI/assets/js/ticket-print.js",
+        "file:src/main/resources/UI/html/admin.html",
+        "file:src/main/resources/UI/html/authentication.html",
+        "file:src/main/resources/UI/html/booking.html",
+        "file:src/main/resources/UI/html/checkout.html",
+        "file:src/main/resources/UI/html/index.html",
+        "file:src/main/resources/UI/html/movies.html",
+        "file:src/main/resources/UI/html/orders.html",
+        "file:src/main/resources/UI/html/theater.html"
+      ]
+    },
+    {
+      "id": "layer:other",
+      "name": "Cấu hình, SQL, tài liệu và kiểm thử",
+      "description": "Cấu hình, SQL, tài liệu và kiểm thử",
+      "nodeIds": [
+        "file:database/add-eight-rooms.sql",
+        "file:database/cinesnack.sql",
+        "file:database/optional-counter-email.sql",
+        "file:database/order-invoice-migration.sql",
+        "file:database/remove-expired-order-status.sql",
+        "file:database/seed-demo-showtimes.sql",
+        "file:docs/code-review-va-cau-truc.md",
+        "file:docs/huong-dan-3-nguoi/01-bap-nuoc-thanh-toan-bao-cao.docx",
+        "file:docs/huong-dan-3-nguoi/02-dat-ve-don-hang-hoa-don.docx",
+        "file:docs/huong-dan-3-nguoi/03-tai-khoan-dang-nhap-phan-quyen.docx",
+        "file:docs/payment-invoice.md",
+        "file:docs/theater-operations.md",
+        "file:pom.xml",
+        "file:src/main/java/com/cinesnack/CineSnackApplication.java",
+        "file:src/main/java/com/cinesnack/common/config/WebConfig.java",
+        "file:src/main/java/com/cinesnack/common/controller/ApiExceptionHandler.java",
+        "file:src/main/java/com/cinesnack/common/controller/CsrfController.java",
+        "file:src/main/java/com/cinesnack/common/support/Codes.java",
+        "file:src/main/java/com/cinesnack/common/support/Sql.java",
+        "file:src/main/java/com/cinesnack/config/DatabaseConnection.java.example",
+        "file:src/main/java/com/cinesnack/config/hướng dẫn kết nối db",
+        "file:src/main/resources/application.properties",
+        "file:src/main/resources/payment.properties",
+        "file:src/test/java/com/cinesnack/catalog/service/PosterServiceTest.java",
+        "file:src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+        "file:src/test/java/com/cinesnack/controller/GuestOrderControllerTest.java",
+        "file:src/test/java/com/cinesnack/controller/SessionSecurityTest.java",
+        "file:src/test/java/com/cinesnack/controller/TheaterSecurityTest.java",
+        "file:src/test/java/com/cinesnack/payment/service/GmailEmailClientTest.java",
+        "file:src/test/java/com/cinesnack/repository/BookingCatalogLockOrderTest.java",
+        "file:src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java",
+        "file:src/test/java/com/cinesnack/repository/GuestOrderListTest.java",
+        "file:src/test/java/com/cinesnack/repository/InvoiceRepositoryTest.java",
+        "file:src/test/java/com/cinesnack/repository/OrderAdminSearchTest.java",
+        "file:src/test/java/com/cinesnack/repository/OrderAvailabilityTest.java",
+        "file:src/test/java/com/cinesnack/repository/OrderTicketDetailsTest.java",
+        "file:src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java",
+        "file:src/test/java/com/cinesnack/security/GuestOrderAccessTest.java",
+        "file:src/test/java/com/cinesnack/security/GuestOrderTokenServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/AdminCatalogValidationTest.java",
+        "file:src/test/java/com/cinesnack/service/CatalogMovieServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/GuestOrderServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/MoviePosterServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/OrderClockRegressionTest.java",
+        "file:src/test/java/com/cinesnack/service/OrderExpiryServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/OrderServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/PaymentServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/PaymentTransactionTest.java",
+        "file:src/test/java/com/cinesnack/service/QrPaymentServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/RegistrationServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/RoomManagementServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+        "file:src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java",
+        "file:src/test/java/com/cinesnack/service/UserServiceTest.java",
+        "file:src/test/java/com/cinesnack/support/CodesTest.java",
+        "file:src/test/js/authentication.test.cjs",
+        "file:src/test/js/theater-fixture-server.cjs",
+        "file:tests/database/catalog-idempotency.ps1",
+        "file:tests/database/p2-atomicity.ps1",
+        "file:tests/frontend/browser/authentication.test.cjs",
+        "file:tests/frontend/browser/four-roles.test.cjs",
+        "file:tests/frontend/browser/helpers.cjs",
+        "file:tests/frontend/browser/p2-regression.test.cjs",
+        "file:tests/frontend/browser/seat-states.test.cjs",
+        "file:tests/frontend/browser/site.test.cjs",
+        "file:tests/frontend/fixtures/api-server.cjs",
+        "file:tests/frontend/integration/accounts.test.cjs",
+        "file:tests/frontend/integration/catalog.test.cjs",
+        "file:tests/frontend/unit/cart.test.cjs",
+        "file:tests/frontend/unit/cinema.test.cjs"
+      ]
+    }
+  ],
+  "tour": [
+    {
+      "order": 1,
+      "title": "Khách chọn phim và ghế",
+      "description": "Khách chọn phim và ghế",
+      "nodeIds": [
+        "file:src/main/resources/UI/assets/js/booking.js"
+      ]
+    },
+    {
+      "order": 2,
+      "title": "Tạo đơn",
+      "description": "Tạo đơn",
+      "nodeIds": [
+        "file:src/main/java/com/cinesnack/booking/service/OrderService.java"
+      ]
+    },
+    {
+      "order": 3,
+      "title": "Admin quản lý danh mục",
+      "description": "Admin quản lý danh mục",
+      "nodeIds": [
+        "file:src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java"
+      ]
+    },
+    {
+      "order": 4,
+      "title": "Staff soát vé",
+      "description": "Staff soát vé",
+      "nodeIds": [
+        "file:src/main/java/com/cinesnack/booking/service/TicketCheckInService.java"
+      ]
+    }
+  ]
+}

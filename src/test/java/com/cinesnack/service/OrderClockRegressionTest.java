@@ -1,16 +1,15 @@
 package com.cinesnack.service;
 
-import com.cinesnack.account.service.UserService;
-import com.cinesnack.booking.service.OrderService;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.cinesnack.booking.dto.CreateOrderRequest;
 import com.cinesnack.account.entity.User;
-import com.cinesnack.catalog.repository.BookingCatalogRepository;
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.booking.dto.CreateOrderRequest;
 import com.cinesnack.booking.repository.OrderRepository;
+import com.cinesnack.booking.service.OrderService;
+import com.cinesnack.catalog.repository.BookingCatalogRepository;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.List;
@@ -27,7 +26,13 @@ class OrderClockRegressionTest {
         var dongHo = new MutableClock(Instant.parse("2026-10-14T03:00:00Z"));
         var batDau = LocalDateTime.now(dongHo).plusSeconds(5);
         when(nguoiDung.layTaiKhoanHoatDong("customer@example.com")).thenReturn(
-            new User(1, "customer@example.com", "hash", "KHACH_HANG", "HOAT_DONG")
+            new User(
+                1,
+                "customer@example.com",
+                "hash",
+                "KHACH_HANG",
+                "HOAT_DONG"
+            )
         );
         when(danhMuc.timVaKhoaSuatChieu(1L)).thenAnswer(lanGoi -> {
             // Simulate time spent waiting for another transaction's show lock.
@@ -40,7 +45,9 @@ class OrderClockRegressionTest {
                 "SAP_CHIEU"
             );
         });
-        when(danhMuc.timGhe(1L)).thenReturn(new BookingCatalogRepository.Seat(1, 2, "HOAT_DONG"));
+        when(danhMuc.timGhe(1L)).thenReturn(
+            new BookingCatalogRepository.Seat(1, 2, "HOAT_DONG")
+        );
         var dichVu = new OrderService(khoDon, danhMuc, nguoiDung, dongHo);
         var yeuCau = new CreateOrderRequest(
             "customer@example.com",

@@ -14,5 +14,6 @@ public record Ticket(
     @JsonProperty("status") String trangThai,
     @JsonProperty("movieName") String tenPhim,
     @JsonProperty("roomName") String tenPhong,
-    @JsonProperty("startsAt") OffsetDateTime batDau
+    @JsonProperty("startsAt") OffsetDateTime batDau,
+    @JsonProperty("printed") boolean daIn
 ) {}

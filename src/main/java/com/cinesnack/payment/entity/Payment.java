@@ -11,7 +11,9 @@ public record Payment(
     @JsonProperty("method") String phuongThuc,
     @JsonProperty("amount") BigDecimal soTien,
     @JsonProperty("status") String trangThai,
-    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'+07:00'")
+    @com.fasterxml.jackson.annotation.JsonFormat(
+        pattern = "yyyy-MM-dd'T'HH:mm:ss'+07:00'"
+    )
     @JsonProperty("paidAt")
     LocalDateTime thanhToanLuc
 ) {}

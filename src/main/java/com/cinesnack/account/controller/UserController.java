@@ -17,6 +17,13 @@ public class UserController {
     @GetMapping("/api/auth/me")
     public Map<String, Object> layTaiKhoan(Principal principal) {
         var u = nguoiDung.layTaiKhoanHoatDong(principal.getName());
-        return Map.of("id", u.maSo(), "email", u.thuDienTu(), "role", u.vaiTro());
+        return Map.of(
+            "id",
+            u.maSo(),
+            "email",
+            u.thuDienTu(),
+            "role",
+            u.vaiTro()
+        );
     }
 }

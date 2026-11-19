@@ -1,9 +1,9 @@
 package com.cinesnack.invoice.service;
 
-import com.cinesnack.invoice.entity.Invoice;
 import com.cinesnack.booking.entity.Order;
-import com.cinesnack.invoice.repository.InvoiceRepository;
 import com.cinesnack.booking.service.OrderService;
+import com.cinesnack.invoice.entity.Invoice;
+import com.cinesnack.invoice.repository.InvoiceRepository;
 import java.time.LocalDateTime;
 import java.util.Set;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,10 @@ public class InvoiceService {
     private final InvoiceRepository khoHoaDon;
     private final OrderService dichVuDonHang;
 
-    public InvoiceService(InvoiceRepository khoHoaDon, OrderService dichVuDonHang) {
+    public InvoiceService(
+        InvoiceRepository khoHoaDon,
+        OrderService dichVuDonHang
+    ) {
         this.khoHoaDon = khoHoaDon;
         this.dichVuDonHang = dichVuDonHang;
     }
@@ -35,8 +38,13 @@ public class InvoiceService {
     }
 
     @Transactional(readOnly = true)
-    public java.util.List<Invoice> layHoaDonKhach(String ma, Set<String> maDonTrongPhien) {
-        return layHoaDon(dichVuDonHang.layDonKhachDuocPhepTruyCap(ma, maDonTrongPhien));
+    public java.util.List<Invoice> layHoaDonKhach(
+        String ma,
+        Set<String> maDonTrongPhien
+    ) {
+        return layHoaDon(
+            dichVuDonHang.layDonKhachDuocPhepTruyCap(ma, maDonTrongPhien)
+        );
     }
 
     private java.util.List<Invoice> layHoaDon(Order donHang) {

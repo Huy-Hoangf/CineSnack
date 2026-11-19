@@ -1,30 +1,37 @@
 package com.cinesnack.service;
 
-import com.cinesnack.account.service.UserService;
-import com.cinesnack.invoice.service.InvoiceService;
-import com.cinesnack.payment.service.PaymentService;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.cinesnack.booking.entity.Order;
-import com.cinesnack.payment.entity.Payment;
 import com.cinesnack.account.entity.User;
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.booking.entity.Order;
 import com.cinesnack.booking.repository.OrderRepository;
+import com.cinesnack.booking.security.GuestOrderTokenService;
+import com.cinesnack.invoice.service.InvoiceService;
+import com.cinesnack.payment.entity.Payment;
 import com.cinesnack.payment.repository.PaymentRepository;
+import com.cinesnack.payment.service.PaymentConfirmed;
+import com.cinesnack.payment.service.PaymentService;
 import java.math.BigDecimal;
 import java.time.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.server.ResponseStatusException;
 
 class PaymentServiceTest {
 
     private final OrderRepository khoDonHang = mock(OrderRepository.class);
-    private final PaymentRepository khoThanhToan = mock(PaymentRepository.class);
+    private final PaymentRepository khoThanhToan = mock(
+        PaymentRepository.class
+    );
     private final InvoiceService dichVuHoaDon = mock(InvoiceService.class);
     private final UserService dichVuNguoiDung = mock(UserService.class);
+    private final ApplicationEventPublisher events = mock(
+        ApplicationEventPublisher.class
+    );
     private final Clock dongHo = Clock.fixed(
         Instant.parse("2026-10-13T03:00:00Z"),
         ZoneId.of("Asia/Ho_Chi_Minh")
@@ -39,54 +46,204 @@ class PaymentServiceTest {
             khoThanhToan,
             dichVuHoaDon,
             dichVuNguoiDung,
-            dongHo
+            dongHo,
+            events
         );
-        when(dichVuNguoiDung.layTaiKhoanHoatDong("staff@example.com")).thenReturn(
+        when(
+            dichVuNguoiDung.layTaiKhoanHoatDong("staff@example.com")
+        ).thenReturn(
             new User(2L, "staff@example.com", "hash", "NHAN_VIEN", "HOAT_DONG")
         );
         when(khoDonHang.timVaKhoa("DH01")).thenReturn(
             donHang("CHO_THANH_TOAN", hienTai.plusMinutes(10))
         );
         when(khoDonHang.coTheThanhToan(1L, hienTai)).thenReturn(true);
-        when(khoDonHang.tinhTongChiTiet(1L)).thenReturn(new BigDecimal("229000.00"));
-        when(khoDonHang.doiTrangThai(1L, "CHO_THANH_TOAN", "DA_THANH_TOAN")).thenReturn(1);
-        when(khoThanhToan.taoThanhToanTienMat(eq(1L), any(), eq(hienTai))).thenReturn(giaoDich());
+        when(khoDonHang.tinhTongChiTiet(1L)).thenReturn(
+            new BigDecimal("229000.00")
+        );
+        when(
+            khoDonHang.doiTrangThai(1L, "CHO_THANH_TOAN", "DA_THANH_TOAN")
+        ).thenReturn(1);
+        when(
+            khoThanhToan.taoThanhToanTienMat(eq(1L), any(), eq(hienTai))
+        ).thenReturn(giaoDich());
     }
 
     @Test
     void thuDungTongTienVaTraTienThua() {
-        var ketQua = dichVu.thanhToanTaiQuay("DH01", new BigDecimal("250000"), "staff@example.com");
+        var ketQua = dichVu.thanhToanTaiQuay(
+            "DH01",
+            new BigDecimal("250000"),
+            "staff@example.com"
+        );
         assertEquals(0, ketQua.tienThua().compareTo(new BigDecimal("21000")));
-        verify(khoThanhToan).taoThanhToanTienMat(1L, new BigDecimal("229000.00"), hienTai);
+        verify(khoThanhToan).taoThanhToanTienMat(
+            1L,
+            new BigDecimal("229000.00"),
+            hienTai
+        );
         verify(khoDonHang).xacNhanChiTietDaThanhToan(1L);
-        verify(dichVuHoaDon).phatHanh(donHang("CHO_THANH_TOAN", hienTai.plusMinutes(10)), hienTai);
+        verify(dichVuHoaDon).phatHanh(
+            donHang("CHO_THANH_TOAN", hienTai.plusMinutes(10)),
+            hienTai
+        );
+        verify(events).publishEvent(
+            new PaymentConfirmed(
+                "DH01",
+                "customer@example.com",
+                new BigDecimal("229000.00")
+            )
+        );
+    }
+
+    @Test
+    void thanhToanDonKhongEmailKhongGuiThongBao() {
+        Order taiQuay = new Order(
+            1L,
+            null,
+            "DH01",
+            null,
+            new BigDecimal("229000.00"),
+            "CHO_THANH_TOAN",
+            hienTai.plusMinutes(10),
+            hienTai.minusMinutes(5)
+        );
+        when(khoDonHang.timVaKhoa("DH01")).thenReturn(taiQuay);
+        dichVu.thanhToanTaiQuay(
+            "DH01",
+            new BigDecimal("229000"),
+            "staff@example.com"
+        );
+        verify(dichVuHoaDon).phatHanh(taiQuay, hienTai);
+        verifyNoInteractions(events);
+    }
+
+    @Test
+    void paidGuestEmailContainsReadOnlyAccessToken() {
+        var tokens = mock(GuestOrderTokenService.class);
+        Order guest = new Order(
+            1L,
+            null,
+            "DH01",
+            "guest@example.com",
+            new BigDecimal("229000.00"),
+            "CHO_THANH_TOAN",
+            hienTai.plusMinutes(10),
+            hienTai
+        );
+        when(khoDonHang.timVaKhoa("DH01")).thenReturn(guest);
+        when(tokens.tao(guest)).thenReturn("signed-token");
+        var service = new PaymentService(
+            khoDonHang,
+            khoThanhToan,
+            dichVuHoaDon,
+            dichVuNguoiDung,
+            dongHo,
+            events,
+            tokens
+        );
+        service.thanhToanTaiQuay(
+            "DH01",
+            new BigDecimal("229000"),
+            "staff@example.com"
+        );
+        verify(events).publishEvent(
+            new PaymentConfirmed(
+                "DH01",
+                "guest@example.com",
+                new BigDecimal("229000.00"),
+                "signed-token"
+            )
+        );
     }
 
     @Test
     void nhanVienXacNhanChuyenKhoanDungTongTien() {
-        when(khoThanhToan.taoThanhToanChuyenKhoan(1L, new BigDecimal("229000.00"), "BANK123", hienTai))
-            .thenReturn(new Payment(2L, 1L, "BANK123", "CHUYEN_KHOAN", new BigDecimal("229000.00"), "THANH_CONG", hienTai));
-        var giaoDich = dichVu.xacNhanChuyenKhoan("DH01", "BANK123", new BigDecimal("229000"), "staff@example.com");
+        when(
+            khoThanhToan.taoThanhToanChuyenKhoan(
+                1L,
+                new BigDecimal("229000.00"),
+                "BANK123",
+                hienTai
+            )
+        ).thenReturn(
+            new Payment(
+                2L,
+                1L,
+                "BANK123",
+                "CHUYEN_KHOAN",
+                new BigDecimal("229000.00"),
+                "THANH_CONG",
+                hienTai
+            )
+        );
+        var giaoDich = dichVu.xacNhanChuyenKhoan(
+            "DH01",
+            "BANK123",
+            new BigDecimal("229000"),
+            "staff@example.com"
+        );
         assertEquals("CHUYEN_KHOAN", giaoDich.phuongThuc());
         verify(dichVuHoaDon).phatHanh(any(), eq(hienTai));
+        verify(events).publishEvent(
+            new PaymentConfirmed(
+                "DH01",
+                "customer@example.com",
+                new BigDecimal("229000.00")
+            )
+        );
     }
 
     @Test
     void tuChoiChuyenKhoanKhacTongTien() {
-        assertEquals(400, assertThrows(ResponseStatusException.class, () ->
-            dichVu.xacNhanChuyenKhoan("DH01", "BANK124", new BigDecimal("230000"), "staff@example.com")
-        ).getStatusCode().value());
-        verify(khoThanhToan, never()).taoThanhToanChuyenKhoan(anyLong(), any(), anyString(), any());
+        assertEquals(
+            400,
+            assertThrows(ResponseStatusException.class, () ->
+                dichVu.xacNhanChuyenKhoan(
+                    "DH01",
+                    "BANK124",
+                    new BigDecimal("230000"),
+                    "staff@example.com"
+                )
+            )
+                .getStatusCode()
+                .value()
+        );
+        verify(khoThanhToan, never()).taoThanhToanChuyenKhoan(
+            anyLong(),
+            any(),
+            anyString(),
+            any()
+        );
+        verifyNoInteractions(events);
     }
 
     @Test
     void khachKhongTheXacNhanChuyenKhoan() {
-        when(dichVuNguoiDung.layTaiKhoanHoatDong("customer@example.com")).thenReturn(
-            new User(3L, "customer@example.com", "hash", "KHACH_HANG", "HOAT_DONG")
+        when(
+            dichVuNguoiDung.layTaiKhoanHoatDong("customer@example.com")
+        ).thenReturn(
+            new User(
+                3L,
+                "customer@example.com",
+                "hash",
+                "KHACH_HANG",
+                "HOAT_DONG"
+            )
         );
-        assertEquals(403, assertThrows(ResponseStatusException.class, () ->
-            dichVu.xacNhanChuyenKhoan("DH01", "BANK124", new BigDecimal("229000"), "customer@example.com")
-        ).getStatusCode().value());
+        assertEquals(
+            403,
+            assertThrows(ResponseStatusException.class, () ->
+                dichVu.xacNhanChuyenKhoan(
+                    "DH01",
+                    "BANK124",
+                    new BigDecimal("229000"),
+                    "customer@example.com"
+                )
+            )
+                .getStatusCode()
+                .value()
+        );
         verify(khoDonHang, never()).timVaKhoa(anyString());
     }
 
@@ -101,45 +258,121 @@ class PaymentServiceTest {
 
     @Test
     void chuyenKhoanLapChiTraGiaoDichDungPhuongThucMaVaSoTien() {
-        when(khoDonHang.timVaKhoa("DH01")).thenReturn(donHang("DA_THANH_TOAN", hienTai.minusMinutes(1)));
-        Payment daCo = new Payment(2L, 1L, "BANK123", "CHUYEN_KHOAN", new BigDecimal("229000.00"), "THANH_CONG", hienTai);
-        when(khoThanhToan.timThanhToanThanhCong(1L)).thenReturn(daCo);
-        assertEquals(daCo, dichVu.xacNhanChuyenKhoan("DH01", "BANK123", new BigDecimal("229000"), "staff@example.com"));
-        assertEquals(409, assertThrows(ResponseStatusException.class, () ->
-            dichVu.xacNhanChuyenKhoan("DH01", "BANK123", new BigDecimal("230000"), "staff@example.com")
-        ).getStatusCode().value());
-        when(khoThanhToan.timThanhToanThanhCong(1L)).thenReturn(giaoDich());
-        assertEquals(409, assertThrows(ResponseStatusException.class, () ->
-            dichVu.xacNhanChuyenKhoan("DH01", "TM01", new BigDecimal("229000"), "staff@example.com")
-        ).getStatusCode().value());
-        when(khoThanhToan.timThanhToanThanhCong(1L)).thenReturn(
-            new Payment(3L, 1L, "BANK123", "CHUYEN_KHOAN", new BigDecimal("228000"), "THANH_CONG", hienTai)
+        when(khoDonHang.timVaKhoa("DH01")).thenReturn(
+            donHang("DA_THANH_TOAN", hienTai.minusMinutes(1))
         );
-        assertEquals(409, assertThrows(ResponseStatusException.class, () ->
-            dichVu.xacNhanChuyenKhoan("DH01", "BANK123", new BigDecimal("229000"), "staff@example.com")
-        ).getStatusCode().value());
-        verify(khoThanhToan, never()).taoThanhToanChuyenKhoan(anyLong(), any(), anyString(), any());
+        Payment daCo = new Payment(
+            2L,
+            1L,
+            "BANK123",
+            "CHUYEN_KHOAN",
+            new BigDecimal("229000.00"),
+            "THANH_CONG",
+            hienTai
+        );
+        when(khoThanhToan.timThanhToanThanhCong(1L)).thenReturn(daCo);
+        assertEquals(
+            daCo,
+            dichVu.xacNhanChuyenKhoan(
+                "DH01",
+                "BANK123",
+                new BigDecimal("229000"),
+                "staff@example.com"
+            )
+        );
+        assertEquals(
+            409,
+            assertThrows(ResponseStatusException.class, () ->
+                dichVu.xacNhanChuyenKhoan(
+                    "DH01",
+                    "BANK123",
+                    new BigDecimal("230000"),
+                    "staff@example.com"
+                )
+            )
+                .getStatusCode()
+                .value()
+        );
+        when(khoThanhToan.timThanhToanThanhCong(1L)).thenReturn(giaoDich());
+        assertEquals(
+            409,
+            assertThrows(ResponseStatusException.class, () ->
+                dichVu.xacNhanChuyenKhoan(
+                    "DH01",
+                    "TM01",
+                    new BigDecimal("229000"),
+                    "staff@example.com"
+                )
+            )
+                .getStatusCode()
+                .value()
+        );
+        when(khoThanhToan.timThanhToanThanhCong(1L)).thenReturn(
+            new Payment(
+                3L,
+                1L,
+                "BANK123",
+                "CHUYEN_KHOAN",
+                new BigDecimal("228000"),
+                "THANH_CONG",
+                hienTai
+            )
+        );
+        assertEquals(
+            409,
+            assertThrows(ResponseStatusException.class, () ->
+                dichVu.xacNhanChuyenKhoan(
+                    "DH01",
+                    "BANK123",
+                    new BigDecimal("229000"),
+                    "staff@example.com"
+                )
+            )
+                .getStatusCode()
+                .value()
+        );
+        verify(khoThanhToan, never()).taoThanhToanChuyenKhoan(
+            anyLong(),
+            any(),
+            anyString(),
+            any()
+        );
+        verifyNoInteractions(events);
     }
 
     @Test
     void khongTraBienLaiTienMatChoDonDaChuyenKhoan() {
-        when(khoDonHang.timVaKhoa("DH01")).thenReturn(donHang("DA_THANH_TOAN", hienTai.minusMinutes(1)));
+        when(khoDonHang.timVaKhoa("DH01")).thenReturn(
+            donHang("DA_THANH_TOAN", hienTai.minusMinutes(1))
+        );
         when(khoThanhToan.timThanhToanThanhCong(1L)).thenReturn(
-            new Payment(2L, 1L, "BANK123", "CHUYEN_KHOAN", new BigDecimal("229000"), "THANH_CONG", hienTai)
+            new Payment(
+                2L,
+                1L,
+                "BANK123",
+                "CHUYEN_KHOAN",
+                new BigDecimal("229000"),
+                "THANH_CONG",
+                hienTai
+            )
         );
         kiemTraMaTrangThai(409, new BigDecimal("250000"));
     }
 
     @Test
     void tuChoiDungThoiDiemHetHan() {
-        when(khoDonHang.timVaKhoa("DH01")).thenReturn(donHang("CHO_THANH_TOAN", hienTai));
+        when(khoDonHang.timVaKhoa("DH01")).thenReturn(
+            donHang("CHO_THANH_TOAN", hienTai)
+        );
         kiemTraMaTrangThai(409, new BigDecimal("250000"));
         verifyNoInteractions(khoThanhToan, dichVuHoaDon);
     }
 
     @Test
     void tuChoiDonDaHuy() {
-        when(khoDonHang.timVaKhoa("DH01")).thenReturn(donHang("HUY", hienTai.plusMinutes(1)));
+        when(khoDonHang.timVaKhoa("DH01")).thenReturn(
+            donHang("HUY", hienTai.plusMinutes(1))
+        );
         kiemTraMaTrangThai(409, new BigDecimal("250000"));
     }
 
@@ -157,7 +390,9 @@ class PaymentServiceTest {
 
     @Test
     void khachKhongDuocXacNhanTienMat() {
-        when(dichVuNguoiDung.layTaiKhoanHoatDong("staff@example.com")).thenReturn(
+        when(
+            dichVuNguoiDung.layTaiKhoanHoatDong("staff@example.com")
+        ).thenReturn(
             new User(2L, "staff@example.com", "hash", "KHACH_HANG", "HOAT_DONG")
         );
         kiemTraMaTrangThai(403, new BigDecimal("250000"));
@@ -168,7 +403,9 @@ class PaymentServiceTest {
     void tuChoiTongTienSaiHoacSuatKhongHopLe() {
         when(khoDonHang.tinhTongChiTiet(1L)).thenReturn(BigDecimal.ONE);
         kiemTraMaTrangThai(409, new BigDecimal("250000"));
-        when(khoDonHang.tinhTongChiTiet(1L)).thenReturn(new BigDecimal("229000.00"));
+        when(khoDonHang.tinhTongChiTiet(1L)).thenReturn(
+            new BigDecimal("229000.00")
+        );
         when(khoDonHang.coTheThanhToan(1L, hienTai)).thenReturn(false);
         kiemTraMaTrangThai(409, new BigDecimal("250000"));
     }
@@ -179,8 +416,13 @@ class PaymentServiceTest {
             .when(dichVuHoaDon)
             .phatHanh(any(), any());
         assertThrows(IllegalStateException.class, () ->
-            dichVu.thanhToanTaiQuay("DH01", new BigDecimal("250000"), "staff@example.com")
+            dichVu.thanhToanTaiQuay(
+                "DH01",
+                new BigDecimal("250000"),
+                "staff@example.com"
+            )
         );
+        verifyNoInteractions(events);
     }
 
     private void kiemTraMaTrangThai(int trangThai, BigDecimal soTien) {

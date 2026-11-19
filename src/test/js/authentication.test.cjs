@@ -4,19 +4,26 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
-const script = fs.readFileSync(path.join(__dirname, "../../main/resources/UI/assets/js/authentication.js"), "utf8");
+const script = fs.readFileSync(
+  path.join(__dirname, "../../main/resources/UI/assets/js/authentication.js"),
+  "utf8",
+);
 
-async function redirectedFrom(role, pathname) {
+async function redirectedFrom(role, pathname, search = "") {
   const destinations = [];
   await vm.runInNewContext(script, {
-    CineSnackApi: { taiKhoan: async () => ({ role, email: "staff@example.com" }) },
+    CineSnackApi: {
+      taiKhoan: async () => ({ role, email: "staff@example.com" }),
+    },
+    URLSearchParams,
     document: {
-      querySelector: () => null,
+      body: { classList: { add() {} } },
+      querySelector: selector => selector.startsWith(".trang-mo-dau") || selector === "#trong-thanh-toan a" ? {} : null,
       querySelectorAll: () => [],
     },
     location: {
       pathname,
-      search: "",
+      search,
       replace: (destination) => destinations.push(destination),
     },
   });
@@ -25,16 +32,27 @@ async function redirectedFrom(role, pathname) {
 
 test("staff can open booking and checkout, while admin remains outside counter ordering", async () => {
   assert.deepEqual(await redirectedFrom("NHAN_VIEN", "/html/booking.html"), []);
-  assert.deepEqual(await redirectedFrom("NHAN_VIEN", "/html/checkout.html"), []);
-  assert.deepEqual(await redirectedFrom("NHAN_VIEN", "/html/orders.html"), ["admin.html"]);
-  assert.deepEqual(await redirectedFrom("QUAN_TRI", "/html/booking.html"), ["admin.html"]);
-  assert.deepEqual(await redirectedFrom("QUAN_TRI", "/html/checkout.html"), ["admin.html"]);
+  assert.deepEqual(
+    await redirectedFrom("NHAN_VIEN", "/html/checkout.html"),
+    ["admin.html"],
+  );
+  assert.deepEqual(
+    await redirectedFrom("NHAN_VIEN", "/html/checkout.html", "?mode=counter"),
+    [],
+  );
+  assert.deepEqual(await redirectedFrom("NHAN_VIEN", "/html/orders.html"), [
+    "admin.html",
+  ]);
+  assert.deepEqual(await redirectedFrom("QUAN_TRI", "/html/booking.html"), []);
+  assert.deepEqual(await redirectedFrom("QUAN_TRI", "/html/checkout.html"), [
+    "admin.html",
+  ]);
 });
 
-test("staff login returns to booking, admin login returns to workspace", async () => {
+test("both operators can return to the schedule after login", async () => {
   for (const [role, expected] of [
     ["NHAN_VIEN", "/html/booking.html"],
-    ["QUAN_TRI", "admin.html"],
+    ["QUAN_TRI", "/html/booking.html"],
   ]) {
     let submit;
     const location = {
@@ -46,9 +64,15 @@ test("staff login returns to booking, admin login returns to workspace", async (
     const password = { value: "secret" };
     const form = {
       reportValidity: () => true,
-      addEventListener: (_, handler) => { submit = handler; },
+      addEventListener: (_, handler) => {
+        submit = handler;
+      },
     };
-    const button = { disabled: false };
+    const button = {
+      disabled: false,
+      setAttribute: () => {},
+      removeAttribute: () => {},
+    };
     const fields = {
       "#bieu-mau-tai-khoan": form,
       "#gui-tai-khoan": button,

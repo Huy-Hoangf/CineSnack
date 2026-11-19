@@ -1,4 +1,8 @@
-param([Parameter(Mandatory = $true)][string]$Server)
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$Server
+)
+
 $ErrorActionPreference = 'Stop'
 $taskRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $taskSql = Get-Content -LiteralPath (Join-Path $taskRoot 'database/cinesnack.sql') -Raw -Encoding utf8
@@ -11,8 +15,11 @@ function Invoke-Sql([string]$Sql) {
         $taskCommand.CommandText = $Sql
         return $taskCommand.ExecuteScalar()
     }
-    finally { $taskCommand.Dispose() }
+    finally {
+        $taskCommand.Dispose()
+    }
 }
+
 function Get-Snapshot {
     return Invoke-Sql @'
 SELECT (SELECT
@@ -33,17 +40,41 @@ try {
     $taskBefore = Get-Snapshot
     $taskPattern = '(?s)IF OBJECT_ID\(N''VE'',N''U''\).*?(?=\s*THROW 50010,)'
     $taskLegacyProbe = [regex]::Replace($taskSql, $taskPattern, 'IF 1=1', 1)
-    if ($taskLegacyProbe -eq $taskSql) { throw 'Không tìm thấy preflight' }
-    try { [void](Invoke-Sql $taskLegacyProbe); throw 'Preflight không chặn script' }
-    catch [System.Data.SqlClient.SqlException] { if ($_.Exception.Number -ne 50010) { throw } }
-    if ((Get-Snapshot) -ne $taskBefore) { throw 'Preflight thay đổi dữ liệu' }
+    if ($taskLegacyProbe -eq $taskSql) {
+        throw 'Không tìm thấy preflight'
+    }
+    try {
+        [void](Invoke-Sql $taskLegacyProbe)
+        throw 'Preflight không chặn script'
+    }
+    catch [System.Data.SqlClient.SqlException] {
+        if ($_.Exception.Number -ne 50010) {
+            throw
+        }
+    }
+    if ((Get-Snapshot) -ne $taskBefore) {
+        throw 'Preflight thay đổi dữ liệu'
+    }
     $taskCommit = "    COMMIT;`nEND TRY"
     $taskCommitAt = $taskSql.LastIndexOf($taskCommit)
-    if ($taskCommitAt -lt 0) { throw 'Không tìm thấy commit bao ngoài' }
+    if ($taskCommitAt -lt 0) {
+        throw 'Không tìm thấy commit bao ngoài'
+    }
     $taskFault = $taskSql.Substring(0, $taskCommitAt) + "    THROW 51000, N'Kiểm thử rollback toàn script', 1;`n" + $taskSql.Substring($taskCommitAt)
-    try { [void](Invoke-Sql $taskFault); throw 'Fault không chặn script' }
-    catch [System.Data.SqlClient.SqlException] { if ($_.Exception.Number -ne 51000) { throw } }
-    if ((Get-Snapshot) -ne $taskBefore) { throw 'Lỗi giữa script không rollback toàn bộ' }
+    try {
+        [void](Invoke-Sql $taskFault)
+        throw 'Fault không chặn script'
+    }
+    catch [System.Data.SqlClient.SqlException] {
+        if ($_.Exception.Number -ne 51000) {
+            throw
+        }
+    }
+    if ((Get-Snapshot) -ne $taskBefore) {
+        throw 'Lỗi giữa script không rollback toàn bộ'
+    }
     Write-Output 'PASS: preflight dừng trước thay đổi; lỗi sau seed rollback dữ liệu/schema; chỉ dùng CineSnack.'
 }
-finally { $taskConnection.Dispose() }
+finally {
+    $taskConnection.Dispose()
+}

@@ -1,6 +1,8 @@
 "use strict";
 (async () => {
-  document.querySelectorAll("[data-trang-thai] span").forEach((s) => s.remove());
+  document
+    .querySelectorAll("[data-trang-thai] span")
+    .forEach((s) => s.remove());
   const q = (s) => document.querySelector(s);
   let trang = 0,
     status = "DANG_CHIEU",
@@ -18,7 +20,25 @@
     box.replaceChildren();
     const h = text("h2", p.name);
     h.id = "chi-tiet-tieu-de";
-    box.append(h, text("p", p.genre + " · " + p.duration + " phút · " + p.ageRating));
+    box.append(
+      h,
+      text("p", p.genre + " · " + p.duration + " phút · " + p.ageRating),
+    );
+    if (p.description) box.append(text("p", p.description));
+    if (p.actors) box.append(text("p", "Diễn viên: " + p.actors));
+    if (p.director) box.append(text("p", "Đạo diễn: " + p.director));
+    if (p.trailerUrl) {
+      try {
+        const url = new URL(p.trailerUrl);
+        if (url.protocol === "https:" && url.hostname && !url.username && !url.password) {
+          const trailer = text("a", "Xem trailer (mở tab mới)", "nut phu");
+          trailer.href = url.href;
+          trailer.target = "_blank";
+          trailer.rel = "noopener noreferrer";
+          box.append(trailer);
+        }
+      } catch (_) { /* Old or malformed links are omitted. */ }
+    }
     if (p.status === "DANG_CHIEU") {
       const a = text("a", "Chọn suất chiếu", "nut");
       a.href = "booking.html?phim=" + p.id;
@@ -128,7 +148,9 @@
         trang = 0;
         document.querySelectorAll("[data-trang-thai]").forEach((b) => {
           const active =
-            (b.dataset.trangThai === "sap-chieu" ? "SAP_CHIEU" : "DANG_CHIEU") === status;
+            (b.dataset.trangThai === "sap-chieu"
+              ? "SAP_CHIEU"
+              : "DANG_CHIEU") === status;
           b.classList.toggle("da-chon", active);
           b.setAttribute("aria-pressed", String(active));
         });

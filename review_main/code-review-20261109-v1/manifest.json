@@ -1,0 +1,272 @@
+[
+  {
+    "path": "database/cinesnack.sql",
+    "originalSha256": "5da657f125e563510d0759d5fcb00729cb16c9609417f5a17d7179ee64c8349b",
+    "proposedSha256": "6e7fcbee07318d4f5b03a6607c92e9ad3ca21d609836b9a726500583fa955f70"
+  },
+  {
+    "path": "database/theater-review-migration.sql",
+    "originalSha256": null,
+    "proposedSha256": "995dc697644b2930afa8412a73198a3001e59f0b38576fd682878d5932db6075"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java",
+    "originalSha256": "64702987df56238028744ab50da12ac4b687183e5506dccc15077319e6750b45",
+    "proposedSha256": "c589165e1e39cd5d925b2889738b28c5c38a9087f2094cd6f1db79be5e0ae918"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java",
+    "originalSha256": "1e840ae73314107ed131c030a289aa520960ad3becd2e92308e9e91510f82495",
+    "proposedSha256": "60a75859741343f52b0a7794bba1fc61b2b351ce2e924a2b24cf9ef6b0e70eb6"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/booking/service/TicketCheckInService.java",
+    "originalSha256": "4dd00a637e20b4e545c7491019ba44dbf7008ee1c48b6c70f48399c48b75368d",
+    "proposedSha256": "88d65bd21b7e620309ec0a8faca35a62ce892f1b0dbbcde01e3e5c046babf7cc"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java",
+    "originalSha256": "9ecf5b42d34e74440a30ed2723241e45e10c826ff4a492a67be6e068bed6487b",
+    "proposedSha256": "ca8c3b402ef37928e31822acbf9e920460c48fda6b65f9fd718857bc0a505419"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/controller/TheaterPolicyController.java",
+    "originalSha256": null,
+    "proposedSha256": "4940ab27716d2cda648a44fdff67bc166da2869d17319310d27d76e2ec6107c3"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java",
+    "originalSha256": "2e76ea8791beb16dfc63b0f651a2be6e5d9e09d24cb7fecec17a3a85024ba75c",
+    "proposedSha256": "66fa96e59c6b116f5cffa34263e4af19b1dd63a0ebd0114268a9b600cf5a856d"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/dto/Catalog.java",
+    "originalSha256": "6631f69adae1f4caf45e6a3ece3d11bed44b0defc710f1c53affc4fe81297510",
+    "proposedSha256": "220c0448395f39fd3abe11ce1a1967fb521e20442dc4269c35fae26957064417"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/dto/TheaterPolicy.java",
+    "originalSha256": null,
+    "proposedSha256": "ee31cfa30d64b4bf9c178c1a582445bdca5b1ef20b63dced666022a746707890"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java",
+    "originalSha256": "28e5ca096e0a43ed30a311d8ae8c1b8b5e8a4ce759aaa4f8d2815261f09395c5",
+    "proposedSha256": "954e090fa29908a64f15261ef4189c8093c0f71f31541e781ee871c90c3645bc"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java",
+    "originalSha256": "c842ec1a9dda92df8383b858cea07a5db911f193234ed16013752f99cad99132",
+    "proposedSha256": "4461bfbd46b719b10ac5eb408443e690c69547b799802ae93c5d21f673187266"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/repository/TheaterPolicyRepository.java",
+    "originalSha256": null,
+    "proposedSha256": "5f263d33c43d5492cc95a84fd014e6c16b9c0849abd60cb7c707941d53dc4493"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java",
+    "originalSha256": "6af44be837d5a09e633435881fc0cbf9828a25725c6d5263efd349314fd65f0d",
+    "proposedSha256": "05c91f66b5e7704b0ca275c1581f53144db9a2b1a2c629ca702f7baf214f15d3"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/service/MoviePosterService.java",
+    "originalSha256": "bba217d33e809d8d63d6bb51f151e2ff6867115f30b111f9786cf32296f3e105",
+    "proposedSha256": "9a8976c04d251ac0e9dcfdf74106f85e5c180a81883984d818cb9102ab6c7a59"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/catalog/service/TheaterPolicyService.java",
+    "originalSha256": null,
+    "proposedSha256": "1946861b9a69a9cc9314c96f774accf9dd9156c3ffba5b97e74b0093daafd52f"
+  },
+  {
+    "path": "src/main/java/com/cinesnack/payment/service/QrPaymentService.java",
+    "originalSha256": "c4f4f410a16fbe62b0542e082d9f244c1978bbd0956e297b31d623f8ed53907e",
+    "proposedSha256": "964a003d0075a017f1741aa0c44087d19de90232bc653abc366b01a94b2b10ca"
+  },
+  {
+    "path": "src/main/resources/UI/assets/css/showtime-timeline.css",
+    "originalSha256": null,
+    "proposedSha256": "ab399a458956e6b08bb43164d5aba1e8d51b5ce7d6ccc37af9a08b4226960466"
+  },
+  {
+    "path": "src/main/resources/UI/assets/css/ticket-print.css",
+    "originalSha256": "0b9b33669909500437577dacc2c367a1cf45e91349360b749be9f8d027b20e05",
+    "proposedSha256": "db9b99a00a94e867c114f3c5d95c68a2940696fcbaf94c9839df6053b2fc51f0"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/admin.js",
+    "originalSha256": "4677510cf49c8d546626690104b0c9b47ddf48f6edfb7f6065f4068df9386f2e",
+    "proposedSha256": "c30558fe64499c184c22f80ae88109ad5cc6bc763c413c6d5fd7e29d691566ff"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/checkout.js",
+    "originalSha256": "3c5c4ed178417279e6777ab552ace2a37f45326546c3719e8d8c4fee23485db9",
+    "proposedSha256": "56aa0ff482bc24cbcb314279fb537fa1b1104cfe0b76e2845cac33a7139c097e"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/movies.js",
+    "originalSha256": "9111399ae104507c82cec01c5ab9bf9281b578947249496c107af4460325a2ae",
+    "proposedSha256": "d8dcb6fa6b1ae85bd962f68d0ca191e955be19e60d5224139dd1d19cb11eab69"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/order-payment-qr.js",
+    "originalSha256": null,
+    "proposedSha256": "2cb838c14bf32d31517aab3341bacbee0fdd1b9ebe5d6e9f1a3abbf5bbb9286c"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/orders.js",
+    "originalSha256": "5547dc530d728a66a2c1ca12cceeadad754310d8b717912bbc749128540a62a3",
+    "proposedSha256": "2d5d3e84906a69bbbaf2f8ddf0f145718aa6ee3c0c785ea415587ec077d41f14"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/payment-deadline.js",
+    "originalSha256": null,
+    "proposedSha256": "57d93b343dfff457d01141aace7c8c98d56b8f5fdb9cce3f81da97cb397507e4"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/show-pricing.js",
+    "originalSha256": null,
+    "proposedSha256": "dbab7a43f9716d4746bca402ffae0008833f1904278ae779048994ccb4044cf7"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/showtime-timeline.js",
+    "originalSha256": null,
+    "proposedSha256": "977b3298b031056afb4fbb78c9ce615fb5d707ce1a238b88380b51a31666b4bb"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/theater-settings.js",
+    "originalSha256": null,
+    "proposedSha256": "0dcf93c4f723bfd5213818aa63c48b987948ba7d23a291e835342df6f09fd7da"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/theater.js",
+    "originalSha256": "70b49321fafee724d1e643dd1f221879a4700068763f2546cb16f34f4dcfa3a8",
+    "proposedSha256": "233d27eccb6e820d1e8bbcc476f305fff6e3d5f8cca99ca44b0ac7b8be03a7ae"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/ticket-code.js",
+    "originalSha256": null,
+    "proposedSha256": "b996528d133e86d92f5e88c6bb3aace5ac6ed62f1ac2a53bc2f7589ac175fc3c"
+  },
+  {
+    "path": "src/main/resources/UI/assets/js/ticket-print.js",
+    "originalSha256": "7319d18eed70d9080242d1707a28a72f0bf99f5c216acedbff96246511a9661e",
+    "proposedSha256": "4cad9f976d0a7bf23269c26849925332df5a2564e9960bed24c3df6471a9cb4f"
+  },
+  {
+    "path": "src/main/resources/UI/html/admin.html",
+    "originalSha256": "ce540ff3972dceb6d880704ee5d1f09bdd699a7adefac2ac4bf2bc0c5cebeace",
+    "proposedSha256": "e11dcc1e5d7a7d7fde0e1dad865c2eb42d3267b0ee707b2d0c73b605a6830ba4"
+  },
+  {
+    "path": "src/main/resources/UI/html/checkout.html",
+    "originalSha256": "e436ba8c29d7dd184d16b911445981c37c754c6356a72d2747fdec2f3f0994f5",
+    "proposedSha256": "40c4538929cbb9a74ac2cd176d5aca32bffabafad767e1210fb1eb02bdbc9ef6"
+  },
+  {
+    "path": "src/main/resources/UI/html/orders.html",
+    "originalSha256": "85fa97aa959879028074ba6038bd74e046cf1ff4180dce4254a2cb2b2ab2d7d5",
+    "proposedSha256": "c74c0eabfb14b17e3d4eb8be003d105dcd18393a1b5592805f6711c8ad828cb7"
+  },
+  {
+    "path": "src/main/resources/UI/html/theater.html",
+    "originalSha256": "aa8ac6c2346a57a80942288726d14cff3c1abc70b9efccebcc04b898aabaa61e",
+    "proposedSha256": "50b020d838c5dc56bd1268fdedf45235e2ef1dc7526f3bb63518b1120bb84182"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/controller/ApiSecurityTest.java",
+    "originalSha256": "7afece7e124a4ea1ce97970466d5941ac2c9f0aab009e73c5787cbbaa9e79cf3",
+    "proposedSha256": "de516d34e9fcf8659d26ec2dce4c373392f01db9a4308e6bc6d990e0e9c4630a"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java",
+    "originalSha256": "e2e9f5636d61feffa1ce0d60a637ffc725070815a6122a4647879a9fd0f0ecaa",
+    "proposedSha256": "432cccbe50b0f5e8cfcaac39df603b36da523d29511e1120c71780f7740ddc79"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/repository/ShowtimeTimelineRepositoryTest.java",
+    "originalSha256": null,
+    "proposedSha256": "8e483d5d8a518cc0821308c8342a4b1ca049ba803c2fdee1edd8f6e4bb82386e"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/repository/TheaterPolicyRepositoryTest.java",
+    "originalSha256": null,
+    "proposedSha256": "8a876cacf759f0185660df9b999905f79c86ccc869291ca48b0361134367c886"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java",
+    "originalSha256": "74123971cf84572b8d91cb36391c59132adfb770af0d0e73c5e5fb121078214d",
+    "proposedSha256": "9249f04d9047b32775692b7a6b9ddb0f26aca13289e50c8e9d9c54e1785ead66"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java",
+    "originalSha256": "22055b68b6b834d0b4355d07ac6cd9218d238624d6519a0f9a5ff979fab28820",
+    "proposedSha256": "659bf6a41564f792a02a701ffd0791854998fd7e57ece45f5e9974fe663adc56"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/service/MovieMetadataTimelineTest.java",
+    "originalSha256": null,
+    "proposedSha256": "268e83b7410f491a337986d8c80d8fd905dbf94c3f4b0aefbda58733671af4a7"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/service/MoviePosterServiceTest.java",
+    "originalSha256": "7ec3c95d8c0477a37060f26b796a43b8b006b5afc222adb662cedf80bed14752",
+    "proposedSha256": "32627570baaa1d7fe94b850622e6e0fc958daa95f2b90de34bcafcf4a1325ce5"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/service/QrPaymentServiceTest.java",
+    "originalSha256": "44c6db9485b88d2f9571ed1589db165e59802b5bfe00cd6f4299f6abd817a9b0",
+    "proposedSha256": "d2743a22458d9e1c71f665811166154337fa6f893d0b8e9ad5e6f7c4c41512ad"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/service/SqlServerPaymentIT.java",
+    "originalSha256": "131a5d40f54f246bbfd1391c90174f0e08fb24232ee10b57112765a6b2df7782",
+    "proposedSha256": "e574aebd5d94543f24dbfdeec145da9987be05bb3c39b4049fec9209980a8540"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/service/TheaterPolicyServiceTest.java",
+    "originalSha256": null,
+    "proposedSha256": "5d3e86828f6f1bf3c23bbd2d88dd77e94e12c05feab143d09675b544172341ce"
+  },
+  {
+    "path": "src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java",
+    "originalSha256": "2cb049e447b8df08ad8b1c3b1faa0cc08c1e1908c1af195cf120b3efa4c94fad",
+    "proposedSha256": "f0b8f6ed1a24ba62ce89ab1b127843555103e096bb425f572e48aa7f78d2af6d"
+  },
+  {
+    "path": "src/test/js/showtime-timeline.test.cjs",
+    "originalSha256": null,
+    "proposedSha256": "429b230741084238fb064d8e8d15b20a28ad688761c8a7d2328ab711071bea29"
+  },
+  {
+    "path": "tests/frontend/browser/movie-timeline.test.cjs",
+    "originalSha256": null,
+    "proposedSha256": "ec58fc2545ca73de78a256b18dde65042b9c0c22cda0fd545d893a85f5d6aefc"
+  },
+  {
+    "path": "tests/frontend/browser/payment-deadline.test.cjs",
+    "originalSha256": null,
+    "proposedSha256": "14c3ea9058a5647da301a424b5affce0855fda08ec324faee2001ac18f8c1b12"
+  },
+  {
+    "path": "tests/frontend/browser/theater-policy.test.cjs",
+    "originalSha256": null,
+    "proposedSha256": "b932e27714cfb743bbb6647de05be5c96ad887604a96e3fad1531f7bb60f9dcf"
+  },
+  {
+    "path": "tests/frontend/browser/ticket-camera.test.cjs",
+    "originalSha256": "0cc32c6e04cf2b5f16d23bc180bcade1794eb0be5464c1a338222023a72bb3c8",
+    "proposedSha256": "1ef16e42afa2ade7339219fee5ac0eef6ade241f076cd874a0a2cd8440b0afa1"
+  },
+  {
+    "path": "tests/frontend/browser/ticket-qr.test.cjs",
+    "originalSha256": null,
+    "proposedSha256": "d5fab3a473e090e093187c585c0b04e6ede1e699bfbfb143d118fdb4a4d9d577"
+  },
+  {
+    "path": "tests/frontend/unit/payment-deadline.test.cjs",
+    "originalSha256": null,
+    "proposedSha256": "cacc61d972f05dec5b4039dd392d00ea66a0efdf4d914dc7734219de365c56fd"
+  }
+]

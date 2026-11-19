@@ -1,9 +1,8 @@
 package com.cinesnack.repository;
 
-import com.cinesnack.booking.repository.OrderRepository;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.cinesnack.booking.repository.OrderRepository;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,8 +20,12 @@ class OrderAvailabilityTest {
             )
         );
         db.execute("DROP ALL OBJECTS");
-        db.execute("CREATE TABLE PHIM(phim_id BIGINT PRIMARY KEY,trang_thai VARCHAR(20))");
-        db.execute("CREATE TABLE PHONG_CHIEU(phong_id BIGINT PRIMARY KEY,trang_thai VARCHAR(20))");
+        db.execute(
+            "CREATE TABLE PHIM(phim_id BIGINT PRIMARY KEY,trang_thai VARCHAR(20))"
+        );
+        db.execute(
+            "CREATE TABLE PHONG_CHIEU(phong_id BIGINT PRIMARY KEY,trang_thai VARCHAR(20))"
+        );
         db.execute(
             "CREATE TABLE SUAT_CHIEU(suat_chieu_id BIGINT PRIMARY KEY,phim_id BIGINT,phong_id BIGINT,bat_dau TIMESTAMP,trang_thai VARCHAR(20))"
         );

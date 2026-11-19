@@ -20,7 +20,12 @@ public class CatalogService {
         this.dongHo = dongHo;
     }
 
-    public List<Catalog.Movie> layPhim(String tu, String trangThai, int trang, int soLuong) {
+    public List<Catalog.Movie> layPhim(
+        String tu,
+        String trangThai,
+        int trang,
+        int soLuong
+    ) {
         return kho.layPhim(tu, trangThai, trang, soLuong);
     }
 

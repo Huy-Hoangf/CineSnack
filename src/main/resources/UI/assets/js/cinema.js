@@ -55,7 +55,10 @@
   }
   function tinhTien(g) {
     const tienVe = g.ghe.reduce((a, v) => a + v.price, 0);
-    const tienBap = [...g.snacks, ...g.combos].reduce((a, v) => a + v.unitPrice * v.quantity, 0);
+    const tienBap = [...g.snacks, ...g.combos].reduce(
+      (a, v) => a + v.unitPrice * v.quantity,
+      0,
+    );
     return { tienVe, tienBap, tong: tienVe + tienBap };
   }
   function gioHopLe(g, now = new Date()) {
@@ -82,7 +85,13 @@
     } else if (g.maSuatChieu !== null) return false;
     if (
       new Set(g.ghe.map((v) => v?.id)).size !== g.ghe.length ||
-      g.ghe.some((v) => !v || !idHopLe(v.id) || typeof v.code !== "string" || !giaHopLe(v.price))
+      g.ghe.some(
+        (v) =>
+          !v ||
+          !idHopLe(v.id) ||
+          typeof v.code !== "string" ||
+          !giaHopLe(v.price),
+      )
     )
       return false;
     for (const [list, key] of [
@@ -130,11 +139,38 @@
   function poster(url) {
     if (url) {
       try {
+        if (url.startsWith("/assets/"))
+          return new URL(".." + url, location.href).href;
         const u = new URL(url, location.href);
-        if (["http:", "https:"].includes(u.protocol) && !u.username && !u.password) return u.href;
+        if (
+          ["http:", "https:"].includes(u.protocol) &&
+          !u.username &&
+          !u.password
+        )
+          return u.href;
       } catch {}
     }
     return "../assets/images/poster-placeholder.svg";
+  }
+  function qrPngUrl(anh) {
+    if (!anh.complete || !anh.naturalWidth)
+      throw new Error("Ảnh QR chưa tải xong.");
+    const canvas = document.createElement("canvas");
+    canvas.width = anh.naturalWidth;
+    canvas.height = anh.naturalHeight;
+    const context = canvas.getContext("2d");
+    context.fillStyle = "#fff";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(anh, 0, 0);
+    return new Promise((resolve, reject) =>
+      canvas.toBlob(
+        (blob) =>
+          blob
+            ? resolve(URL.createObjectURL(blob))
+            : reject(new Error("Không thể tạo ảnh PNG.")),
+        "image/png",
+      ),
+    );
   }
   const rap = {
     khoaGio,
@@ -150,6 +186,7 @@
     taoYeuCau,
     layGio,
     poster,
+    qrPngUrl,
   };
   if (typeof module !== "undefined" && module.exports) module.exports = rap;
   else window.CineSnack = rap;

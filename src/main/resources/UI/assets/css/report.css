@@ -1,0 +1,32 @@
+.ops #baocao-form { grid-template-columns: repeat(2, minmax(0, 1fr)) auto; }
+.report-presets { display: flex; gap: 8px; flex-wrap: wrap; grid-column: 1 / -1; }
+.ops #baocao-result { display: block; }
+.report-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.ops #baocao-result .report-summary article { grid-column: auto; margin: 0; }
+.ops #baocao-result .report-summary article:first-child { grid-column: 1 / -1; }
+.report-legend { display: flex; gap: 20px; }
+.report-legend .tickets { color: var(--brand); }
+.report-legend .snacks { color: #805b1d; }
+.report-summary strong { overflow-wrap: anywhere; }
+.report-chart-scroll { overflow-x: auto; padding: 4px; }
+.report-chart { display: flex; gap: 12px; min-width: 100%; width: max-content; }
+.report-chart-day { flex: 1 0 48px; text-align: center; }
+.report-column { height: 220px; width: 44px; display: inline-flex; flex-direction: column-reverse; justify-content: flex-start; padding: 0; border: 0; border-bottom: 2px solid var(--control-border); background: #f4eee5; cursor: pointer; }
+.report-column[aria-pressed="true"] { outline: 2px solid var(--text); outline-offset: 2px; }
+.report-segment { display: block; width: 100%; flex-shrink: 0; }
+.report-segment.tickets, .report-composition .tickets { background: var(--brand); }
+.report-segment.snacks, .report-composition { background: #ac7d30; }
+.report-chart-day small { display: block; margin-top: 8px; }
+.report-composition { height: 20px; border-radius: 4px; overflow: hidden; margin-block: 16px; }
+.report-composition span { display: block; height: 100%; }
+.report-day-detail { min-height: 3em; margin-top: 16px; }
+.report-table { font-variant-numeric: tabular-nums; }
+.report-table td:not(:first-child) { text-align: right; }
+@media (max-width: 700px) {
+  .ops #baocao-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ops #baocao-form button[type="submit"] { grid-column: 1 / -1; }
+  .report-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .report-summary article:first-child { grid-column: 1 / -1 !important; }
+  .report-table td::before { content: attr(data-label); display: block; font-size: 12px; color: var(--text-muted); }
+  .report-table td:not(:first-child) { text-align: left; }
+}

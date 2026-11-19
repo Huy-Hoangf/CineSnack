@@ -1,9 +1,8 @@
 package com.cinesnack.repository;
 
-import com.cinesnack.booking.repository.OrderRepository;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.cinesnack.booking.repository.OrderRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -28,15 +27,27 @@ class OrderAdminSearchTest {
         );
         var repository = new OrderRepository(db);
 
-        assertEquals("DHGUEST", repository.layTatCa("DHGUEST", "", 0, 1).get(0).ma());
+        assertEquals(
+            "DHGUEST",
+            repository.layTatCa("DHGUEST", "", 0, 1).get(0).ma()
+        );
         assertNull(
-            repository.layTatCa("guest@example.com", "CHO_THANH_TOAN", 0, 1).get(0).maNguoiDung()
+            repository
+                .layTatCa("guest@example.com", "CHO_THANH_TOAN", 0, 1)
+                .get(0)
+                .maNguoiDung()
         );
         assertEquals(
             "DHUSER",
-            repository.layTatCa("guest@example.com", "DA_THANH_TOAN", 0, 1).get(0).ma()
+            repository
+                .layTatCa("guest@example.com", "DA_THANH_TOAN", 0, 1)
+                .get(0)
+                .ma()
         );
-        assertEquals("DHGUEST", repository.layTatCa("guest@example.com", "", 1, 1).get(0).ma());
+        assertEquals(
+            "DHGUEST",
+            repository.layTatCa("guest@example.com", "", 1, 1).get(0).ma()
+        );
         assertTrue(repository.layTatCa("' OR 1=1 --", "", 0, 20).isEmpty());
     }
 }

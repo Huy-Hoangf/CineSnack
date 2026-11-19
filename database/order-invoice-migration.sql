@@ -38,7 +38,8 @@ BEGIN TRY
           AND COL_NAME(fkc.parent_object_id,fkc.parent_column_id)='hoa_don_ve_id';
     OPEN fk_ticket_cursor;
     FETCH NEXT FROM fk_ticket_cursor INTO @fk;
-    WHILE @@FETCH_STATUS=0 BEGIN
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
         SET @sql=N'ALTER TABLE VE DROP CONSTRAINT '+QUOTENAME(@fk);
         EXEC sp_executesql @sql;
         FETCH NEXT FROM fk_ticket_cursor INTO @fk;
@@ -54,7 +55,8 @@ BEGIN TRY
           AND COL_NAME(fkc.parent_object_id,fkc.parent_column_id)='hoa_don_bong_nuoc_id';
     OPEN fk_food_cursor;
     FETCH NEXT FROM fk_food_cursor INTO @fk;
-    WHILE @@FETCH_STATUS=0 BEGIN
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
         SET @sql=N'ALTER TABLE CHI_TIET_HOA_DON_BONG_NUOC DROP CONSTRAINT '+QUOTENAME(@fk);
         EXEC sp_executesql @sql;
         FETCH NEXT FROM fk_food_cursor INTO @fk;
@@ -89,7 +91,8 @@ BEGIN TRY
           AND definition LIKE '%trang_thai%';
     OPEN check_cursor;
     FETCH NEXT FROM check_cursor INTO @bang,@kiemTra;
-    WHILE @@FETCH_STATUS=0 BEGIN
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
         SET @sql=N'ALTER TABLE '+QUOTENAME(@bang)+N' DROP CONSTRAINT '+QUOTENAME(@kiemTra);
         EXEC sp_executesql @sql;
         FETCH NEXT FROM check_cursor INTO @bang,@kiemTra;
@@ -104,7 +107,8 @@ BEGIN TRY
           AND c.name='trang_thai';
     OPEN default_cursor;
     FETCH NEXT FROM default_cursor INTO @bang,@kiemTra;
-    WHILE @@FETCH_STATUS=0 BEGIN
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
         SET @sql=N'ALTER TABLE '+QUOTENAME(@bang)+N' DROP CONSTRAINT '+QUOTENAME(@kiemTra);
         EXEC sp_executesql @sql;
         FETCH NEXT FROM default_cursor INTO @bang,@kiemTra;

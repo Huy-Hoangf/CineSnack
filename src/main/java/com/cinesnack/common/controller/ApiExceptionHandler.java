@@ -15,11 +15,15 @@ import org.springframework.web.server.ResponseStatusException;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, String>> xuLyLoiNghiepVu(ResponseStatusException ngoaiLe) {
+    public ResponseEntity<Map<String, String>> xuLyLoiNghiepVu(
+        ResponseStatusException ngoaiLe
+    ) {
         return ResponseEntity.status(ngoaiLe.getStatusCode()).body(
             Map.of(
                 "message",
-                ngoaiLe.getReason() == null ? "Yêu cầu không hợp lệ" : ngoaiLe.getReason()
+                ngoaiLe.getReason() == null
+                    ? "Yêu cầu không hợp lệ"
+                    : ngoaiLe.getReason()
             )
         );
     }
@@ -31,12 +35,19 @@ public class ApiExceptionHandler {
         MethodArgumentTypeMismatchException.class,
         HandlerMethodValidationException.class,
     })
-    public ResponseEntity<Map<String, String>> xuLyDuLieuKhongHopLe(Exception ngoaiLe) {
-        return taoPhanHoi(HttpStatus.BAD_REQUEST, "Dữ liệu gửi lên không hợp lệ");
+    public ResponseEntity<Map<String, String>> xuLyDuLieuKhongHopLe(
+        Exception ngoaiLe
+    ) {
+        return taoPhanHoi(
+            HttpStatus.BAD_REQUEST,
+            "Dữ liệu gửi lên không hợp lệ"
+        );
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, String>> loiXungDot(DataIntegrityViolationException ngoaiLe) {
+    public ResponseEntity<Map<String, String>> loiXungDot(
+        DataIntegrityViolationException ngoaiLe
+    ) {
         return taoPhanHoi(
             HttpStatus.CONFLICT,
             "Dữ liệu đã thay đổi hoặc bị trùng, vui lòng kiểm tra lại đơn hàng"
@@ -44,7 +55,9 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<Map<String, String>> xuLyLoiCoSoDuLieu(DataAccessException ngoaiLe) {
+    public ResponseEntity<Map<String, String>> xuLyLoiCoSoDuLieu(
+        DataAccessException ngoaiLe
+    ) {
         return taoPhanHoi(
             HttpStatus.SERVICE_UNAVAILABLE,
             "Không thể xử lý dữ liệu lúc này, vui lòng thử lại"
@@ -52,11 +65,21 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, String>> xuLyLoiKhongDuKien(Exception ngoaiLe) {
-        return taoPhanHoi(HttpStatus.INTERNAL_SERVER_ERROR, "Không thể xử lý yêu cầu lúc này");
+    public ResponseEntity<Map<String, String>> xuLyLoiKhongDuKien(
+        Exception ngoaiLe
+    ) {
+        return taoPhanHoi(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            "Không thể xử lý yêu cầu lúc này"
+        );
     }
 
-    private ResponseEntity<Map<String, String>> taoPhanHoi(HttpStatus trangThai, String thongBao) {
-        return ResponseEntity.status(trangThai).body(Map.of("message", thongBao));
+    private ResponseEntity<Map<String, String>> taoPhanHoi(
+        HttpStatus trangThai,
+        String thongBao
+    ) {
+        return ResponseEntity.status(trangThai).body(
+            Map.of("message", thongBao)
+        );
     }
 }

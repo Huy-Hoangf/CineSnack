@@ -1,0 +1,81 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const { chuanBi } = require('./helpers.cjs');
+const fs = require('node:fs');
+
+test('movie metadata remains text, trailer opens safely, admin sends new fields', async t => {
+  const app = await chuanBi(t), page = await app.trangMoi();
+  Object.assign(app.catalog.movie, { director: '<img src=x onerror=alert(1)>', trailerUrl: 'https://example.com/trailer' });
+  await app.mo(page, 'movies.html?phim=1');
+  await page.locator('#hop-phim[open]').waitFor();
+  assert.match(await page.locator('#phim-chi-tiet').textContent(), /Đạo diễn: <img src=x onerror=alert\(1\)>/);
+  assert.equal(await page.locator('#phim-chi-tiet img').count(), 0);
+  const trailer = page.getByRole('link', { name: 'Xem trailer (mở tab mới)' });
+  assert.equal(await trailer.getAttribute('href'), 'https://example.com/trailer');
+  assert.equal(await trailer.getAttribute('target'), '_blank');
+  assert.equal(await trailer.getAttribute('rel'), 'noopener noreferrer');
+  await page.locator('#hop-phim').evaluate(node => node.close());
+  await app.dangNhap(page, 'admin@example.test', 'admin.html');
+  await page.locator('[data-edit-movie="1"]').click();
+  assert.equal(await page.locator('#phim-form [name=director]').inputValue(), app.catalog.movie.director);
+  assert.equal(await page.locator('#phim-form [name=trailerUrl]').inputValue(), app.catalog.movie.trailerUrl);
+  await page.locator('#phim-form [name=director]').fill('Đạo diễn mới');
+  let saved;
+  await page.route('**/api/admin/movies/1', async route => {
+    const raw = route.request().postDataBuffer().toString('utf8');
+    saved = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
+    await route.fulfill({ json: { ...saved, id: 1 } });
+  });
+  await page.locator('#phim-form [type=submit]').click();
+  await page.locator('#phim-hop').waitFor({ state: 'hidden' });
+  assert.equal(saved.director, 'Đạo diễn mới');
+  assert.equal(saved.trailerUrl, 'https://example.com/trailer');
+  assert.deepEqual(app.loi, []);
+});
+
+test('daily timeline shows all rows, overnight clipping, filters, keyboard editing and mobile agenda', async t => {
+  const app = await chuanBi(t), page = await app.trangMoi();
+  const day = '2026-11-09';
+  const base = { ...app.catalog.showTime, startsAt: day + 'T10:00:00+07:00', endsAt: day + 'T12:00:00+07:00' };
+  const shows = Array.from({ length: 101 }, (_, index) => ({ ...base, id: index + 1 }));
+  shows.push({ ...base, id: 102, roomId: 2, roomName: 'Phòng 02', startsAt: '2026-11-08T23:00:00+07:00', endsAt: day + 'T01:00:00+07:00', status: 'HUY' });
+  shows.push({ ...base, id: 103, roomId: 2, roomName: 'Phòng 02', startsAt: day + 'T23:00:00+07:00', endsAt: '2026-11-10T01:00:00+07:00' });
+  await page.route('**/api/admin/showtimes/timeline?*', route => {
+    const q = new URL(route.request().url()).searchParams;
+    return route.fulfill({ json: q.get('date') === day ? shows.filter(s => (!q.get('roomId') || String(s.roomId) === q.get('roomId')) && (!q.get('status') || s.status === q.get('status'))) : [] });
+  });
+  await app.dangNhap(page, 'admin@example.test', 'admin.html');
+  await page.locator('[data-muc=suat]').click();
+  assert.equal(await page.getByRole('button', { name: 'Lịch theo ngày', exact: true }).getAttribute('aria-pressed'), 'true');
+  await page.getByLabel('Ngày (giờ Việt Nam)').fill(day);
+  await page.getByLabel('Ngày (giờ Việt Nam)').dispatchEvent('change');
+  await page.waitForFunction(() => document.querySelectorAll('.showtime-block').length === 103);
+  await page.locator('.showtime-accessible summary').click();
+  assert.equal(await page.locator('.showtime-accessible tbody tr').count(), 103);
+  assert.equal(await page.locator('.showtime-block[data-status=HUY]').evaluate(node => node.style.left), '160px');
+  await page.getByLabel('Phòng', { exact: true }).selectOption('2');
+  await page.waitForFunction(() => document.querySelectorAll('.showtime-block').length === 2);
+  fs.mkdirSync('.review/ui', { recursive: true });
+  await page.locator('#muc-suat').screenshot({ path: '.review/ui/timeline-desktop.png' });
+  await page.getByLabel('Trạng thái', { exact: true }).selectOption('HUY');
+  await page.waitForFunction(() => document.querySelectorAll('.showtime-block').length === 1);
+  const block = page.locator('.showtime-block');
+  await block.focus();
+  await page.keyboard.press('Enter');
+  await page.locator('#suat-hop[open]').waitFor();
+  assert.equal(await page.locator('#suat-form [name=id]').inputValue(), '102');
+  await page.locator('#suat-hop').evaluate(node => node.close());
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.equal(await page.locator('.showtime-scroll').isVisible(), false);
+  await page.locator('.agenda-entry').click();
+  await page.locator('#suat-hop[open]').waitFor();
+  assert.equal(await page.locator('#suat-form [name=id]').inputValue(), '102');
+  await page.locator('#suat-hop').evaluate(node => node.close());
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true,
+    JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('body *')].filter(node => node.getBoundingClientRect().width > innerWidth && getComputedStyle(node).position !== 'absolute').map(node => [node.tagName, node.className, node.getBoundingClientRect().width]).slice(0, 20))));
+  await page.locator('#muc-suat').screenshot({ path: '.review/ui/timeline-mobile.png' });
+  await page.getByRole('button', { name: 'Ngày sau →', exact: true }).click();
+  await page.getByText('Không có suất chiếu phù hợp trong ngày này.', { exact: true }).waitFor();
+  assert.equal(await page.getByLabel('Ngày (giờ Việt Nam)').inputValue(), '2026-11-10');
+  assert.deepEqual(app.loi, []);
+});

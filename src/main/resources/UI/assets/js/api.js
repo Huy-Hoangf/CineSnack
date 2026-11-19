@@ -10,15 +10,22 @@ window.CineSnackApi = (() => {
     csrf = await ph.json();
     return csrf;
   }
-  async function goi(url, { method = "GET", body, form = false } = {}) {
+  async function goi(
+    url,
+    { method = "GET", body, form = false, extraHeaders = {} } = {},
+  ) {
     if (!/^\/api\//.test(url)) throw new Error("Đường dẫn API không hợp lệ.");
     const headers = { Accept: "application/json" };
     if (!["GET", "HEAD", "OPTIONS"].includes(method)) {
       const token = csrf || (await layCsrf());
       headers[token.headerName] = token.token;
     }
-    if (body !== undefined)
-      headers["Content-Type"] = form ? "application/x-www-form-urlencoded" : "application/json";
+    const laFormData = body instanceof FormData;
+    if (body !== undefined && !laFormData)
+      headers["Content-Type"] = form
+        ? "application/x-www-form-urlencoded"
+        : "application/json";
+    Object.assign(headers, extraHeaders);
     let ph;
     try {
       ph = await fetch(url, {
@@ -26,10 +33,18 @@ window.CineSnackApi = (() => {
         headers,
         credentials: "same-origin",
         body:
-          body === undefined ? undefined : form ? new URLSearchParams(body) : JSON.stringify(body),
+          body === undefined
+            ? undefined
+            : laFormData
+              ? body
+              : form
+                ? new URLSearchParams(body)
+                : JSON.stringify(body),
       });
     } catch {
-      throw new Error("Mất kết nối. Nếu đang tạo đơn, hãy kiểm tra Đơn của tôi trước khi đặt lại.");
+      throw new Error(
+        "Mất kết nối. Nếu đang tạo đơn, hãy kiểm tra Đơn của tôi trước khi đặt lại.",
+      );
     }
     const data = ph.status === 204 ? null : await ph.json().catch(() => null);
     if (!ph.ok) {
@@ -41,7 +56,9 @@ window.CineSnackApi = (() => {
       };
       throw Object.assign(
         new Error(
-          data?.message || macDinh[ph.status] || "Không thể xử lý yêu cầu. Vui lòng thử lại.",
+          data?.message ||
+            macDinh[ph.status] ||
+            "Không thể xử lý yêu cầu. Vui lòng thử lại.",
         ),
         { status: ph.status },
       );
@@ -70,5 +87,8 @@ window.CineSnackApi = (() => {
     await goi("/api/auth/logout", { method: "POST" });
     csrf = undefined;
   }
-  return { goi, taiKhoan, dangNhap, dangXuat };
+  async function dangKy(body) {
+    return goi("/api/auth/register", { method: "POST", body });
+  }
+  return { goi, taiKhoan, dangNhap, dangXuat, dangKy };
 })();

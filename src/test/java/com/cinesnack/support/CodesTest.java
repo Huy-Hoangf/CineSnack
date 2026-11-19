@@ -1,9 +1,8 @@
 package com.cinesnack.support;
 
-import com.cinesnack.common.support.Codes;
-
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.cinesnack.common.support.Codes;
 import org.junit.jupiter.api.Test;
 
 class CodesTest {

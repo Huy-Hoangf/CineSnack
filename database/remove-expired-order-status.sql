@@ -22,7 +22,8 @@ BEGIN TRY
         ) AND definition LIKE '%HET_HAN%';
     OPEN status_constraints;
     FETCH NEXT FROM status_constraints INTO @tableName, @constraintName;
-    WHILE @@FETCH_STATUS = 0 BEGIN
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
         SET @sql = N'ALTER TABLE ' + QUOTENAME(@tableName)
             + N' DROP CONSTRAINT ' + QUOTENAME(@constraintName);
         EXEC sp_executesql @sql;
@@ -31,10 +32,17 @@ BEGIN TRY
     CLOSE status_constraints;
     DEALLOCATE status_constraints;
 
-    UPDATE DON_HANG SET trang_thai = 'HUY' WHERE trang_thai = 'HET_HAN';
-    UPDATE VE SET trang_thai = 'HUY' WHERE trang_thai = 'HET_HAN';
+    UPDATE DON_HANG
+    SET trang_thai = 'HUY'
+    WHERE trang_thai = 'HET_HAN';
+
+    UPDATE VE
+    SET trang_thai = 'HUY'
+    WHERE trang_thai = 'HET_HAN';
+
     UPDATE CHI_TIET_HOA_DON_BONG_NUOC
-        SET trang_thai_phuc_vu = 'HUY' WHERE trang_thai_phuc_vu = 'HET_HAN';
+    SET trang_thai_phuc_vu = 'HUY'
+    WHERE trang_thai_phuc_vu = 'HET_HAN';
 
     IF NOT EXISTS (SELECT 1 FROM sys.check_constraints
         WHERE parent_object_id = OBJECT_ID('DON_HANG') AND name = 'CK_DON_HANG_TRANG_THAI')

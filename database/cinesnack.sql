@@ -48,6 +48,10 @@ CREATE TABLE PHIM (
     phim_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
     ten_phim NVARCHAR(200) NOT NULL,
     the_loai NVARCHAR(100) NOT NULL,
+    mo_ta NVARCHAR(2000) NULL,
+    dien_vien NVARCHAR(500) NULL,
+    dao_dien NVARCHAR(200) NULL,
+    trailer_url NVARCHAR(500) NULL,
     thoi_luong_phut INT NOT NULL,
     phan_loai_do_tuoi VARCHAR(10) NOT NULL,
     poster_url NVARCHAR(500) NULL,
@@ -55,6 +59,15 @@ CREATE TABLE PHIM (
     CHECK (thoi_luong_phut > 0)
 );
 END;
+
+IF COL_LENGTH(''PHIM'', ''mo_ta'') IS NULL
+    ALTER TABLE PHIM ADD mo_ta NVARCHAR(2000) NULL;
+IF COL_LENGTH(''PHIM'', ''dien_vien'') IS NULL
+    ALTER TABLE PHIM ADD dien_vien NVARCHAR(500) NULL;
+IF COL_LENGTH(''PHIM'', ''dao_dien'') IS NULL
+    ALTER TABLE PHIM ADD dao_dien NVARCHAR(200) NULL;
+IF COL_LENGTH(''PHIM'', ''trailer_url'') IS NULL
+    ALTER TABLE PHIM ADD trailer_url NVARCHAR(500) NULL;
 
 IF OBJECT_ID(N''NGUOI_DUNG'', N''U'') IS NULL BEGIN
 CREATE TABLE NGUOI_DUNG (
@@ -108,6 +121,8 @@ CREATE TABLE SUAT_CHIEU (
     bat_dau DATETIME2(0) NOT NULL,
     ket_thuc DATETIME2(0) NOT NULL,
     gia_co_ban DECIMAL(12, 2) NOT NULL,
+    phu_thu_vip DECIMAL(12, 2) NOT NULL DEFAULT 0 CHECK (phu_thu_vip >= 0),
+    che_do_gia VARCHAR(10) NOT NULL CONSTRAINT DF_SUAT_CHIEU_CHE_DO_GIA DEFAULT ''MANUAL'',
     trang_thai VARCHAR(20) NOT NULL,
     FOREIGN KEY (phim_id) REFERENCES PHIM (phim_id),
     FOREIGN KEY (phong_id) REFERENCES PHONG_CHIEU (phong_id),
@@ -116,12 +131,52 @@ CREATE TABLE SUAT_CHIEU (
 );
 END;
 
+-- Repeatable movie metadata, room pricing and late check-in policy upgrade.
+    IF COL_LENGTH(''dbo.SUAT_CHIEU'', ''che_do_gia'') IS NULL
+        ALTER TABLE dbo.SUAT_CHIEU ADD che_do_gia VARCHAR(10) NOT NULL
+            CONSTRAINT DF_SUAT_CHIEU_CHE_DO_GIA DEFAULT ''MANUAL'' WITH VALUES;
+    -- Compile only after ALTER has made the column available.
+    IF NOT EXISTS (SELECT 1 FROM sys.check_constraints
+        WHERE parent_object_id = OBJECT_ID(N''dbo.SUAT_CHIEU'') AND name = N''CK_SUAT_CHIEU_CHE_DO_GIA'')
+        EXEC(N''ALTER TABLE dbo.SUAT_CHIEU ADD CONSTRAINT CK_SUAT_CHIEU_CHE_DO_GIA
+            CHECK (che_do_gia IN (''''MANUAL'''', ''''POLICY''''));'');
+
+    IF OBJECT_ID(N''dbo.BANG_GIA_PHONG'', N''U'') IS NULL
+    BEGIN
+        CREATE TABLE dbo.BANG_GIA_PHONG (
+            phong_id BIGINT NOT NULL CONSTRAINT PK_BANG_GIA_PHONG PRIMARY KEY,
+            gia_thuong_ngay_thuong DECIMAL(12,2) NOT NULL,
+            gia_vip_ngay_thuong DECIMAL(12,2) NOT NULL,
+            gia_thuong_cuoi_tuan DECIMAL(12,2) NOT NULL,
+            gia_vip_cuoi_tuan DECIMAL(12,2) NOT NULL,
+            CONSTRAINT FK_BANG_GIA_PHONG_PHONG FOREIGN KEY (phong_id) REFERENCES dbo.PHONG_CHIEU(phong_id) ON DELETE CASCADE,
+            CONSTRAINT CK_BANG_GIA_PHONG_GIA CHECK (
+                gia_thuong_ngay_thuong >= 0 AND gia_vip_ngay_thuong >= gia_thuong_ngay_thuong
+                AND gia_thuong_cuoi_tuan >= 0 AND gia_vip_cuoi_tuan >= gia_thuong_cuoi_tuan
+                AND gia_thuong_ngay_thuong = FLOOR(gia_thuong_ngay_thuong)
+                AND gia_vip_ngay_thuong = FLOOR(gia_vip_ngay_thuong)
+                AND gia_thuong_cuoi_tuan = FLOOR(gia_thuong_cuoi_tuan)
+                AND gia_vip_cuoi_tuan = FLOOR(gia_vip_cuoi_tuan))
+        );
+    END;
+    IF OBJECT_ID(N''dbo.CHINH_SACH_RAP'', N''U'') IS NULL
+    BEGIN
+        CREATE TABLE dbo.CHINH_SACH_RAP (
+            chinh_sach_id INT NOT NULL CONSTRAINT PK_CHINH_SACH_RAP PRIMARY KEY,
+            gioi_han_soat_muon_phut INT NULL,
+            CONSTRAINT CK_CHINH_SACH_RAP_DON CHECK (chinh_sach_id = 1),
+            CONSTRAINT CK_CHINH_SACH_RAP_MUON CHECK (gioi_han_soat_muon_phut BETWEEN 0 AND 600)
+        );
+    END;
+    IF NOT EXISTS (SELECT 1 FROM dbo.CHINH_SACH_RAP WITH (UPDLOCK, HOLDLOCK) WHERE chinh_sach_id = 1)
+        INSERT INTO dbo.CHINH_SACH_RAP(chinh_sach_id, gioi_han_soat_muon_phut) VALUES (1, NULL);
+
 IF OBJECT_ID(N''DON_HANG'', N''U'') IS NULL BEGIN
 CREATE TABLE DON_HANG (
     don_hang_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
     nguoi_dung_id BIGINT NULL,
     ma_don_hang VARCHAR(30) NOT NULL UNIQUE,
-    email_nhan_ve VARCHAR(150) NOT NULL,
+    email_nhan_ve VARCHAR(150) NULL,
     tong_tien DECIMAL(12, 2) NOT NULL,
     trang_thai VARCHAR(20) NOT NULL,
     het_han_luc DATETIME2(0) NULL,
@@ -237,11 +292,16 @@ CREATE TABLE VE (
     ),
     soat_ve_luc DATETIME2(0) NULL,
     nhan_vien_soat_id BIGINT NULL,
+    in_ve_luc DATETIME2(0) NULL,
+    nhan_vien_in_id BIGINT NULL,
     FOREIGN KEY (hoa_don_ve_id) REFERENCES HOA_DON_VE (hoa_don_ve_id),
     FOREIGN KEY (don_hang_id) REFERENCES DON_HANG (don_hang_id),
     FOREIGN KEY (suat_chieu_id, phong_id) REFERENCES SUAT_CHIEU (suat_chieu_id, phong_id),
     FOREIGN KEY (ghe_id, phong_id) REFERENCES GHE (ghe_id, phong_id),
     FOREIGN KEY (nhan_vien_soat_id) REFERENCES NGUOI_DUNG (nguoi_dung_id),
+    CONSTRAINT FK_VE_NHAN_VIEN_IN FOREIGN KEY (nhan_vien_in_id) REFERENCES NGUOI_DUNG (nguoi_dung_id),
+    CONSTRAINT CK_VE_IN CHECK ((in_ve_luc IS NULL AND nhan_vien_in_id IS NULL)
+        OR (in_ve_luc IS NOT NULL AND nhan_vien_in_id IS NOT NULL)),
     CONSTRAINT CK_VE_SOAT CHECK (
         (
             trang_thai = ''DA_SOAT''
@@ -586,6 +646,22 @@ ADD phat_hanh_luc DATETIME2(0) NULL;
 IF COL_LENGTH(''VE'', ''mo_ta_luc_mua'') IS NULL
 ALTER TABLE VE
 ADD mo_ta_luc_mua NVARCHAR(400) NULL;
+IF COL_LENGTH(''SUAT_CHIEU'', ''phu_thu_vip'') IS NULL
+ALTER TABLE SUAT_CHIEU ADD phu_thu_vip DECIMAL(12,2) NOT NULL DEFAULT 0;
+IF COL_LENGTH(''VE'', ''in_ve_luc'') IS NULL
+ALTER TABLE VE ADD in_ve_luc DATETIME2(0) NULL;
+IF COL_LENGTH(''VE'', ''nhan_vien_in_id'') IS NULL BEGIN
+ALTER TABLE VE ADD nhan_vien_in_id BIGINT NULL;
+END;
+-- Biên dịch ràng buộc sau khi các cột mới đã được tạo.
+IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys
+    WHERE parent_object_id=OBJECT_ID(''VE'') AND name=''FK_VE_NHAN_VIEN_IN'')
+EXEC(N''ALTER TABLE VE ADD CONSTRAINT FK_VE_NHAN_VIEN_IN FOREIGN KEY (nhan_vien_in_id)
+REFERENCES NGUOI_DUNG(nguoi_dung_id);'');
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints
+    WHERE parent_object_id=OBJECT_ID(''VE'') AND name=''CK_VE_IN'')
+EXEC(N''ALTER TABLE VE ADD CONSTRAINT CK_VE_IN CHECK ((in_ve_luc IS NULL AND nhan_vien_in_id IS NULL)
+OR (in_ve_luc IS NOT NULL AND nhan_vien_in_id IS NOT NULL));'');
 
 EXEC(N''UPDATE h
 SET email_nhan = d.email_nhan_ve,
@@ -905,41 +981,22 @@ SET QUOTED_IDENTIFIER ON;
 SET NUMERIC_ROUNDABORT OFF;
 BEGIN TRY
     BEGIN TRANSACTION;
-IF NOT EXISTS (
-    SELECT
-        1
-    FROM
-        PHONG_CHIEU
-    WITH
-        (UPDLOCK, HOLDLOCK)
-    WHERE
-        ten_phong = N''Phòng 01''
-)
-INSERT INTO
-    PHONG_CHIEU (ten_phong, loai_phong, trang_thai)
-VALUES
-    (N''Phòng 01'', N''2D'', ''HOAT_DONG'');
-DECLARE @phong BIGINT = (
-    SELECT
-        phong_id
-    FROM
-        PHONG_CHIEU
-    WITH
-        (UPDLOCK, HOLDLOCK)
-    WHERE
-        ten_phong = N''Phòng 01''
-);
-IF NOT EXISTS (
-    SELECT
-        1
-    FROM
-        PHONG_CHIEU
-    WHERE
-        phong_id = @phong
-        AND trang_thai = ''HOAT_DONG''
-) THROW 50011,
-N''Phòng 01 đã ngừng hoạt động; không tự thay đổi trạng thái.'',
-1;
+DECLARE @soPhong INT = 1;
+DECLARE @phong BIGINT;
+WHILE @soPhong <= 8
+BEGIN
+    DECLARE @tenPhong NVARCHAR(50) =
+        N''Phòng '' + RIGHT(N''0'' + CONVERT(NVARCHAR(2), @soPhong), 2);
+    IF NOT EXISTS (
+        SELECT 1
+        FROM PHONG_CHIEU WITH (UPDLOCK, HOLDLOCK)
+        WHERE ten_phong = @tenPhong
+    )
+        INSERT INTO PHONG_CHIEU (ten_phong, loai_phong, trang_thai)
+        VALUES (@tenPhong, N''2D'', ''HOAT_DONG'');
+    SET @phong = NULL;
+    SELECT @phong = phong_id FROM PHONG_CHIEU WHERE ten_phong = @tenPhong AND trang_thai = ''HOAT_DONG'';
+    IF @phong IS NULL THROW 50011, N''Phòng chiếu đã ngừng hoạt động.'', 1;
 INSERT INTO
     GHE (phong_id, ma_ghe, loai_ghe, trang_thai)
 SELECT
@@ -985,6 +1042,9 @@ WHERE
             phong_id = @phong
             AND ma_ghe = CONCAT(h.hang, s.so)
     );
+    SET @soPhong += 1;
+END;
+SELECT @phong = phong_id FROM PHONG_CHIEU WHERE ten_phong = N''Phòng 01'';
 DECLARE @ngay DATETIME2(0) = DATEADD(
     DAY,
     1,
