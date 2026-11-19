@@ -7,6 +7,9 @@
     food,
     lanTai = 0,
     dangTai = true;
+  let ngay = [],
+    batDauTuan = 0,
+    ngayChon = null;
   let g = {
     version: 2,
     maSuatChieu: null,
@@ -18,8 +21,40 @@
   };
   const luu = CineSnack.layGio();
   const params = new URLSearchParams(location.search);
+  let user;
+  try {
+    user = await CineSnackApi.taiKhoan();
+  } catch (error) {
+    o("dat-ve-loi").textContent = error.message;
+    return;
+  }
+  const worker = ["NHAN_VIEN", "QUAN_TRI"].includes(user?.role);
+  const counterMode = user?.role === "NHAN_VIEN" && params.get("mode") === "counter";
+  const viewOnly = worker && !counterMode;
+  if (worker) {
+    document.body.classList.add("ops");
+    o("ghe-tieu-de").textContent = viewOnly ? "Sơ đồ ghế" : "Chọn ghế cho khách";
+    o("combo-tieu-de").textContent = "Bắp nước và combo";
+    document.querySelector('label[for="chon-phim"]').textContent = "Phim";
+  }
+  if (viewOnly) {
+    document.body.classList.add("booking-view-only");
+    o("booking-view-note").hidden = false;
+    document.querySelector(".trang-mo-dau h1").textContent = "Lịch chiếu & sơ đồ ghế";
+    document.querySelector(".trang-mo-dau .bao > p").textContent = "Chọn phim và suất chiếu để xem tình trạng ghế của rạp.";
+    for (const selector of [".tien-trinh-buoc", ".don-tom-tat", ".dat-ve-di-dong", "#combo"])
+      document.querySelector(selector).hidden = true;
+    o("counter-booking-link").hidden = user?.role !== "NHAN_VIEN";
+    o("counter-booking-link").href = "booking.html?mode=counter" +
+      (params.has("phim") ? "&phim=" + encodeURIComponent(params.get("phim")) : "");
+  } else if (counterMode) {
+    document.querySelector(".trang-mo-dau h1").textContent = "Bán vé tại quầy";
+    document.querySelector(".trang-mo-dau .bao > p").textContent = "Chọn vé và bắp nước cho khách mua trực tiếp tại rạp.";
+  }
   const maYeuCau = Number(params.get("phim"));
-  const khoiPhuc = CineSnack.gioHopLe(luu) && (!params.has("phim") || maYeuCau === luu.phim?.id);
+  const khoiPhuc =
+    !viewOnly && CineSnack.gioHopLe(luu) &&
+    (!params.has("phim") || maYeuCau === luu.phim?.id);
   const loi = (text) => {
     o("dat-ve-loi").textContent = text;
   };
@@ -29,10 +64,15 @@
   }
   function capNhat() {
     CineSnack.hienTomTat(g);
-    o("tiep-dat-ve").disabled = dangTai || !o("chon-phim").value || !CineSnack.gioHopLe(g);
+    o("tiep-dat-ve").disabled =
+      viewOnly || dangTai || !o("chon-phim").value || !CineSnack.gioHopLe(g);
     o("di-dong-tiep").disabled = o("tiep-dat-ve").disabled;
-    o("di-dong-so-ghe").textContent = g.ghe.length ? `${g.ghe.length} ghế đã chọn` : "Chưa chọn ghế";
-    o("di-dong-tong").textContent = CineSnack.dinhDangTien(CineSnack.tinhTien(g).tong);
+    o("di-dong-so-ghe").textContent = g.ghe.length
+      ? `${g.ghe.length} ghế đã chọn`
+      : "Chưa chọn ghế";
+    o("di-dong-tong").textContent = CineSnack.dinhDangTien(
+      CineSnack.tinhTien(g).tong,
+    );
     o("tiep-goi-y").textContent = g.ghe.length
       ? `${g.ghe.length} ghế đã chọn.`
       : "Chọn ghế hoặc bắp nước để tiếp tục.";
@@ -40,9 +80,13 @@
   const vungGhe = o("ghe-cuon");
   function capNhatGoiYCuon() {
     const coTheCuon = vungGhe.scrollWidth > vungGhe.clientWidth + 1;
-    const conBenPhai = vungGhe.scrollLeft + vungGhe.clientWidth < vungGhe.scrollWidth - 1;
+    const conBenPhai =
+      vungGhe.scrollLeft + vungGhe.clientWidth < vungGhe.scrollWidth - 1;
     o("ghe-goi-y-cuon").hidden = !coTheCuon;
-    o("ghe-khung-cuon").classList.toggle("con-ghe-ben-phai", coTheCuon && conBenPhai);
+    o("ghe-khung-cuon").classList.toggle(
+      "con-ghe-ben-phai",
+      coTheCuon && conBenPhai,
+    );
   }
   vungGhe.addEventListener("scroll", capNhatGoiYCuon);
   window.addEventListener("resize", capNhatGoiYCuon);
@@ -58,8 +102,11 @@
     label.append(i, span);
     return label;
   }
-  async function chonSuat(s) {
+  async function chonSuat(s, fromPicker = false) {
     const lan = ++lanTai;
+    if (worker) o("ghe-tieu-de").textContent = s
+      ? [s.movieName || g.phim?.name, s.roomName, CineSnack.gioSuat(s.startsAt)].filter(Boolean).join(" · ")
+      : viewOnly ? "Sơ đồ ghế" : "Chọn ghế cho khách";
     g.suat = s;
     g.maSuatChieu = s?.id || null;
     g.ghe = [];
@@ -98,14 +145,17 @@
         b.dataset.ghe = v.code;
         b.textContent = v.code;
         b.disabled = !v.available;
+        if (viewOnly) b.setAttribute("aria-disabled", "true");
         b.setAttribute("aria-pressed", "false");
         b.setAttribute(
           "aria-label",
-          `Ghế ${v.code}, ${CineSnack.dinhDangTien(v.price)}${v.available ? "" : ", đã đặt"}`,
+          `Ghế ${v.code}, ${CineSnack.dinhDangTien(v.price)}${v.available ? ", còn trống" : ", đã đặt"}`,
         );
         b.addEventListener("click", () => {
+          if (viewOnly) return;
           loi("");
-          if (g.ghe.some((x) => x.id === v.id)) g.ghe = g.ghe.filter((x) => x.id !== v.id);
+          if (g.ghe.some((x) => x.id === v.id))
+            g.ghe = g.ghe.filter((x) => x.id !== v.id);
           else {
             if (g.ghe.length >= 10) {
               o("ghe-loi").textContent = "Tối đa 10 ghế mỗi đơn.";
@@ -113,15 +163,21 @@
             }
             g.ghe.push(v);
           }
-          b.setAttribute("aria-pressed", String(g.ghe.some((x) => x.id === v.id)));
+          b.setAttribute(
+            "aria-pressed",
+            String(g.ghe.some((x) => x.id === v.id)),
+          );
           capNhat();
         });
         hang.get(ma).append(b);
       }
       capNhatGoiYCuon();
+      if (worker && fromPicker && ds.length) o("ghe-tieu-de").focus();
     } catch (e) {
       if (lan === lanTai) {
-        hienTrangThaiGhe("Không tải được ghế. Vui lòng chọn lại suất chiếu để thử lại.");
+        hienTrangThaiGhe(
+          "Không tải được ghế. Vui lòng chọn lại suất chiếu để thử lại.",
+        );
         loi(e.message);
       }
     } finally {
@@ -132,6 +188,7 @@
     }
   }
   function hienGio(ngay, maUuTien = null) {
+    ngayChon = ngay;
     o("chon-gio").replaceChildren();
     const ds = suat.filter((s) => CineSnack.ngaySuat(s.startsAt) === ngay);
     const daChon = maUuTien ? ds.find((s) => s.id === maUuTien) : null;
@@ -142,11 +199,40 @@
           "gio",
           CineSnack.gioSuat(s.startsAt) + " · " + s.roomName,
           s.id === daChon?.id,
-          () => chonSuat(s),
+          () => chonSuat(s, true),
         ),
       );
     return chonSuat(daChon || null);
   }
+  function hienTuan() {
+    const ds = ngay.slice(batDauTuan, batDauTuan + 7);
+    o("chon-ngay-dieu-huong").hidden = ngay.length === 0;
+    o("chon-ngay").replaceChildren();
+    for (const n of ds)
+      o("chon-ngay").append(
+        radio(n, "ngay", CineSnack.dinhDangNgay(n), n === ngayChon, () =>
+          hienGio(n),
+        ),
+      );
+    o("ngay-khoang").textContent = ds.length
+      ? `${CineSnack.dinhDangNgay(ds[0])} – ${CineSnack.dinhDangNgay(ds.at(-1))}`
+      : "";
+    o("ngay-truoc").disabled = batDauTuan === 0;
+    o("ngay-sau").disabled = batDauTuan + 7 >= ngay.length;
+  }
+  for (const [id, delta] of [
+    ["ngay-truoc", -7],
+    ["ngay-sau", 7],
+  ])
+    o(id).addEventListener("click", () => {
+      batDauTuan = Math.max(
+        0,
+        Math.min(batDauTuan + delta, Math.floor((ngay.length - 1) / 7) * 7),
+      );
+      ngayChon = ngay[batDauTuan];
+      hienTuan();
+      hienGio(ngayChon);
+    });
   async function doiPhim(maUuTien = null) {
     const lan = ++lanTai;
     g.phim = phim.find((p) => p.id === Number(o("chon-phim").value)) || null;
@@ -156,6 +242,8 @@
     dangTai = true;
     capNhat();
     o("chon-ngay").replaceChildren();
+    ngay = [];
+    hienTuan();
     o("chon-gio").replaceChildren();
     o("hang-ghe").replaceChildren();
     o("ghe-loi").textContent = "";
@@ -176,13 +264,11 @@
       const ds = await CineSnackApi.goi("/api/showtimes?movieId=" + g.phim.id);
       if (lan !== lanTai) return;
       suat = ds;
-      const ngay = [...new Set(ds.map((s) => CineSnack.ngaySuat(s.startsAt)))];
+      ngay = [...new Set(ds.map((s) => CineSnack.ngaySuat(s.startsAt)))];
       const daChon = ds.find((s) => s.id === maUuTien);
-      const ngayChon = daChon ? CineSnack.ngaySuat(daChon.startsAt) : ngay[0];
-      for (const n of ngay)
-        o("chon-ngay").append(
-          radio(n, "ngay", CineSnack.dinhDangNgay(n), n === ngayChon, () => hienGio(n)),
-        );
+      ngayChon = daChon ? CineSnack.ngaySuat(daChon.startsAt) : ngay[0];
+      batDauTuan = Math.floor(Math.max(0, ngay.indexOf(ngayChon)) / 7) * 7;
+      hienTuan();
       if (ngay.length) await hienGio(ngayChon, maUuTien);
       else {
         dangTai = false;
@@ -193,7 +279,9 @@
     } catch (e) {
       if (lan === lanTai) {
         dangTai = false;
-        hienTrangThaiGhe("Không tải được suất chiếu. Vui lòng chọn lại phim để thử lại.");
+        hienTrangThaiGhe(
+          "Không tải được suất chiếu. Vui lòng chọn lại phim để thử lại.",
+        );
         loi(e.message);
         capNhat();
       }
@@ -201,6 +289,7 @@
   }
   function hienFood() {
     o("chon-combo").replaceChildren();
+    if (viewOnly) return;
     for (const [key, idKey, ds] of [
       ["combos", "comboId", food.combos],
       ["snacks", "productId", food.products],
@@ -263,15 +352,18 @@
   }
   o("chon-phim").addEventListener("change", () => doiPhim());
   o("tiep-dat-ve").addEventListener("click", () => {
+    if (viewOnly) return;
     if (!CineSnack.gioHopLe(g)) {
       loi("Suất hoặc lựa chọn không còn hợp lệ. Hãy chọn lại.");
       return;
     }
     try {
       sessionStorage.setItem(CineSnack.khoaGio, JSON.stringify(g));
-      location.href = "checkout.html";
+      location.href = counterMode ? "checkout.html?mode=counter" : "checkout.html";
     } catch {
-      loi("Trình duyệt không cho phép lưu giỏ. Bật lưu trữ của trang để tiếp tục.");
+      loi(
+        "Trình duyệt không cho phép lưu giỏ. Bật lưu trữ của trang để tiếp tục.",
+      );
     }
   });
   capNhat();
@@ -282,6 +374,11 @@
     ]);
     phim = p;
     food = f;
+    const ma = khoiPhuc ? luu.phim?.id : maYeuCau;
+    if (ma && !phim.some(movie => movie.id === ma)) {
+      const movie = await CineSnackApi.goi("/api/movies/" + ma);
+      if (movie.status === "DANG_CHIEU") phim.push(movie);
+    }
     o("chon-phim").replaceChildren();
     const empty = document.createElement("option");
     empty.value = "";
@@ -290,16 +387,16 @@
     const onlySnacks = document.createElement("option");
     onlySnacks.value = "snacks";
     onlySnacks.textContent = "Chỉ mua bắp nước";
-    o("chon-phim").append(onlySnacks);
+    if (!viewOnly) o("chon-phim").append(onlySnacks);
     for (const p of phim) {
       const option = document.createElement("option");
       option.value = p.id;
       option.textContent = p.name;
       o("chon-phim").append(option);
     }
-    const ma = khoiPhuc ? luu.phim?.id : maYeuCau;
     o("chon-phim").value = String(
-      phim.find((p) => p.id === ma)?.id || (khoiPhuc && !luu.phim ? "snacks" : ""),
+      phim.find((p) => p.id === ma)?.id ||
+        (khoiPhuc && !luu.phim ? "snacks" : ""),
     );
     if (khoiPhuc) {
       for (const [key, idKey, ds] of [
@@ -324,7 +421,9 @@
     hienFood();
     await doiPhim(khoiPhuc ? luu.maSuatChieu : null);
     if (khoiPhuc && g.maSuatChieu === luu.maSuatChieu) {
-      g.ghe = ghe.filter((v) => v.available && luu.ghe.some((old) => old.id === v.id));
+      g.ghe = ghe.filter(
+        (v) => v.available && luu.ghe.some((old) => old.id === v.id),
+      );
       document
         .querySelectorAll("[data-ghe-id]")
         .forEach((n) =>

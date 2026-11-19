@@ -1,11 +1,10 @@
 package com.cinesnack.repository;
 
-import com.cinesnack.catalog.repository.BookingCatalogRepository;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import com.cinesnack.catalog.repository.BookingCatalogRepository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,19 +18,25 @@ class BookingCatalogLockOrderTest {
     @Test
     void locksMovieBeforeShowWhenBookingSeats() {
         JdbcTemplate jdbc = mock(JdbcTemplate.class);
-        doReturn(List.of(9L), List.of(9L), List.of(
-            new BookingCatalogRepository.Show(
-                4,
-                2,
-                new BigDecimal("75000"),
-                LocalDateTime.parse("2026-10-21T10:00:00"),
-                "SAP_CHIEU"
+        doReturn(
+            List.of(9L),
+            List.of(9L),
+            List.of(
+                new BookingCatalogRepository.Show(
+                    4,
+                    2,
+                    new BigDecimal("75000"),
+                    LocalDateTime.parse("2026-10-21T10:00:00"),
+                    "SAP_CHIEU"
+                )
             )
-        )).when(jdbc).query(
-            anyString(),
-            org.mockito.ArgumentMatchers.<RowMapper<Object>>any(),
-            any(Object[].class)
-        );
+        )
+            .when(jdbc)
+            .query(
+                anyString(),
+                org.mockito.ArgumentMatchers.<RowMapper<Object>>any(),
+                any(Object[].class)
+            );
 
         assertNotNull(new BookingCatalogRepository(jdbc).timVaKhoaSuatChieu(4));
 
@@ -41,8 +46,17 @@ class BookingCatalogLockOrderTest {
             org.mockito.ArgumentMatchers.<RowMapper<Object>>any(),
             any(Object[].class)
         );
-        assertTrue(sql.getAllValues().get(0).contains("SELECT phim_id FROM SUAT_CHIEU"));
-        assertTrue(sql.getAllValues().get(1).contains("FROM PHIM WITH (HOLDLOCK)"));
-        assertTrue(sql.getAllValues().get(2).contains("SUAT_CHIEU WITH (UPDLOCK, HOLDLOCK)"));
+        assertTrue(
+            sql.getAllValues().get(0).contains("SELECT phim_id FROM SUAT_CHIEU")
+        );
+        assertTrue(
+            sql.getAllValues().get(1).contains("FROM PHIM WITH (HOLDLOCK)")
+        );
+        assertTrue(
+            sql
+                .getAllValues()
+                .get(2)
+                .contains("SUAT_CHIEU WITH (UPDLOCK, HOLDLOCK)")
+        );
     }
 }

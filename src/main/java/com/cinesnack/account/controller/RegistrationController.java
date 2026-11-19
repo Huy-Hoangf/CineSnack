@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class RegistrationController {
+
     private final RegistrationService dangKy;
 
     public RegistrationController(RegistrationService dangKy) {

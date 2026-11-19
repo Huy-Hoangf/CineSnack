@@ -13,13 +13,33 @@ public class BookingCatalogRepository {
         long maSo,
         long maPhong,
         BigDecimal gia,
+        BigDecimal phuThuVip,
         LocalDateTime batDau,
         String trangThai
+    ) {
+        public Show(
+            long maSo,
+            long maPhong,
+            BigDecimal gia,
+            LocalDateTime batDau,
+            String trangThai
+        ) {
+            this(maSo, maPhong, gia, BigDecimal.ZERO, batDau, trangThai);
+        }
+    }
+
+    public record Seat(long maSo, long maPhong, String trangThai, String loai) {
+        public Seat(long maSo, long maPhong, String trangThai) {
+            this(maSo, maPhong, trangThai, "THUONG");
+        }
+    }
+
+    public record Food(
+        long maSo,
+        String ten,
+        BigDecimal gia,
+        String trangThai
     ) {}
-
-    public record Seat(long maSo, long maPhong, String trangThai) {}
-
-    public record Food(long maSo, String ten, BigDecimal gia, String trangThai) {}
 
     private final JdbcTemplate truyVan;
 
@@ -45,7 +65,7 @@ public class BookingCatalogRepository {
 
         var shows = truyVan.query(
             """
-            SELECT suat_chieu_id, phong_id, gia_co_ban, bat_dau, trang_thai
+            SELECT suat_chieu_id, phong_id, gia_co_ban, phu_thu_vip, bat_dau, trang_thai
             FROM SUAT_CHIEU WITH (UPDLOCK, HOLDLOCK)
             WHERE suat_chieu_id = ? AND phim_id = ?
               AND EXISTS(SELECT 1 FROM PHONG_CHIEU r WHERE r.phong_id=SUAT_CHIEU.phong_id AND r.trang_thai='HOAT_DONG')
@@ -55,6 +75,7 @@ public class BookingCatalogRepository {
                     dong.getLong("suat_chieu_id"),
                     dong.getLong("phong_id"),
                     dong.getBigDecimal("gia_co_ban"),
+                    dong.getBigDecimal("phu_thu_vip"),
                     Sql.docThoiGian(dong, "bat_dau"),
                     dong.getString("trang_thai")
                 ),
@@ -66,12 +87,13 @@ public class BookingCatalogRepository {
 
     public Seat timGhe(long maSo) {
         var dsGiaTri = truyVan.query(
-            "SELECT ghe_id, phong_id, trang_thai FROM GHE WHERE ghe_id = ?",
+            "SELECT ghe_id, phong_id, trang_thai, loai_ghe FROM GHE WHERE ghe_id = ?",
             (dong, viTri) ->
                 new Seat(
                     dong.getLong("ghe_id"),
                     dong.getLong("phong_id"),
-                    dong.getString("trang_thai")
+                    dong.getString("trang_thai"),
+                    dong.getString("loai_ghe")
                 ),
             maSo
         );

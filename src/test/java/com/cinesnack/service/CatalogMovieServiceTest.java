@@ -1,12 +1,11 @@
 package com.cinesnack.service;
 
-import com.cinesnack.catalog.service.CatalogService;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import com.cinesnack.catalog.dto.Catalog;
 import com.cinesnack.catalog.repository.CatalogRepository;
+import com.cinesnack.catalog.service.CatalogService;
 import java.time.Clock;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,13 +19,18 @@ class CatalogMovieServiceTest {
             123,
             "Phim sắp chiếu",
             "Hoạt hình",
+            "Nội dung",
+            "Diễn viên",
             90,
             "P",
             null,
             "SAP_CHIEU"
         );
         when(kho.timPhim(123)).thenReturn(phim);
-        assertEquals(phim, new CatalogService(kho, Clock.systemUTC()).layPhimTheoMa(123));
+        assertEquals(
+            phim,
+            new CatalogService(kho, Clock.systemUTC()).layPhimTheoMa(123)
+        );
     }
 
     @Test

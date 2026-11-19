@@ -12,7 +12,9 @@ public record Invoice(
     @JsonProperty("type") String loai,
     @JsonProperty("email") String thuDienTu,
     @JsonProperty("total") BigDecimal tongTien,
-    @com.fasterxml.jackson.annotation.JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'+07:00'")
+    @com.fasterxml.jackson.annotation.JsonFormat(
+        pattern = "yyyy-MM-dd'T'HH:mm:ss'+07:00'"
+    )
     @JsonProperty("issuedAt")
     LocalDateTime phatHanhLuc,
     @JsonProperty("lines") List<Line> dsDong

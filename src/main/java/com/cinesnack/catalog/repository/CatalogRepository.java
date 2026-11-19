@@ -17,7 +17,12 @@ public class CatalogRepository {
         this.truyVan = truyVan;
     }
 
-    public List<Catalog.Movie> layPhim(String tuTim, String trangThai, int trang, int soLuong) {
+    public List<Catalog.Movie> layPhim(
+        String tuTim,
+        String trangThai,
+        int trang,
+        int soLuong
+    ) {
         return truyVan.query(
             """
             SELECT * FROM PHIM WHERE trang_thai IN ('DANG_CHIEU','SAP_CHIEU')
@@ -29,10 +34,14 @@ public class CatalogRepository {
                     d.getLong("phim_id"),
                     d.getString("ten_phim"),
                     d.getString("the_loai"),
+                    d.getString("mo_ta"),
+                    d.getString("dien_vien"),
                     d.getInt("thoi_luong_phut"),
                     d.getString("phan_loai_do_tuoi"),
                     d.getString("poster_url"),
-                    d.getString("trang_thai")
+                    d.getString("trang_thai"),
+                    d.getString("dao_dien"),
+                    d.getString("trailer_url")
                 ),
             trangThai,
             trangThai,
@@ -51,10 +60,14 @@ public class CatalogRepository {
                     d.getLong("phim_id"),
                     d.getString("ten_phim"),
                     d.getString("the_loai"),
+                    d.getString("mo_ta"),
+                    d.getString("dien_vien"),
                     d.getInt("thoi_luong_phut"),
                     d.getString("phan_loai_do_tuoi"),
                     d.getString("poster_url"),
-                    d.getString("trang_thai")
+                    d.getString("trang_thai"),
+                    d.getString("dao_dien"),
+                    d.getString("trailer_url")
                 ),
             maPhim
         );
@@ -76,10 +89,16 @@ public class CatalogRepository {
                     d.getString("ten_phim"),
                     d.getLong("phong_id"),
                     d.getString("ten_phong"),
-                    Sql.docThoiGian(d, "bat_dau").atOffset(ZoneOffset.ofHours(7)),
-                    Sql.docThoiGian(d, "ket_thuc").atOffset(ZoneOffset.ofHours(7)),
+                    Sql.docThoiGian(d, "bat_dau").atOffset(
+                        ZoneOffset.ofHours(7)
+                    ),
+                    Sql.docThoiGian(d, "ket_thuc").atOffset(
+                        ZoneOffset.ofHours(7)
+                    ),
                     d.getBigDecimal("gia_co_ban"),
-                    d.getString("trang_thai")
+                    d.getBigDecimal("phu_thu_vip"),
+                    d.getString("trang_thai"),
+                    d.getString("che_do_gia")
                 ),
             luc,
             maPhim,
@@ -90,7 +109,8 @@ public class CatalogRepository {
     public List<Catalog.Seat> layGhe(long maSuat, LocalDateTime luc) {
         return truyVan.query(
             """
-            SELECT g.ghe_id,g.ma_ghe,g.loai_ghe,s.gia_co_ban,
+            SELECT g.ghe_id,g.ma_ghe,g.loai_ghe,
+              s.gia_co_ban + CASE WHEN g.loai_ghe='VIP' THEN s.phu_thu_vip ELSE 0 END AS gia_ghe,
               CASE WHEN g.trang_thai='HOAT_DONG' AND r.trang_thai='HOAT_DONG' AND p.trang_thai='DANG_CHIEU' AND s.trang_thai='SAP_CHIEU' AND s.bat_dau>?
                 AND NOT EXISTS(SELECT 1 FROM VE v WHERE v.suat_chieu_id=s.suat_chieu_id AND v.ghe_id=g.ghe_id
                   AND v.trang_thai IN('CHO_THANH_TOAN','DA_THANH_TOAN','DA_SOAT')) THEN 1 ELSE 0 END con_trong
@@ -103,7 +123,7 @@ public class CatalogRepository {
                     d.getString("ma_ghe"),
                     d.getString("loai_ghe"),
                     d.getInt("con_trong") == 1,
-                    d.getBigDecimal("gia_co_ban")
+                    d.getBigDecimal("gia_ghe")
                 ),
             luc,
             maSuat

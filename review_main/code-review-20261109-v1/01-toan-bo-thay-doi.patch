@@ -1,0 +1,3046 @@
+diff --git a/database/cinesnack.sql b/database/cinesnack.sql
+index 64389d3..0cdab00 100644
+--- a/database/cinesnack.sql
++++ b/database/cinesnack.sql
+@@ -50,6 +50,8 @@ CREATE TABLE PHIM (
+     the_loai NVARCHAR(100) NOT NULL,
+     mo_ta NVARCHAR(2000) NULL,
+     dien_vien NVARCHAR(500) NULL,
++    dao_dien NVARCHAR(200) NULL,
++    trailer_url NVARCHAR(500) NULL,
+     thoi_luong_phut INT NOT NULL,
+     phan_loai_do_tuoi VARCHAR(10) NOT NULL,
+     poster_url NVARCHAR(500) NULL,
+@@ -62,6 +64,10 @@ IF COL_LENGTH(''PHIM'', ''mo_ta'') IS NULL
+     ALTER TABLE PHIM ADD mo_ta NVARCHAR(2000) NULL;
+ IF COL_LENGTH(''PHIM'', ''dien_vien'') IS NULL
+     ALTER TABLE PHIM ADD dien_vien NVARCHAR(500) NULL;
++IF COL_LENGTH(''PHIM'', ''dao_dien'') IS NULL
++    ALTER TABLE PHIM ADD dao_dien NVARCHAR(200) NULL;
++IF COL_LENGTH(''PHIM'', ''trailer_url'') IS NULL
++    ALTER TABLE PHIM ADD trailer_url NVARCHAR(500) NULL;
+ 
+ IF OBJECT_ID(N''NGUOI_DUNG'', N''U'') IS NULL BEGIN
+ CREATE TABLE NGUOI_DUNG (
+@@ -116,6 +122,7 @@ CREATE TABLE SUAT_CHIEU (
+     ket_thuc DATETIME2(0) NOT NULL,
+     gia_co_ban DECIMAL(12, 2) NOT NULL,
+     phu_thu_vip DECIMAL(12, 2) NOT NULL DEFAULT 0 CHECK (phu_thu_vip >= 0),
++    che_do_gia VARCHAR(10) NOT NULL CONSTRAINT DF_SUAT_CHIEU_CHE_DO_GIA DEFAULT ''MANUAL'',
+     trang_thai VARCHAR(20) NOT NULL,
+     FOREIGN KEY (phim_id) REFERENCES PHIM (phim_id),
+     FOREIGN KEY (phong_id) REFERENCES PHONG_CHIEU (phong_id),
+@@ -124,6 +131,46 @@ CREATE TABLE SUAT_CHIEU (
+ );
+ END;
+ 
++-- Repeatable movie metadata, room pricing and late check-in policy upgrade.
++    IF COL_LENGTH(''dbo.SUAT_CHIEU'', ''che_do_gia'') IS NULL
++        ALTER TABLE dbo.SUAT_CHIEU ADD che_do_gia VARCHAR(10) NOT NULL
++            CONSTRAINT DF_SUAT_CHIEU_CHE_DO_GIA DEFAULT ''MANUAL'' WITH VALUES;
++    -- Compile only after ALTER has made the column available.
++    IF NOT EXISTS (SELECT 1 FROM sys.check_constraints
++        WHERE parent_object_id = OBJECT_ID(N''dbo.SUAT_CHIEU'') AND name = N''CK_SUAT_CHIEU_CHE_DO_GIA'')
++        EXEC(N''ALTER TABLE dbo.SUAT_CHIEU ADD CONSTRAINT CK_SUAT_CHIEU_CHE_DO_GIA
++            CHECK (che_do_gia IN (''''MANUAL'''', ''''POLICY''''));'');
++
++    IF OBJECT_ID(N''dbo.BANG_GIA_PHONG'', N''U'') IS NULL
++    BEGIN
++        CREATE TABLE dbo.BANG_GIA_PHONG (
++            phong_id BIGINT NOT NULL CONSTRAINT PK_BANG_GIA_PHONG PRIMARY KEY,
++            gia_thuong_ngay_thuong DECIMAL(12,2) NOT NULL,
++            gia_vip_ngay_thuong DECIMAL(12,2) NOT NULL,
++            gia_thuong_cuoi_tuan DECIMAL(12,2) NOT NULL,
++            gia_vip_cuoi_tuan DECIMAL(12,2) NOT NULL,
++            CONSTRAINT FK_BANG_GIA_PHONG_PHONG FOREIGN KEY (phong_id) REFERENCES dbo.PHONG_CHIEU(phong_id) ON DELETE CASCADE,
++            CONSTRAINT CK_BANG_GIA_PHONG_GIA CHECK (
++                gia_thuong_ngay_thuong >= 0 AND gia_vip_ngay_thuong >= gia_thuong_ngay_thuong
++                AND gia_thuong_cuoi_tuan >= 0 AND gia_vip_cuoi_tuan >= gia_thuong_cuoi_tuan
++                AND gia_thuong_ngay_thuong = FLOOR(gia_thuong_ngay_thuong)
++                AND gia_vip_ngay_thuong = FLOOR(gia_vip_ngay_thuong)
++                AND gia_thuong_cuoi_tuan = FLOOR(gia_thuong_cuoi_tuan)
++                AND gia_vip_cuoi_tuan = FLOOR(gia_vip_cuoi_tuan))
++        );
++    END;
++    IF OBJECT_ID(N''dbo.CHINH_SACH_RAP'', N''U'') IS NULL
++    BEGIN
++        CREATE TABLE dbo.CHINH_SACH_RAP (
++            chinh_sach_id INT NOT NULL CONSTRAINT PK_CHINH_SACH_RAP PRIMARY KEY,
++            gioi_han_soat_muon_phut INT NULL,
++            CONSTRAINT CK_CHINH_SACH_RAP_DON CHECK (chinh_sach_id = 1),
++            CONSTRAINT CK_CHINH_SACH_RAP_MUON CHECK (gioi_han_soat_muon_phut BETWEEN 0 AND 600)
++        );
++    END;
++    IF NOT EXISTS (SELECT 1 FROM dbo.CHINH_SACH_RAP WITH (UPDLOCK, HOLDLOCK) WHERE chinh_sach_id = 1)
++        INSERT INTO dbo.CHINH_SACH_RAP(chinh_sach_id, gioi_han_soat_muon_phut) VALUES (1, NULL);
++
+ IF OBJECT_ID(N''DON_HANG'', N''U'') IS NULL BEGIN
+ CREATE TABLE DON_HANG (
+     don_hang_id BIGINT IDENTITY(1, 1) PRIMARY KEY,
+diff --git a/database/theater-review-migration.sql b/database/theater-review-migration.sql
+new file mode 100644
+index 0000000..7a70995
+--- /dev/null
++++ b/database/theater-review-migration.sql
+@@ -0,0 +1,61 @@
++-- Non-destructive, repeatable upgrade. Review and run manually on a backed-up database.
++USE [CineSnack];
++SET XACT_ABORT ON;
++SET ANSI_NULLS ON;
++SET QUOTED_IDENTIFIER ON;
++
++IF OBJECT_ID(N'dbo.PHIM', N'U') IS NULL
++   OR OBJECT_ID(N'dbo.PHONG_CHIEU', N'U') IS NULL
++   OR OBJECT_ID(N'dbo.SUAT_CHIEU', N'U') IS NULL
++    THROW 50010, N'Không tìm thấy schema CineSnack cần nâng cấp; chưa thay đổi dữ liệu.', 1;
++
++BEGIN TRY
++    BEGIN TRANSACTION;
++    IF COL_LENGTH('dbo.PHIM', 'dao_dien') IS NULL
++        ALTER TABLE dbo.PHIM ADD dao_dien NVARCHAR(200) NULL;
++    IF COL_LENGTH('dbo.PHIM', 'trailer_url') IS NULL
++        ALTER TABLE dbo.PHIM ADD trailer_url NVARCHAR(500) NULL;
++    IF COL_LENGTH('dbo.SUAT_CHIEU', 'che_do_gia') IS NULL
++        ALTER TABLE dbo.SUAT_CHIEU ADD che_do_gia VARCHAR(10) NOT NULL
++            CONSTRAINT DF_SUAT_CHIEU_CHE_DO_GIA DEFAULT 'MANUAL' WITH VALUES;
++    -- Compile only after ALTER has made the column available.
++    IF NOT EXISTS (SELECT 1 FROM sys.check_constraints
++        WHERE parent_object_id = OBJECT_ID(N'dbo.SUAT_CHIEU') AND name = N'CK_SUAT_CHIEU_CHE_DO_GIA')
++        EXEC(N'ALTER TABLE dbo.SUAT_CHIEU ADD CONSTRAINT CK_SUAT_CHIEU_CHE_DO_GIA
++            CHECK (che_do_gia IN (''MANUAL'', ''POLICY''));');
++
++    IF OBJECT_ID(N'dbo.BANG_GIA_PHONG', N'U') IS NULL
++    BEGIN
++        CREATE TABLE dbo.BANG_GIA_PHONG (
++            phong_id BIGINT NOT NULL CONSTRAINT PK_BANG_GIA_PHONG PRIMARY KEY,
++            gia_thuong_ngay_thuong DECIMAL(12,2) NOT NULL,
++            gia_vip_ngay_thuong DECIMAL(12,2) NOT NULL,
++            gia_thuong_cuoi_tuan DECIMAL(12,2) NOT NULL,
++            gia_vip_cuoi_tuan DECIMAL(12,2) NOT NULL,
++            CONSTRAINT FK_BANG_GIA_PHONG_PHONG FOREIGN KEY (phong_id) REFERENCES dbo.PHONG_CHIEU(phong_id) ON DELETE CASCADE,
++            CONSTRAINT CK_BANG_GIA_PHONG_GIA CHECK (
++                gia_thuong_ngay_thuong >= 0 AND gia_vip_ngay_thuong >= gia_thuong_ngay_thuong
++                AND gia_thuong_cuoi_tuan >= 0 AND gia_vip_cuoi_tuan >= gia_thuong_cuoi_tuan
++                AND gia_thuong_ngay_thuong = FLOOR(gia_thuong_ngay_thuong)
++                AND gia_vip_ngay_thuong = FLOOR(gia_vip_ngay_thuong)
++                AND gia_thuong_cuoi_tuan = FLOOR(gia_thuong_cuoi_tuan)
++                AND gia_vip_cuoi_tuan = FLOOR(gia_vip_cuoi_tuan))
++        );
++    END;
++    IF OBJECT_ID(N'dbo.CHINH_SACH_RAP', N'U') IS NULL
++    BEGIN
++        CREATE TABLE dbo.CHINH_SACH_RAP (
++            chinh_sach_id INT NOT NULL CONSTRAINT PK_CHINH_SACH_RAP PRIMARY KEY,
++            gioi_han_soat_muon_phut INT NULL,
++            CONSTRAINT CK_CHINH_SACH_RAP_DON CHECK (chinh_sach_id = 1),
++            CONSTRAINT CK_CHINH_SACH_RAP_MUON CHECK (gioi_han_soat_muon_phut BETWEEN 0 AND 600)
++        );
++    END;
++    IF NOT EXISTS (SELECT 1 FROM dbo.CHINH_SACH_RAP WITH (UPDLOCK, HOLDLOCK) WHERE chinh_sach_id = 1)
++        INSERT INTO dbo.CHINH_SACH_RAP(chinh_sach_id, gioi_han_soat_muon_phut) VALUES (1, NULL);
++    COMMIT TRANSACTION;
++END TRY
++BEGIN CATCH
++    IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;
++    THROW;
++END CATCH;
+diff --git a/src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java b/src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java
+index d46167d..52262fc 100644
+--- a/src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java
++++ b/src/main/java/com/cinesnack/account/config/ApiSecurityConfig.java
+@@ -64,6 +64,7 @@ public class ApiSecurityConfig {
+                         )
+                         .permitAll()
+                         .requestMatchers(
++                            "/api/admin/theater-policy",
+                             "/api/admin/movies",
+                             "/api/admin/movies/**",
+                             "/api/admin/showtimes",
+diff --git a/src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java b/src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java
+index 0bda12b..80aae20 100644
+--- a/src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java
++++ b/src/main/java/com/cinesnack/booking/repository/TicketCheckInRepository.java
+@@ -18,7 +18,7 @@ public class TicketCheckInRepository {
+ 
+     // A single conditional update prevents two scanners from admitting the same
+     // ticket.
+-    public int checkIn(String code, long staff, LocalDateTime now) {
++    public int checkIn(String code, long staff, LocalDateTime now, Integer lateCheckInMinutes) {
+         return db.update(
+             """
+             UPDATE VE SET trang_thai='DA_SOAT',soat_ve_luc=?,nhan_vien_soat_id=?
+@@ -27,13 +27,16 @@ public class TicketCheckInRepository {
+                 WHERE h.hoa_don_ve_id=VE.hoa_don_ve_id AND d.don_hang_id=VE.don_hang_id
+                 AND h.trang_thai='DA_THANH_TOAN' AND d.trang_thai='DA_THANH_TOAN')
+             AND EXISTS (SELECT 1 FROM SUAT_CHIEU s WHERE s.suat_chieu_id=VE.suat_chieu_id
+-                AND s.trang_thai IN ('SAP_CHIEU','DANG_CHIEU') AND s.bat_dau<=? AND s.ket_thuc>?)
++                AND s.trang_thai IN ('SAP_CHIEU','DANG_CHIEU') AND s.bat_dau<=? AND s.ket_thuc>?
++                AND (?=1 OR s.bat_dau>=?))
+             """,
+             now,
+             staff,
+             code,
+             now.plusMinutes(30),
+-            now
++            now,
++            lateCheckInMinutes == null ? 1 : 0,
++            now.minusMinutes(lateCheckInMinutes == null ? 0 : lateCheckInMinutes)
+         );
+     }
+ 
+diff --git a/src/main/java/com/cinesnack/booking/service/TicketCheckInService.java b/src/main/java/com/cinesnack/booking/service/TicketCheckInService.java
+index 81e3183..1ce9970 100644
+--- a/src/main/java/com/cinesnack/booking/service/TicketCheckInService.java
++++ b/src/main/java/com/cinesnack/booking/service/TicketCheckInService.java
+@@ -2,6 +2,7 @@ package com.cinesnack.booking.service;
+ 
+ import com.cinesnack.account.service.UserService;
+ import com.cinesnack.booking.entity.Ticket;
++import com.cinesnack.catalog.service.TheaterPolicyService;
+ import com.cinesnack.booking.repository.TicketCheckInRepository;
+ import java.time.*;
+ import org.springframework.http.HttpStatus;
+@@ -15,15 +16,18 @@ public class TicketCheckInService {
+     private final TicketCheckInRepository repo;
+     private final UserService users;
+     private final Clock clock;
++    private final TheaterPolicyService policy;
+ 
+     public TicketCheckInService(
+         TicketCheckInRepository repo,
+         UserService users,
+-        Clock clock
++        Clock clock,
++        TheaterPolicyService policy
+     ) {
+         this.repo = repo;
+         this.users = users;
+         this.clock = clock;
++        this.policy = policy;
+     }
+ 
+     public record Result(
+@@ -74,10 +78,10 @@ public class TicketCheckInService {
+             clock.withZone(ZoneId.of("Asia/Ho_Chi_Minh"))
+         ).withNano(0);
+         if (
+-            repo.checkIn(code.trim(), staff.maSo(), now) != 1
++            repo.checkIn(code.trim(), staff.maSo(), now, policy.currentPolicy().lateCheckInMinutes()) != 1
+         ) throw new ResponseStatusException(
+             HttpStatus.CONFLICT,
+-            "Vé không hợp lệ, đã soát, chưa thanh toán hoặc ngoài giờ soát (từ 30 phút trước giờ chiếu đến trước khi kết thúc)."
++            "Vé không hợp lệ, đã soát, chưa thanh toán hoặc ngoài giờ soát theo chính sách rạp (mở từ 30 phút trước giờ chiếu, luôn trước khi kết thúc)."
+         );
+         return new Result(
+             repo.ticket(code.trim()),
+diff --git a/src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java b/src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java
+index a322f6b..be9c7ee 100644
+--- a/src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java
++++ b/src/main/java/com/cinesnack/catalog/controller/AdminCatalogController.java
+@@ -6,6 +6,7 @@ import com.cinesnack.catalog.service.AdminCatalogService;
+ import jakarta.validation.Valid;
+ import jakarta.validation.constraints.*;
+ import java.security.Principal;
++import java.time.LocalDate;
+ import java.util.List;
+ import org.springframework.http.HttpStatus;
+ import org.springframework.validation.annotation.Validated;
+@@ -67,6 +68,16 @@ public class AdminCatalogController {
+         return service.shows(principal.getName(), page, size);
+     }
+ 
++    @GetMapping("/showtimes/timeline")
++    public List<Catalog.Show> timeline(
++        @RequestParam LocalDate date,
++        @RequestParam(required = false) @Positive Long roomId,
++        @RequestParam(defaultValue = "") @Pattern(regexp = "|SAP_CHIEU|DANG_CHIEU|DA_CHIEU|HUY") String status,
++        Principal principal
++    ) {
++        return service.timeline(principal.getName(), date, roomId, status);
++    }
++
+     @PostMapping("/showtimes")
+     @ResponseStatus(HttpStatus.CREATED)
+     public Catalog.Show createShow(
+diff --git a/src/main/java/com/cinesnack/catalog/controller/TheaterPolicyController.java b/src/main/java/com/cinesnack/catalog/controller/TheaterPolicyController.java
+new file mode 100644
+index 0000000..0b9a746
+--- /dev/null
++++ b/src/main/java/com/cinesnack/catalog/controller/TheaterPolicyController.java
+@@ -0,0 +1,27 @@
++package com.cinesnack.catalog.controller;
++
++import com.cinesnack.catalog.dto.TheaterPolicy;
++import com.cinesnack.catalog.service.TheaterPolicyService;
++import jakarta.validation.Valid;
++import jakarta.validation.constraints.Positive;
++import java.security.Principal;
++import org.springframework.validation.annotation.Validated;
++import org.springframework.web.bind.annotation.*;
++
++@RestController
++@Validated
++@RequestMapping("/api/admin")
++public class TheaterPolicyController {
++    private final TheaterPolicyService service;
++    public TheaterPolicyController(TheaterPolicyService service) { this.service=service; }
++    @GetMapping("/rooms/{id}/pricing")
++    public TheaterPolicy.RoomPricing pricing(@PathVariable @Positive long id, Principal user) { return service.pricing(id,user.getName()); }
++    @PutMapping("/rooms/{id}/pricing")
++    public TheaterPolicy.RoomPricing savePricing(@PathVariable @Positive long id, @Valid @RequestBody TheaterPolicy.RoomPricing request, Principal user) {
++        return service.savePricing(id,request,user.getName());
++    }
++    @GetMapping("/theater-policy")
++    public TheaterPolicy.Settings policy(Principal user) { return service.policy(user.getName()); }
++    @PutMapping("/theater-policy")
++    public TheaterPolicy.Settings savePolicy(@Valid @RequestBody TheaterPolicy.Settings request, Principal user) { return service.savePolicy(request,user.getName()); }
++}
+diff --git a/src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java b/src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java
+index 36b14a6..2242742 100644
+--- a/src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java
++++ b/src/main/java/com/cinesnack/catalog/dto/AdminCatalog.java
+@@ -1,7 +1,9 @@
+ package com.cinesnack.catalog.dto;
+ 
++import com.fasterxml.jackson.annotation.JsonIgnore;
+ import jakarta.validation.constraints.*;
+ import java.math.BigDecimal;
++import java.net.URI;
+ import java.time.OffsetDateTime;
+ 
+ public final class AdminCatalog {
+@@ -20,14 +22,33 @@ public final class AdminCatalog {
+         String posterUrl,
+         @NotNull
+         @Pattern(regexp = "DANG_CHIEU|SAP_CHIEU|NGUNG_CHIEU")
+-        String status
+-    ) {}
++        String status,
++        @Size(max = 200) String director,
++        @Size(max = 500) String trailerUrl
++    ) {
++        public MovieRequest(String name, String genre, String description, String actors,
++            int duration, String ageRating, String posterUrl, String status) {
++            this(name, genre, description, actors, duration, ageRating, posterUrl, status, null, null);
++        }
++
++        @AssertTrue(message = "Trailer phải là URL HTTPS có máy chủ và không chứa tài khoản.")
++        @JsonIgnore
++        public boolean isTrailerUrlValid() {
++            if (trailerUrl == null || trailerUrl.isEmpty()) return true;
++            try {
++                URI uri = URI.create(trailerUrl);
++                return "https".equalsIgnoreCase(uri.getScheme()) && uri.getHost() != null
++                    && uri.getRawUserInfo() == null;
++            } catch (IllegalArgumentException ex) {
++                return false;
++            }
++        }
++    }
+ 
+     public record ShowRequest(
+         @NotNull @Positive Long movieId,
+         @NotNull @Positive Long roomId,
+         @NotNull OffsetDateTime startsAt,
+-        @NotNull
+         @DecimalMin("0")
+         @DecimalMax("9999999999")
+         @Digits(integer = 10, fraction = 0)
+@@ -38,8 +59,16 @@ public final class AdminCatalog {
+         BigDecimal vipSurcharge,
+         @NotNull
+         @Pattern(regexp = "SAP_CHIEU|DANG_CHIEU|DA_CHIEU|HUY")
+-        String status
++        String status,
++        @Pattern(regexp = "MANUAL|POLICY") String pricingMode
+     ) {
++        public ShowRequest { pricingMode = pricingMode == null ? "MANUAL" : pricingMode; }
++        public ShowRequest(Long movieId, Long roomId, OffsetDateTime startsAt, BigDecimal price, BigDecimal vipSurcharge, String status) {
++            this(movieId, roomId, startsAt, price, vipSurcharge, status, "MANUAL");
++        }
++        @AssertTrue(message = "Chế độ nhập tay cần giá cơ bản.")
++        @JsonIgnore
++        public boolean isManualPriceValid() { return !"MANUAL".equals(pricingMode) || price != null; }
+         public ShowRequest(
+             Long movieId,
+             Long roomId,
+diff --git a/src/main/java/com/cinesnack/catalog/dto/Catalog.java b/src/main/java/com/cinesnack/catalog/dto/Catalog.java
+index dc6c6d2..87fd40f 100644
+--- a/src/main/java/com/cinesnack/catalog/dto/Catalog.java
++++ b/src/main/java/com/cinesnack/catalog/dto/Catalog.java
+@@ -18,8 +18,15 @@ public final class Catalog {
+         @JsonProperty("duration") int soPhut,
+         @JsonProperty("ageRating") String doTuoi,
+         @JsonProperty("posterUrl") String poster,
+-        @JsonProperty("status") String trangThai
+-    ) {}
++        @JsonProperty("status") String trangThai,
++        @JsonProperty("director") String daoDien,
++        @JsonProperty("trailerUrl") String trailerUrl
++    ) {
++        public Movie(long maSo, String ten, String theLoai, String moTa, String dienVien,
++            int soPhut, String doTuoi, String poster, String trangThai) {
++            this(maSo, ten, theLoai, moTa, dienVien, soPhut, doTuoi, poster, trangThai, null, null);
++        }
++    }
+ 
+     public record Show(
+         @JsonProperty("id") long maSo,
+@@ -31,8 +38,13 @@ public final class Catalog {
+         @JsonProperty("endsAt") OffsetDateTime ketThuc,
+         @JsonProperty("price") BigDecimal gia,
+         @JsonProperty("vipSurcharge") BigDecimal phuThuVip,
+-        @JsonProperty("status") String trangThai
++        @JsonProperty("status") String trangThai,
++        @JsonProperty("pricingMode") String pricingMode
+     ) {
++        public Show(long maSo, long maPhim, String tenPhim, long maPhong, String tenPhong,
++            OffsetDateTime batDau, OffsetDateTime ketThuc, BigDecimal gia, BigDecimal phuThuVip, String trangThai) {
++            this(maSo,maPhim,tenPhim,maPhong,tenPhong,batDau,ketThuc,gia,phuThuVip,trangThai,"MANUAL");
++        }
+         public Show(
+             long maSo,
+             long maPhim,
+diff --git a/src/main/java/com/cinesnack/catalog/dto/TheaterPolicy.java b/src/main/java/com/cinesnack/catalog/dto/TheaterPolicy.java
+new file mode 100644
+index 0000000..a0d2f35
+--- /dev/null
++++ b/src/main/java/com/cinesnack/catalog/dto/TheaterPolicy.java
+@@ -0,0 +1,32 @@
++package com.cinesnack.catalog.dto;
++
++import com.fasterxml.jackson.annotation.JsonIgnore;
++import com.fasterxml.jackson.annotation.JsonCreator;
++import com.fasterxml.jackson.annotation.JsonProperty;
++import jakarta.validation.constraints.*;
++import java.math.BigDecimal;
++
++public final class TheaterPolicy {
++    private TheaterPolicy() {}
++    public record RoomPricing(
++        @NotNull @DecimalMin("0") @DecimalMax("9999999999") @Digits(integer=10, fraction=0) BigDecimal weekdayRegular,
++        @NotNull @DecimalMin("0") @DecimalMax("9999999999") @Digits(integer=10, fraction=0) BigDecimal weekdayVip,
++        @NotNull @DecimalMin("0") @DecimalMax("9999999999") @Digits(integer=10, fraction=0) BigDecimal weekendRegular,
++        @NotNull @DecimalMin("0") @DecimalMax("9999999999") @Digits(integer=10, fraction=0) BigDecimal weekendVip
++    ) {
++        @JsonIgnore
++        @AssertTrue(message="Giá VIP phải lớn hơn hoặc bằng giá thường cùng loại ngày.")
++        public boolean isVipPriceValid() {
++            return (weekdayRegular == null || weekdayVip == null || weekdayVip.compareTo(weekdayRegular) >= 0)
++                && (weekendRegular == null || weekendVip == null || weekendVip.compareTo(weekendRegular) >= 0);
++        }
++    }
++    public record Settings(@Min(0) @Max(600) Integer lateCheckInMinutes) {
++        // Integer's default JSON coercion truncates fractions; minutes must be exact.
++        @JsonCreator
++        public static Settings fromJson(@JsonProperty("lateCheckInMinutes") BigDecimal minutes) {
++            return new Settings(minutes == null ? null : minutes.intValueExact());
++        }
++    }
++    public record ShowPrices(BigDecimal regular, BigDecimal vip) {}
++}
+diff --git a/src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java b/src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java
+index bbbfd0b..53d5ae2 100644
+--- a/src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java
++++ b/src/main/java/com/cinesnack/catalog/repository/AdminCatalogRepository.java
+@@ -52,7 +52,7 @@ public class AdminCatalogRepository {
+     public long insertMovie(AdminCatalog.MovieRequest m) {
+         return Sql.themVaLayMa(
+             jdbc,
+-            "INSERT INTO PHIM(ten_phim,the_loai,mo_ta,dien_vien,thoi_luong_phut,phan_loai_do_tuoi,poster_url,trang_thai) OUTPUT INSERTED.phim_id VALUES(?,?,?,?,?,?,?,?)",
++            "INSERT INTO PHIM(ten_phim,the_loai,mo_ta,dien_vien,thoi_luong_phut,phan_loai_do_tuoi,poster_url,trang_thai,dao_dien,trailer_url) OUTPUT INSERTED.phim_id VALUES(?,?,?,?,?,?,?,?,?,?)",
+             m.name().trim(),
+             m.genre().trim(),
+             m.description() == null ? null : m.description().trim(),
+@@ -60,13 +60,15 @@ public class AdminCatalogRepository {
+             m.duration(),
+             m.ageRating(),
+             m.posterUrl(),
+-            m.status()
++            m.status(),
++            m.director() == null ? null : m.director().trim(),
++            m.trailerUrl()
+         );
+     }
+ 
+     public void updateMovie(long id, AdminCatalog.MovieRequest m) {
+         jdbc.update(
+-            "UPDATE PHIM SET ten_phim=?,the_loai=?,mo_ta=?,dien_vien=?,thoi_luong_phut=?,phan_loai_do_tuoi=?,poster_url=?,trang_thai=? WHERE phim_id=?",
++            "UPDATE PHIM SET ten_phim=?,the_loai=?,mo_ta=?,dien_vien=?,thoi_luong_phut=?,phan_loai_do_tuoi=?,poster_url=?,trang_thai=?,dao_dien=?,trailer_url=? WHERE phim_id=?",
+             m.name().trim(),
+             m.genre().trim(),
+             m.description() == null ? null : m.description().trim(),
+@@ -75,6 +77,8 @@ public class AdminCatalogRepository {
+             m.ageRating(),
+             m.posterUrl(),
+             m.status(),
++            m.director() == null ? null : m.director().trim(),
++            m.trailerUrl(),
+             id
+         );
+     }
+@@ -118,6 +122,14 @@ public class AdminCatalogRepository {
+         );
+     }
+ 
++    public List<Catalog.Show> timeline(LocalDateTime start, LocalDateTime end, Long roomId, String status) {
++        return jdbc.query(
++            SHOW_SELECT + "WHERE s.bat_dau<? AND s.ket_thuc>? AND (? IS NULL OR s.phong_id=?) " +
++                "AND (?='' OR s.trang_thai=?) ORDER BY s.phong_id,s.bat_dau,s.suat_chieu_id",
++            (r, i) -> show(r), end, start, roomId, roomId, status, status
++        );
++    }
++
+     public Catalog.Show show(long id) {
+         var rows = jdbc.query(
+             SHOW_SELECT + "WHERE s.suat_chieu_id=?",
+@@ -173,14 +185,15 @@ public class AdminCatalogRepository {
+         // INSERT OUTPUT INTO is required because SUAT_CHIEU has an enabled trigger.
+         return Sql.themVaLayMa(
+             jdbc,
+-            "SET NOCOUNT ON; DECLARE @ids TABLE(id BIGINT); INSERT INTO SUAT_CHIEU(phim_id,phong_id,bat_dau,ket_thuc,gia_co_ban,phu_thu_vip,trang_thai) OUTPUT INSERTED.suat_chieu_id INTO @ids VALUES(?,?,?,?,?,?,?); SELECT id FROM @ids; SET NOCOUNT OFF;",
++            "SET NOCOUNT ON; DECLARE @ids TABLE(id BIGINT); INSERT INTO SUAT_CHIEU(phim_id,phong_id,bat_dau,ket_thuc,gia_co_ban,phu_thu_vip,trang_thai,che_do_gia) OUTPUT INSERTED.suat_chieu_id INTO @ids VALUES(?,?,?,?,?,?,?,?); SELECT id FROM @ids; SET NOCOUNT OFF;",
+             s.movieId(),
+             s.roomId(),
+             start,
+             end,
+             s.price(),
+             s.vipSurcharge(),
+-            s.status()
++            s.status(),
++            s.pricingMode()
+         );
+     }
+ 
+@@ -191,7 +204,7 @@ public class AdminCatalogRepository {
+         LocalDateTime end
+     ) {
+         jdbc.update(
+-            "UPDATE SUAT_CHIEU SET phim_id=?,phong_id=?,bat_dau=?,ket_thuc=?,gia_co_ban=?,phu_thu_vip=?,trang_thai=? WHERE suat_chieu_id=?",
++            "UPDATE SUAT_CHIEU SET phim_id=?,phong_id=?,bat_dau=?,ket_thuc=?,gia_co_ban=?,phu_thu_vip=?,trang_thai=?,che_do_gia=? WHERE suat_chieu_id=?",
+             s.movieId(),
+             s.roomId(),
+             start,
+@@ -199,6 +212,7 @@ public class AdminCatalogRepository {
+             s.price(),
+             s.vipSurcharge(),
+             s.status(),
++            s.pricingMode(),
+             id
+         );
+     }
+@@ -228,7 +242,9 @@ public class AdminCatalogRepository {
+             r.getInt("thoi_luong_phut"),
+             r.getString("phan_loai_do_tuoi"),
+             r.getString("poster_url"),
+-            r.getString("trang_thai")
++            r.getString("trang_thai"),
++            r.getString("dao_dien"),
++            r.getString("trailer_url")
+         );
+     }
+ 
+@@ -243,7 +259,8 @@ public class AdminCatalogRepository {
+             Sql.docThoiGian(r, "ket_thuc").atOffset(ZoneOffset.ofHours(7)),
+             r.getBigDecimal("gia_co_ban"),
+             r.getBigDecimal("phu_thu_vip"),
+-            r.getString("trang_thai")
++            r.getString("trang_thai"),
++            r.getString("che_do_gia")
+         );
+     }
+ }
+diff --git a/src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java b/src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java
+index 8bd2fe0..4a0ca7d 100644
+--- a/src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java
++++ b/src/main/java/com/cinesnack/catalog/repository/CatalogRepository.java
+@@ -39,7 +39,9 @@ public class CatalogRepository {
+                     d.getInt("thoi_luong_phut"),
+                     d.getString("phan_loai_do_tuoi"),
+                     d.getString("poster_url"),
+-                    d.getString("trang_thai")
++                    d.getString("trang_thai"),
++                    d.getString("dao_dien"),
++                    d.getString("trailer_url")
+                 ),
+             trangThai,
+             trangThai,
+@@ -63,7 +65,9 @@ public class CatalogRepository {
+                     d.getInt("thoi_luong_phut"),
+                     d.getString("phan_loai_do_tuoi"),
+                     d.getString("poster_url"),
+-                    d.getString("trang_thai")
++                    d.getString("trang_thai"),
++                    d.getString("dao_dien"),
++                    d.getString("trailer_url")
+                 ),
+             maPhim
+         );
+@@ -93,7 +97,8 @@ public class CatalogRepository {
+                     ),
+                     d.getBigDecimal("gia_co_ban"),
+                     d.getBigDecimal("phu_thu_vip"),
+-                    d.getString("trang_thai")
++                    d.getString("trang_thai"),
++                    d.getString("che_do_gia")
+                 ),
+             luc,
+             maPhim,
+diff --git a/src/main/java/com/cinesnack/catalog/repository/TheaterPolicyRepository.java b/src/main/java/com/cinesnack/catalog/repository/TheaterPolicyRepository.java
+new file mode 100644
+index 0000000..d756710
+--- /dev/null
++++ b/src/main/java/com/cinesnack/catalog/repository/TheaterPolicyRepository.java
+@@ -0,0 +1,39 @@
++package com.cinesnack.catalog.repository;
++
++import com.cinesnack.catalog.dto.TheaterPolicy;
++import org.springframework.jdbc.core.JdbcTemplate;
++import org.springframework.stereotype.Repository;
++
++@Repository
++public class TheaterPolicyRepository {
++    private final JdbcTemplate jdbc;
++    public TheaterPolicyRepository(JdbcTemplate jdbc) { this.jdbc = jdbc; }
++
++    public boolean lockRoom(long roomId) {
++        return !jdbc.query("SELECT phong_id FROM PHONG_CHIEU WITH (UPDLOCK,HOLDLOCK) WHERE phong_id=? AND trang_thai<>'DA_XOA'",
++            (r,i)->r.getLong(1), roomId).isEmpty();
++    }
++    public boolean roomExists(long roomId) {
++        return jdbc.queryForObject("SELECT COUNT(*) FROM PHONG_CHIEU WHERE phong_id=? AND trang_thai<>'DA_XOA'", Integer.class, roomId) > 0;
++    }
++    public TheaterPolicy.RoomPricing pricing(long roomId) {
++        var rows = jdbc.query("SELECT * FROM BANG_GIA_PHONG WHERE phong_id=?", (r,i)->new TheaterPolicy.RoomPricing(
++            r.getBigDecimal("gia_thuong_ngay_thuong"), r.getBigDecimal("gia_vip_ngay_thuong"),
++            r.getBigDecimal("gia_thuong_cuoi_tuan"), r.getBigDecimal("gia_vip_cuoi_tuan")), roomId);
++        return rows.isEmpty() ? null : rows.get(0);
++    }
++    // Room row lock held by service serializes initial insert and later writes.
++    public void savePricing(long roomId, TheaterPolicy.RoomPricing p) {
++        int changed = jdbc.update("UPDATE BANG_GIA_PHONG SET gia_thuong_ngay_thuong=?,gia_vip_ngay_thuong=?,gia_thuong_cuoi_tuan=?,gia_vip_cuoi_tuan=? WHERE phong_id=?",
++            p.weekdayRegular(),p.weekdayVip(),p.weekendRegular(),p.weekendVip(),roomId);
++        if(changed == 0) jdbc.update("INSERT INTO BANG_GIA_PHONG(phong_id,gia_thuong_ngay_thuong,gia_vip_ngay_thuong,gia_thuong_cuoi_tuan,gia_vip_cuoi_tuan) VALUES(?,?,?,?,?)",
++            roomId,p.weekdayRegular(),p.weekdayVip(),p.weekendRegular(),p.weekendVip());
++    }
++    public TheaterPolicy.Settings policy() {
++        return jdbc.queryForObject("SELECT gioi_han_soat_muon_phut FROM CHINH_SACH_RAP WHERE chinh_sach_id=1",
++            (r,i)->new TheaterPolicy.Settings((Integer)r.getObject(1)));
++    }
++    public void savePolicy(TheaterPolicy.Settings p) {
++        jdbc.update("UPDATE CHINH_SACH_RAP SET gioi_han_soat_muon_phut=? WHERE chinh_sach_id=1",p.lateCheckInMinutes());
++    }
++}
+diff --git a/src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java b/src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java
+index f520824..a91b405 100644
+--- a/src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java
++++ b/src/main/java/com/cinesnack/catalog/service/AdminCatalogService.java
+@@ -7,6 +7,7 @@ import com.cinesnack.catalog.repository.AdminCatalogRepository;
+ import java.time.*;
+ import java.time.temporal.ChronoUnit;
+ import java.util.List;
++import java.util.Objects;
+ import org.springframework.http.HttpStatus;
+ import org.springframework.stereotype.Service;
+ import org.springframework.transaction.annotation.Transactional;
+@@ -18,15 +19,18 @@ public class AdminCatalogService {
+     private final AdminCatalogRepository repo;
+     private final UserService users;
+     private final Clock clock;
++    private final TheaterPolicyService policy;
+ 
+     public AdminCatalogService(
+         AdminCatalogRepository repo,
+         UserService users,
+-        Clock clock
++        Clock clock,
++        TheaterPolicyService policy
+     ) {
+         this.repo = repo;
+         this.users = users;
+         this.clock = clock;
++        this.policy = policy;
+     }
+ 
+     @Transactional(readOnly = true)
+@@ -41,6 +45,18 @@ public class AdminCatalogService {
+         return repo.shows(page, size);
+     }
+ 
++    @Transactional(readOnly = true)
++    public List<Catalog.Show> timeline(String email, LocalDate date, Long roomId, String status) {
++        kiemTraQuyenQuanTri(email);
++        String filter = status == null ? "" : status;
++        if (date == null || (roomId != null && roomId <= 0) ||
++            !(filter.isEmpty() || List.of("SAP_CHIEU", "DANG_CHIEU", "DA_CHIEU", "HUY").contains(filter))) {
++            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ngày, phòng hoặc trạng thái không hợp lệ.");
++        }
++        // SQL stores theater-local datetime; each requested date is a Vietnam calendar day.
++        return repo.timeline(date.atStartOfDay(), date.plusDays(1).atStartOfDay(), roomId, filter);
++    }
++
+     @Transactional(readOnly = true)
+     public List<AdminCatalog.Room> rooms(String email) {
+         kiemTraQuyenQuanTri(email);
+@@ -56,9 +72,13 @@ public class AdminCatalogService {
+         kiemTraQuyenQuanTri(email);
+         if (id == null) return repo.movie(repo.insertMovie(request));
+         Catalog.Movie old = requireMovie(id);
+-        if (repo.movieHasTickets(id)) throw conflict(
+-            "Phim đã có lịch sử vé; không thể sửa thông tin phim."
+-        );
++        if (repo.movieHasTickets(id) && (
++            !Objects.equals(old.ten(), request.name().trim()) ||
++            !Objects.equals(old.theLoai(), request.genre().trim()) ||
++            old.soPhut() != request.duration() ||
++            !Objects.equals(old.doTuoi(), request.ageRating()) ||
++            !Objects.equals(old.trangThai(), request.status())
++        )) throw conflict("Phim đã có vé; chỉ được sửa mô tả, diễn viên, poster, đạo diễn và trailer.");
+         if (
+             old.soPhut() != request.duration() && repo.movieHasShows(id)
+         ) throw conflict("Phim đã có suất chiếu; không thể đổi thời lượng.");
+@@ -115,6 +135,11 @@ public class AdminCatalogService {
+             !"HUY".equals(request.status()) &&
+             repo.overlaps(request.roomId(), start, end, id == null ? 0 : id)
+         ) throw conflict("Phòng đã có suất chiếu trùng giờ.");
++        if ("POLICY".equals(request.pricingMode())) {
++            var prices = policy.pricesForShow(request.roomId(), request.startsAt());
++            request = new AdminCatalog.ShowRequest(request.movieId(),request.roomId(),request.startsAt(),
++                prices.regular(),prices.vip().subtract(prices.regular()),request.status(),"POLICY");
++        }
+         if (id == null) id = repo.insertShow(request, start, end);
+         else repo.updateShow(id, request, start, end);
+         return repo.show(id);
+diff --git a/src/main/java/com/cinesnack/catalog/service/MoviePosterService.java b/src/main/java/com/cinesnack/catalog/service/MoviePosterService.java
+index 316b77f..9885bec 100644
+--- a/src/main/java/com/cinesnack/catalog/service/MoviePosterService.java
++++ b/src/main/java/com/cinesnack/catalog/service/MoviePosterService.java
+@@ -58,7 +58,9 @@ public class MoviePosterService {
+             request.duration(),
+             request.ageRating(),
+             posterUrl,
+-            request.status()
++            request.status(),
++            request.director(),
++            request.trailerUrl()
+         );
+         return catalog.saveMovie(id, updated, email);
+     }
+diff --git a/src/main/java/com/cinesnack/catalog/service/TheaterPolicyService.java b/src/main/java/com/cinesnack/catalog/service/TheaterPolicyService.java
+new file mode 100644
+index 0000000..4939fbe
+--- /dev/null
++++ b/src/main/java/com/cinesnack/catalog/service/TheaterPolicyService.java
+@@ -0,0 +1,54 @@
++package com.cinesnack.catalog.service;
++
++import com.cinesnack.account.service.UserService;
++import com.cinesnack.catalog.dto.TheaterPolicy;
++import com.cinesnack.catalog.repository.TheaterPolicyRepository;
++import java.time.*;
++import org.springframework.http.HttpStatus;
++import org.springframework.stereotype.Service;
++import org.springframework.transaction.annotation.Transactional;
++import org.springframework.web.server.ResponseStatusException;
++
++@Service
++public class TheaterPolicyService {
++    private final TheaterPolicyRepository repo;
++    private final UserService users;
++    public TheaterPolicyService(TheaterPolicyRepository repo, UserService users) { this.repo=repo; this.users=users; }
++    @Transactional(readOnly=true)
++    public TheaterPolicy.RoomPricing pricing(long roomId, String email) {
++        requireAdmin(email);
++        if (!repo.roomExists(roomId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Không tìm thấy phòng.");
++        return requirePricing(roomId);
++    }
++    @Transactional
++    public TheaterPolicy.RoomPricing savePricing(long roomId, TheaterPolicy.RoomPricing pricing, String email) {
++        requireAdmin(email);
++        if (!repo.lockRoom(roomId)) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Không tìm thấy phòng.");
++        repo.savePricing(roomId,pricing);
++        return pricing;
++    }
++    @Transactional(readOnly=true)
++    public TheaterPolicy.Settings policy(String email) { requireAdmin(email); return currentPolicy(); }
++    @Transactional
++    public TheaterPolicy.Settings savePolicy(TheaterPolicy.Settings policy, String email) {
++        requireAdmin(email); repo.savePolicy(policy); return policy;
++    }
++    @Transactional(readOnly=true)
++    public TheaterPolicy.Settings currentPolicy() { return repo.policy(); }
++    // Called only when an administrator explicitly saves a POLICY show; the show snapshots these values.
++    public TheaterPolicy.ShowPrices pricesForShow(long roomId, OffsetDateTime startsAt) {
++        var p = requirePricing(roomId);
++        var day = startsAt.atZoneSameInstant(ZoneId.of("Asia/Ho_Chi_Minh")).getDayOfWeek();
++        boolean weekend = day == DayOfWeek.SATURDAY || day == DayOfWeek.SUNDAY;
++        return new TheaterPolicy.ShowPrices(weekend ? p.weekendRegular() : p.weekdayRegular(), weekend ? p.weekendVip() : p.weekdayVip());
++    }
++    private TheaterPolicy.RoomPricing requirePricing(long roomId) {
++        var p=repo.pricing(roomId);
++        if(p==null) throw new ResponseStatusException(HttpStatus.CONFLICT,"Phòng chưa có bảng giá. Hãy cấu hình trước khi lấy giá theo chính sách.");
++        return p;
++    }
++    private void requireAdmin(String email) {
++        if(!"QUAN_TRI".equals(users.layTaiKhoanHoatDong(email).vaiTro()))
++            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Chỉ quản trị được cấu hình giá và chính sách rạp.");
++    }
++}
+diff --git a/src/main/java/com/cinesnack/payment/service/QrPaymentService.java b/src/main/java/com/cinesnack/payment/service/QrPaymentService.java
+index 9456346..6b0926f 100644
+--- a/src/main/java/com/cinesnack/payment/service/QrPaymentService.java
++++ b/src/main/java/com/cinesnack/payment/service/QrPaymentService.java
+@@ -8,6 +8,9 @@ import java.net.URLEncoder;
+ import java.nio.charset.StandardCharsets;
+ import java.time.Clock;
+ import java.time.LocalDateTime;
++import java.time.OffsetDateTime;
++import java.time.ZoneOffset;
++import java.time.ZoneId;
+ import java.util.Set;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.beans.factory.annotation.Value;
+@@ -24,7 +27,9 @@ public class QrPaymentService {
+         @JsonProperty("imageUrl") String diaChiAnh,
+         @JsonProperty("bankName") String tenNganHang,
+         @JsonProperty("accountNo") String soTaiKhoan,
+-        @JsonProperty("accountName") String tenChuTaiKhoan
++        @JsonProperty("accountName") String tenChuTaiKhoan,
++        @JsonProperty("expiresAt") OffsetDateTime hetHanLuc,
++        @JsonProperty("serverTime") OffsetDateTime gioServer
+     ) {}
+ 
+     private final OrderService donHang;
+@@ -77,10 +82,11 @@ public class QrPaymentService {
+     }
+ 
+     private QrPayment taoQr(Order don) {
++        LocalDateTime now = LocalDateTime.now(dongHo.withZone(ZoneId.of("Asia/Ho_Chi_Minh")));
+         if (
+             !"CHO_THANH_TOAN".equals(don.trangThai()) ||
+             (don.hetHanLuc() != null &&
+-                !don.hetHanLuc().isAfter(LocalDateTime.now(dongHo)))
++                !don.hetHanLuc().isAfter(now))
+         ) {
+             throw new ResponseStatusException(
+                 HttpStatus.CONFLICT,
+@@ -127,7 +133,9 @@ public class QrPaymentService {
+             url,
+             tenNganHang,
+             soTaiKhoan,
+-            tenChuTaiKhoan
++            tenChuTaiKhoan,
++            don.hetHanLuc() == null ? null : don.hetHanLuc().atOffset(ZoneOffset.ofHours(7)),
++            now.atOffset(ZoneOffset.ofHours(7))
+         );
+     }
+ 
+diff --git a/src/main/resources/UI/assets/css/showtime-timeline.css b/src/main/resources/UI/assets/css/showtime-timeline.css
+new file mode 100644
+index 0000000..ae1e7e1
+--- /dev/null
++++ b/src/main/resources/UI/assets/css/showtime-timeline.css
+@@ -0,0 +1,22 @@
++.quan-tri-trang .workspace-content, .quan-tri-trang .workspace-sidebar { min-width: 0; }
++.showtime-controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; margin-block: 16px; }
++.showtime-controls[hidden], .showtime-controls ~ [hidden] { display: none; }
++.showtime-controls label { display: grid; gap: 6px; }
++.showtime-controls button, .showtime-controls input, .showtime-controls select { min-height: 44px; }
++.showtime-controls [aria-pressed="true"] { outline: 2px solid currentColor; outline-offset: 2px; }
++.showtime-scroll { max-width: 100%; overflow-x: auto; border: 1px solid #b6becb; border-radius: 8px; background: #fff; color: #172033; }
++.showtime-chart { width: 1640px; }
++.showtime-axis { height: 44px; position: relative; border-bottom: 1px solid #b6becb; }
++.showtime-tick { position: absolute; top: 12px; font-size: 12px; transform: translateX(-50%); }
++.showtime-row { position: relative; border-bottom: 1px solid #b6becb; background: repeating-linear-gradient(to right, transparent 0, transparent 59px, #e3e7ed 59px, #e3e7ed 60px); background-position-x: 160px; }
++.showtime-room { position: sticky; left: 0; width: 150px; height: 100%; z-index: 2; display: flex; align-items: center; padding: 10px; box-sizing: border-box; overflow-wrap: anywhere; background: #f0f3f8; border-right: 1px solid #b6becb; }
++.showtime-block { position: absolute; height: 80px; box-sizing: border-box; overflow: hidden; padding: 6px; border: 1px solid #345b9b; border-radius: 6px; background: #e1ecff; color: #152d50; cursor: pointer; text-align: left; }
++.showtime-block strong, .showtime-block small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
++.showtime-block[data-status="HUY"] { background: #fce4e6; border-style: dashed; color: #6a1724; }
++.showtime-block[data-status="DA_CHIEU"] { background: #e8eaf0; color: #303849; }
++.showtime-block[data-status="DANG_CHIEU"] { background: #d9f3e4; color: #13452d; }
++.showtime-scroll:focus-visible, .showtime-block:focus-visible, .showtime-accessible summary:focus-visible { outline: 3px solid #245bd1; outline-offset: -3px; }
++.showtime-accessible { margin-block: 16px; }
++.showtime-accessible summary { cursor: pointer; padding: 12px; font-weight: 600; }
++.showtime-accessible caption { text-align: left; padding: 12px; }
++@media (max-width: 640px) { .showtime-controls label { flex: 1 1 160px; } .showtime-controls input, .showtime-controls select { max-width: 100%; } }
+diff --git a/src/main/resources/UI/assets/css/ticket-print.css b/src/main/resources/UI/assets/css/ticket-print.css
+index 7911b4d..e7c8882 100644
+--- a/src/main/resources/UI/assets/css/ticket-print.css
++++ b/src/main/resources/UI/assets/css/ticket-print.css
+@@ -1,3 +1,17 @@
++.ticket-codes li {
++  display: flex;
++  flex-direction: column;
++  align-items: flex-start;
++  gap: 8px;
++  margin: 14px 0;
++  font-size: 14px;
++}
++.ticket-codes .ticket-qr {
++  display: block;
++  width: 160px;
++  height: 160px;
++  max-width: 100%;
++}
+ .ticket-print-preview {
+   margin-top: 24px;
+   padding: 20px;
+diff --git a/src/main/resources/UI/assets/js/admin.js b/src/main/resources/UI/assets/js/admin.js
+index fe84d0c..6ec8de1 100644
+--- a/src/main/resources/UI/assets/js/admin.js
++++ b/src/main/resources/UI/assets/js/admin.js
+@@ -21,6 +21,14 @@
+     rooms = [],
+     movieOptions = [];
+   const isAdmin = () => user?.role === "QUAN_TRI";
++  const timeline = CineSnackTimeline.init({
++    container: layPhanTu("showtime-timeline"),
++    listElement: layPhanTu("suat-list-panel"),
++    countElement: layPhanTu("suat-so"),
++    request: (url) => CineSnackApi.goi(url),
++    onEdit: editShow,
++    onError: error,
++  });
+   function error(err) {
+     layPhanTu("admin-loi").textContent = err.message;
+     layPhanTu("admin-loi").focus();
+@@ -216,6 +224,7 @@
+       `Trang ${showPage + 1} · ${shows.length} suất`;
+     layPhanTu("suat-truoc").disabled = showPage === 0;
+     layPhanTu("suat-sau").disabled = shows.length < 100;
++    await timeline.refresh();
+   }
+   async function loadSnacks() {
+     const data = await CineSnackApi.goi("/api/admin/snacks");
+@@ -538,6 +547,8 @@
+         "genre",
+         "description",
+         "actors",
++        "director",
++        "trailerUrl",
+         "duration",
+         "ageRating",
+         "status",
+@@ -587,6 +598,7 @@
+       field(form, "vipSurcharge").value = show.vipSurcharge || 0;
+       field(form, "status").value = show.status;
+     }
++    CineSnackShowPricing.setMode(form, show?.pricingMode || "MANUAL");
+     layPhanTu("suat-form-title").textContent = show
+       ? "Sửa suất chiếu"
+       : "Thêm suất chiếu";
+@@ -626,7 +638,7 @@
+     try {
+       const id = field(form, "id").value;
+       const body = Object.fromEntries(
+-        ["name", "genre", "description", "actors", "ageRating", "status"].map(
++        ["name", "genre", "description", "actors", "director", "trailerUrl", "ageRating", "status"].map(
+           (name) => [name, field(form, name).value.trim()],
+         ),
+       );
+@@ -673,8 +685,7 @@
+         movieId: Number(field(form, "movieId").value),
+         roomId: Number(field(form, "roomId").value),
+         startsAt: raw + (raw.length === 16 ? ":00" : "") + "+07:00",
+-        price: Number(field(form, "price").value),
+-        vipSurcharge: Number(field(form, "vipSurcharge").value),
++        ...CineSnackShowPricing.request(form),
+         status: field(form, "status").value,
+       };
+       await CineSnackApi.goi("/api/admin/showtimes" + (id ? "/" + id : ""), {
+diff --git a/src/main/resources/UI/assets/js/checkout.js b/src/main/resources/UI/assets/js/checkout.js
+index 70c8dde..e15b2dd 100644
+--- a/src/main/resources/UI/assets/js/checkout.js
++++ b/src/main/resources/UI/assets/js/checkout.js
+@@ -33,6 +33,45 @@
+     qrStatus = document.querySelector("#checkout-qr-action-status");
+   let currentQr = null;
+   let currentQrPngUrl = null;
++  let deadline = null;
++  function expireQr() {
++    currentQr = null;
++    openQr.disabled = true;
++    for (const id of ["account", "content"])
++      document.querySelector("#checkout-copy-" + id).disabled = true;
++    downloadQr.hidden = true;
++    downloadQr.removeAttribute("href");
++    if (currentQrPngUrl) URL.revokeObjectURL(currentQrPngUrl);
++    currentQrPngUrl = null;
++    document.querySelector("#checkout-qr-image").replaceChildren();
++    const text = "Đã hết thời gian giữ chỗ. Không chuyển tiền cho đơn này. Mở đơn để kiểm tra trạng thái.";
++    document.querySelector("#checkout-qr-error").textContent = text;
++    loi.textContent = text;
++  }
++  function watchDeadline(expiresAt, serverTime, requestedAt) {
++    deadline?.stop();
++    deadline = CineSnackDeadline.start({ expiresAt, serverTime, requestedAt,
++      onTick: (text) => document.querySelector("#checkout-countdown").textContent = text,
++      onExpire: expireQr,
++    });
++  }
++  document.addEventListener("visibilitychange", () => {
++    if (!document.hidden) deadline?.refresh();
++  });
++  window.addEventListener("pagehide", () => {
++    deadline?.stop();
++    currentQr = null;
++    document.querySelector("#checkout-qr-image").replaceChildren();
++    downloadQr.hidden = true;
++    downloadQr.removeAttribute("href");
++    if (currentQrPngUrl) URL.revokeObjectURL(currentQrPngUrl);
++  });
++  window.addEventListener("pageshow", (event) => {
++    if (event.persisted && maDaTao) {
++      const target = user?.role === "NHAN_VIEN" ? "admin.html" : "orders.html";
++      location.replace(target + "?code=" + encodeURIComponent(maDaTao) + (user ? "" : "&guest=1"));
++    }
++  });
+   let user,
+     gui = false,
+     maDaTao,
+@@ -64,7 +103,9 @@
+     loi.textContent = e.message;
+     nut.disabled = true;
+   }
+-  openQr.addEventListener("click", () => qrDialog.showModal());
++  openQr.addEventListener("click", () => {
++    if (deadline?.isActive()) qrDialog.showModal();
++  });
+   async function copyQr(value) {
+     if (!value) return;
+     try {
+@@ -88,6 +129,7 @@
+       ? "Mở đơn để xác nhận thanh toán"
+       : "Xem trạng thái đơn";
+     document.querySelector("#checkout-qr-code").textContent = ma;
++    if (!deadline?.isActive()) return;
+     document.querySelector("#checkout-qr-image").replaceChildren();
+     for (const id of ["bank", "account", "account-name", "amount", "content"])
+       document.querySelector("#checkout-" + id).textContent = "";
+@@ -101,31 +143,43 @@
+     qrDialog.showModal();
+     try {
+       const prefix = user ? "/api/orders" : "/api/guest/orders";
++      const requestedAt = Date.now();
+       const qr = await CineSnackApi.goi(
+         `${prefix}/${encodeURIComponent(ma)}/payment-qr`,
+       );
++      if (!deadline.isActive()) return;
++      if (qr.expiresAt && qr.serverTime) watchDeadline(qr.expiresAt, qr.serverTime, requestedAt);
++      if (!deadline.isActive()) return;
+       currentQr = qr;
+       const image = document.createElement("img");
+       image.width = 260;
+       image.height = 260;
+       image.crossOrigin = "anonymous";
+-      image.src = qr.imageUrl;
+       image.alt = `QR chuyển khoản ${CineSnack.dinhDangTien(qr.amount)}, nội dung ${qr.content}`;
+       image.addEventListener("load", async () => {
++        if (!deadline.isActive() || currentQr !== qr) return;
+         try {
+-          currentQrPngUrl = await CineSnack.qrPngUrl(image);
++          const png = await CineSnack.qrPngUrl(image);
++          if (!deadline.isActive() || currentQr !== qr) {
++            URL.revokeObjectURL(png);
++            return;
++          }
++          currentQrPngUrl = png;
+           downloadQr.href = currentQrPngUrl;
+           downloadQr.download = `CineSnack-${ma}.png`;
+           downloadQr.hidden = false;
+         } catch {
++          if (!deadline.isActive()) return;
+           qrStatus.textContent =
+             "Không tạo được ảnh PNG từ QR. Bạn vẫn có thể quét mã đang hiển thị.";
+         }
+       });
+       image.addEventListener("error", () => {
++        if (!deadline.isActive()) return;
+         image.remove();
+         qrError.textContent = "Không tải được ảnh QR. Mở đơn để thử lại.";
+       });
++      image.src = qr.imageUrl;
+       document.querySelector("#checkout-qr-image").replaceChildren(image);
+       for (const [id, value] of Object.entries({
+         bank: qr.bankName,
+@@ -136,6 +190,7 @@
+       }))
+         document.querySelector("#checkout-" + id).textContent = value || "—";
+     } catch (error) {
++      if (!deadline.isActive()) return;
+       qrError.textContent =
+         error.message + " Đơn đã được tạo; bạn có thể mở đơn để xem lại.";
+     }
+@@ -161,6 +216,7 @@
+     loi.textContent = "Đang tạo đơn…";
+     try {
+       const staff = user?.role === "NHAN_VIEN";
++      const requestedAt = Date.now();
+       const d = await CineSnackApi.goi(
+         staff
+           ? "/api/admin/orders"
+@@ -189,6 +245,7 @@
+       openQr.hidden = false;
+       email.readOnly = true;
+       loi.textContent = "";
++      watchDeadline(d.expiresAt, d.createdAt, requestedAt);
+       await hienQr(d.code, orderUrl, staff);
+     } catch (error) {
+       khongRo = !error.status;
+diff --git a/src/main/resources/UI/assets/js/movies.js b/src/main/resources/UI/assets/js/movies.js
+index 2d70642..57d79a0 100644
+--- a/src/main/resources/UI/assets/js/movies.js
++++ b/src/main/resources/UI/assets/js/movies.js
+@@ -26,6 +26,19 @@
+     );
+     if (p.description) box.append(text("p", p.description));
+     if (p.actors) box.append(text("p", "Diễn viên: " + p.actors));
++    if (p.director) box.append(text("p", "Đạo diễn: " + p.director));
++    if (p.trailerUrl) {
++      try {
++        const url = new URL(p.trailerUrl);
++        if (url.protocol === "https:" && url.hostname && !url.username && !url.password) {
++          const trailer = text("a", "Xem trailer (mở tab mới)", "nut phu");
++          trailer.href = url.href;
++          trailer.target = "_blank";
++          trailer.rel = "noopener noreferrer";
++          box.append(trailer);
++        }
++      } catch (_) { /* Old or malformed links are omitted. */ }
++    }
+     if (p.status === "DANG_CHIEU") {
+       const a = text("a", "Chọn suất chiếu", "nut");
+       a.href = "booking.html?phim=" + p.id;
+diff --git a/src/main/resources/UI/assets/js/order-payment-qr.js b/src/main/resources/UI/assets/js/order-payment-qr.js
+new file mode 100644
+index 0000000..276c3ad
+--- /dev/null
++++ b/src/main/resources/UI/assets/js/order-payment-qr.js
+@@ -0,0 +1,98 @@
++"use strict";
++window.CineSnackOrderQr = (() => {
++  function create(order, prefix, onExpire = () => {}) {
++    const element = (tag, text) => {
++      const node = document.createElement(tag);
++      if (text !== undefined) node.textContent = text;
++      return node;
++    };
++    const node = element("section");
++    node.className = "invoice order-payment-qr";
++    const countdown = element("output");
++    countdown.setAttribute("role", "timer");
++    const time = element("p", "Thời gian giữ chỗ còn lại: ");
++    time.append(countdown);
++    const content = element("div");
++    node.append(element("h3", "QR chuyển khoản đúng tổng tiền"), time, content);
++    let deadline, disposed = false, pngUrl = null;
++    function dispose() {
++      disposed = true;
++      deadline?.stop();
++      content.replaceChildren();
++      if (pngUrl) URL.revokeObjectURL(pngUrl);
++      pngUrl = null;
++      window.removeEventListener("pagehide", dispose);
++      document.removeEventListener("visibilitychange", refresh);
++    }
++    function refresh() {
++      if (!document.hidden) deadline?.refresh();
++    }
++    function start(expiresAt, serverTime, requestedAt) {
++      deadline?.stop();
++      deadline = CineSnackDeadline.start({ expiresAt, serverTime, requestedAt,
++        onTick(text) {
++          countdown.textContent = text;
++          if (!node.isConnected) dispose();
++        },
++        onExpire() {
++          if (pngUrl) URL.revokeObjectURL(pngUrl);
++          pngUrl = null;
++          content.replaceChildren(element("p", "Đã hết thời gian giữ chỗ. Không chuyển tiền cho đơn này. Cập nhật đơn để xem trạng thái."));
++          onExpire();
++        },
++      });
++      if (disposed) deadline.stop();
++    }
++    function active() { return !disposed && node.isConnected && deadline?.isActive(); }
++    async function activate() {
++      window.addEventListener("pagehide", dispose);
++      document.addEventListener("visibilitychange", refresh);
++      try {
++        countdown.textContent = "Đang kiểm tra thời hạn…";
++        const requestedAt = Date.now();
++        const qr = await CineSnackApi.goi(`${prefix}/${encodeURIComponent(order.code)}/payment-qr`);
++        if (disposed || !node.isConnected) return;
++        start(qr.expiresAt || order.expiresAt, qr.serverTime, requestedAt);
++        if (!active()) return;
++        const image = element("img");
++        Object.assign(image, { width:260, height:260, crossOrigin:"anonymous", alt:`QR chuyển khoản ${CineSnack.dinhDangTien(qr.amount)}, nội dung ${qr.content}` });
++        const download = element("a", "Tải ảnh QR (PNG)");
++        download.className = "nut phu";
++        download.hidden = true;
++        image.addEventListener("load", async () => {
++          if (!active()) return;
++          try {
++            const url = await CineSnack.qrPngUrl(image);
++            if (!active()) { URL.revokeObjectURL(url); return; }
++            pngUrl = url;
++            download.href = url;
++            download.download = `CineSnack-${order.code}.png`;
++            download.hidden = false;
++          } catch {
++            if (active()) content.append(element("p", "Không tạo được ảnh PNG. Bạn vẫn có thể quét QR."));
++          }
++        });
++        image.addEventListener("error", () => {
++          if (!active()) return;
++          image.remove();
++          content.append(element("p", "Không tải được QR. Cập nhật đơn để thử lại."));
++        });
++        image.src = qr.imageUrl;
++        content.replaceChildren(image,
++          element("p", `${qr.bankName || "Ngân hàng"} · ${qr.accountNo} · ${qr.accountName || ""}`),
++          element("p", `Số tiền: ${CineSnack.dinhDangTien(qr.amount)} · Nội dung: ${qr.content}`),
++          element("p", "Sau khi chuyển tiền, chờ nhân viên đối chiếu và xác nhận. Quét QR không tự hoàn tất đơn."), download);
++      } catch (error) {
++        if (disposed || !node.isConnected) return;
++        if (!deadline) {
++          try { start(order.expiresAt); }
++          catch { content.replaceChildren(element("p", "Không xác định được thời hạn. Cập nhật đơn để kiểm tra.")); return; }
++        }
++        if (!deadline.isActive()) return;
++        content.replaceChildren(element("p", error.message));
++      }
++    }
++    return { node, activate, dispose };
++  }
++  return { create };
++})();
+diff --git a/src/main/resources/UI/assets/js/orders.js b/src/main/resources/UI/assets/js/orders.js
+index c7ddff2..f5bdd48 100644
+--- a/src/main/resources/UI/assets/js/orders.js
++++ b/src/main/resources/UI/assets/js/orders.js
+@@ -1,6 +1,10 @@
+ "use strict";
+ window.CineSnackOrders = (() => {
++  window.addEventListener("pageshow", (event) => {
++    if (event.persisted) location.reload();
++  });
+   const lanTaiChiTiet = new WeakMap();
++  const activePaymentQr = new WeakMap();
+   function lanMoi(box) {
+     const lan = (lanTaiChiTiet.get(box) || 0) + 1;
+     lanTaiChiTiet.set(box, lan);
+@@ -120,10 +124,15 @@ window.CineSnackOrders = (() => {
+     if (data.tickets.length && donHang.status === "DA_THANH_TOAN") {
+       const codes = taoPhanTu("details", undefined, "ticket-codes"),
+         values = taoPhanTu("ul");
+-      for (const ticket of data.tickets)
+-        values.append(
+-          taoPhanTu("li", `${ticket.seatCode || "Ghế"}: ${ticket.code}`),
+-        );
++      for (const ticket of data.tickets) {
++        const item = taoPhanTu("li", `${ticket.seatCode ? "Ghế " + ticket.seatCode : "Vé"}: ${ticket.code}`);
++        if (ticket.status === "DA_SOAT") item.append(taoPhanTu("strong", "Vé đã soát"));
++        else if (ticket.status === "DA_THANH_TOAN") {
++          try { item.append(CineSnackTicketCode.create(ticket.code)); }
++          catch (error) { item.append(taoPhanTu("p", error.message)); }
++        }
++        values.append(item);
++      }
+       codes.append(
+         taoPhanTu("summary", "Xem mã vé để cung cấp tại rạp"),
+         values,
+@@ -190,6 +199,7 @@ window.CineSnackOrders = (() => {
+     if (!hopLe()) return;
+     const lan = lanMoi(box);
+     let dangThuTien = false;
++    let paymentExpired = false;
+     const { data, prefix, accessHeaders } = await taiChiTietDon(
+       code,
+       user,
+@@ -219,7 +229,8 @@ window.CineSnackOrders = (() => {
+         message.textContent = error.message;
+         message.focus();
+       } finally {
+-        b.disabled = dangThuTien;
++        b.disabled = dangThuTien || (paymentExpired && b.type === "submit") ||
++          (b === cancel && donHang.status !== "CHO_THANH_TOAN");
+         b.removeAttribute("aria-busy");
+       }
+     }
+@@ -250,6 +261,11 @@ window.CineSnackOrders = (() => {
+         await CineSnackApi.goi(`${prefix}/${encodeURIComponent(code)}/cancel`, {
+           method: "POST",
+         });
++        donHang.status = "HUY";
++        paymentQr?.dispose();
++        paymentQr?.node.remove();
++        root.querySelector("#trang-thai-don").textContent = nhan.HUY;
++        root.querySelectorAll(".cash-form").forEach((form) => form.hidden = true);
+         await hienChiTiet(box, code, user, thayDoi, hopLe, guestMode);
+         await thayDoi();
+       }),
+@@ -299,6 +315,8 @@ window.CineSnackOrders = (() => {
+           }
+           dangThuTien = false;
+           refresh.disabled = false;
++          paymentQr?.dispose();
++          paymentQr?.node.remove();
+           donHang.status = "DA_THANH_TOAN";
+           root.querySelector("#trang-thai-don").textContent =
+             nhan[donHang.status];
+@@ -369,100 +387,38 @@ window.CineSnackOrders = (() => {
+               },
+             },
+           );
++          paymentQr?.dispose();
++          paymentQr?.node.remove();
++          donHang.status = "DA_THANH_TOAN";
++          transfer.hidden = true;
++          form.hidden = true;
+           await hienChiTiet(box, code, user, thayDoi, hopLe, guestMode);
+           await thayDoi();
+         });
+       });
+       root.append(transfer);
+     }
+-    if (donHang.status === "CHO_THANH_TOAN") {
+-      const qrBox = taoPhanTu("section", undefined, "invoice");
+-      qrBox.append(taoPhanTu("h3", "QR chuyển khoản đúng tổng tiền"));
+-      try {
+-        const qr = await CineSnackApi.goi(
+-          `${prefix}/${encodeURIComponent(code)}/payment-qr`,
+-        );
+-        const img = taoPhanTu("img");
+-        img.crossOrigin = "anonymous";
+-        img.src = qr.imageUrl;
+-        img.alt = `QR chuyển khoản ${CineSnack.dinhDangTien(qr.amount)}, nội dung ${qr.content}`;
+-        img.width = 260;
+-        img.height = 260;
+-        img.loading = "lazy";
+-        img.addEventListener("error", () => {
+-          img.remove();
+-          qrBox.append(
+-            taoPhanTu(
+-              "p",
+-              "Không tải được ảnh QR. Vui lòng cập nhật đơn để thử lại.",
+-              "loi",
+-            ),
+-          );
+-        });
+-        qrBox.append(
+-          img,
+-          taoPhanTu(
+-            "p",
+-            `Số tiền: ${CineSnack.dinhDangTien(qr.amount)} · Nội dung: ${qr.content}`,
+-          ),
+-          taoPhanTu(
+-            "p",
+-            "Sau khi chuyển tiền, chờ nhân viên đối chiếu và xác nhận. Quét QR không tự hoàn tất đơn.",
+-          ),
+-        );
+-        if (qr.accountNo)
+-          qrBox.insertBefore(
+-            taoPhanTu(
+-              "p",
+-              `${qr.bankName || "Ngân hàng"} · ${qr.accountNo} · ${qr.accountName || ""}`,
+-            ),
+-            img.nextSibling,
+-          );
+-        const download = taoPhanTu("a", "Tải ảnh QR (PNG)", "nut phu");
+-        download.hidden = true;
+-        img.addEventListener("load", async () => {
+-          try {
+-            download.href = await CineSnack.qrPngUrl(img);
+-            download.download = `CineSnack-${code}.png`;
+-            download.hidden = false;
+-          } catch {
+-            qrBox.append(
+-              taoPhanTu(
+-                "p",
+-                "Không tạo được ảnh PNG. Vui lòng thử lại.",
+-                "loi",
+-              ),
+-            );
+-          }
+-        });
+-        qrBox.append(download);
+-      } catch (error) {
+-        qrBox.append(taoPhanTu("p", error.message, "loi"));
+-      }
+-      root.append(qrBox);
+-      if (donHang.expiresAt) {
+-        const conLai = Date.parse(donHang.expiresAt) - Date.now();
+-        setTimeout(
+-          () => {
+-            qrBox.replaceChildren(
+-              taoPhanTu(
+-                "p",
+-                "Đã hết thời gian giữ chỗ. Cập nhật đơn để xem trạng thái mới.",
+-                "loi",
+-              ),
+-            );
+-          },
+-          Math.max(0, conLai),
+-        );
+-      }
+-    }
++    const paymentQr = donHang.status === "CHO_THANH_TOAN"
++      ? CineSnackOrderQr.create(donHang, prefix, () => {
++          paymentExpired = true;
++          root.querySelectorAll('.cash-form button[type="submit"]').forEach((b) => b.disabled = true);
++        })
++      : null;
++    if (paymentQr) root.append(paymentQr.node);
+     await themHoaDon(
+       root,
+       donHang,
+       `${prefix}/${encodeURIComponent(code)}/invoices`,
+       accessHeaders,
+     );
+-    if (hopLe() && lanTaiChiTiet.get(box) === lan) box.replaceChildren(root);
++    if (hopLe() && lanTaiChiTiet.get(box) === lan) {
++      activePaymentQr.get(box)?.dispose();
++      box.replaceChildren(root);
++      if (paymentQr) {
++        activePaymentQr.set(box, paymentQr);
++        paymentQr.activate();
++      } else activePaymentQr.delete(box);
++    } else paymentQr?.dispose();
+     return donHang;
+   }
+   return { nhan, taoPhanTu, hienChiTiet };
+diff --git a/src/main/resources/UI/assets/js/payment-deadline.js b/src/main/resources/UI/assets/js/payment-deadline.js
+new file mode 100644
+index 0000000..0f8f92b
+--- /dev/null
++++ b/src/main/resources/UI/assets/js/payment-deadline.js
+@@ -0,0 +1,37 @@
++"use strict";
++(function (root) {
++  function start({ expiresAt, serverTime, requestedAt, onTick = () => {}, onExpire = () => {},
++    now = () => Date.now(), schedule = (fn) => setInterval(fn, 1000),
++    cancel = (id) => clearInterval(id) }) {
++    const deadline = Date.parse(expiresAt);
++    const server = serverTime == null ? null : Date.parse(serverTime);
++    if (!Number.isFinite(deadline) || (server !== null && !Number.isFinite(server)))
++      throw new Error("Không xác định được thời hạn giữ chỗ.");
++    const receivedAt = now();
++    // Charge the full round trip conservatively; a delayed response must not
++    // grant extra hold time when synchronizing with the server clock.
++    const latency = requestedAt == null ? 0 : Math.max(0, receivedAt - requestedAt);
++    const offset = server === null ? 0 : server + latency - receivedAt;
++    let timer, stopped = false;
++    function stop() {
++      stopped = true;
++      if (timer !== undefined) cancel(timer);
++    }
++    function refresh() {
++      if (stopped) return false;
++      const seconds = Math.max(0, Math.ceil((deadline - now() - offset) / 1000));
++      onTick(`${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`);
++      if (!seconds) {
++        stop();
++        onExpire();
++        return false;
++      }
++      return true;
++    }
++    if (refresh()) timer = schedule(refresh);
++    return { refresh, isActive: refresh, stop };
++  }
++  const api = { start };
++  if (typeof module !== "undefined" && module.exports) module.exports = api;
++  if (root) root.CineSnackDeadline = api;
++})(typeof window !== "undefined" ? window : null);
+diff --git a/src/main/resources/UI/assets/js/show-pricing.js b/src/main/resources/UI/assets/js/show-pricing.js
+new file mode 100644
+index 0000000..0d719bc
+--- /dev/null
++++ b/src/main/resources/UI/assets/js/show-pricing.js
+@@ -0,0 +1,21 @@
++"use strict";
++window.CineSnackShowPricing = (() => {
++  function setMode(form, mode) {
++    form.elements.namedItem("pricingMode").value = mode || "MANUAL";
++    const manual = form.elements.namedItem("pricingMode").value === "MANUAL";
++    for (const name of ["price", "vipSurcharge"]) {
++      const input = form.elements.namedItem(name);
++      input.required = manual;
++      input.disabled = !manual;
++    }
++  }
++  function request(form) {
++    const pricingMode = form.elements.namedItem("pricingMode").value;
++    return pricingMode === "POLICY" ? { pricingMode } : {
++      pricingMode, price: Number(form.elements.namedItem("price").value),
++      vipSurcharge: Number(form.elements.namedItem("vipSurcharge").value)
++    };
++  }
++  document.getElementById("suat-form").elements.namedItem("pricingMode").addEventListener("change", event => setMode(event.target.form, event.target.value));
++  return { setMode, request };
++})();
+diff --git a/src/main/resources/UI/assets/js/showtime-timeline.js b/src/main/resources/UI/assets/js/showtime-timeline.js
+new file mode 100644
+index 0000000..dd045a7
+--- /dev/null
++++ b/src/main/resources/UI/assets/js/showtime-timeline.js
+@@ -0,0 +1,178 @@
++"use strict";
++(function (root) {
++  const DAY = 86400000;
++  const labels = { SAP_CHIEU: "Sắp chiếu", DANG_CHIEU: "Đang chiếu", DA_CHIEU: "Đã chiếu", HUY: "Đã hủy" };
++  const time = (value) => new Intl.DateTimeFormat("vi-VN", {
++    timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit",
++  }).format(new Date(value));
++  function dayStart(date) { return Date.parse(date + "T00:00:00+07:00"); }
++  function shiftDate(date, delta) {
++    return new Date(Date.parse(date + "T00:00:00Z") + delta * DAY).toISOString().slice(0, 10);
++  }
++  function layout(shows, date) {
++    const start = dayStart(date), end = start + DAY;
++    const items = shows.filter((show) => Date.parse(show.startsAt) < end && Date.parse(show.endsAt) > start)
++      .map((show) => ({ ...show,
++        startMinute: (Math.max(start, Date.parse(show.startsAt)) - start) / 60000,
++        endMinute: (Math.min(end, Date.parse(show.endsAt)) - start) / 60000,
++      })).sort((a, b) => a.roomId - b.roomId || Date.parse(a.startsAt) - Date.parse(b.startsAt) || a.id - b.id);
++    let roomId, lanes = [];
++    for (const item of items) {
++      if (roomId !== item.roomId) { roomId = item.roomId; lanes = []; }
++      let lane = lanes.findIndex((until) => until <= item.startMinute);
++      if (lane < 0) lane = lanes.length;
++      lanes[lane] = item.endMinute;
++      item.lane = lane;
++    }
++    return items;
++  }
++  function element(tag, text, className) {
++    const node = document.createElement(tag);
++    if (text != null) node.textContent = text;
++    if (className) node.className = className;
++    return node;
++  }
++  function action(text, callback) {
++    const node = element("button", text, "account-button");
++    node.type = "button";
++    node.addEventListener("click", callback);
++    return node;
++  }
++  function render(container, shows, date, rooms, onEdit) {
++    const items = layout(shows, date);
++    container.replaceChildren();
++    if (!items.length) {
++      container.append(element("p", "Không có suất chiếu phù hợp trong ngày này."));
++      return;
++    }
++    const scroll = element("div", null, "showtime-scroll");
++    scroll.tabIndex = 0;
++    scroll.setAttribute("role", "region");
++    scroll.setAttribute("aria-label", "Timeline lịch chiếu ngày " + date + ". Cuộn ngang để xem đủ 24 giờ.");
++    const chart = element("div", null, "showtime-chart");
++    const axis = element("div", null, "showtime-axis");
++    axis.append(element("strong", "Phòng / giờ", "showtime-room"));
++    for (let hour = 0; hour <= 24; hour++) {
++      const tick = element("span", String(hour).padStart(2, "0") + ":00", "showtime-tick");
++      tick.style.left = (160 + hour * 60) + "px";
++      axis.append(tick);
++    }
++    chart.append(axis);
++    const roomMap = new Map(rooms.map((room) => [Number(room.id), room.name]));
++    for (const show of items) roomMap.set(show.roomId, show.roomName);
++    for (const [roomId, name] of [...roomMap].sort((a, b) => a[0] - b[0])) {
++      const roomShows = items.filter((show) => show.roomId === roomId);
++      const row = element("div", null, "showtime-row");
++      row.style.height = Math.max(1, ...roomShows.map((show) => show.lane + 1)) * 88 + "px";
++      row.append(element("strong", name, "showtime-room"));
++      for (const show of roomShows) {
++        const description = show.movieName + " · " + time(show.startsAt) + " → " + time(show.endsAt) + " · " + (labels[show.status] || show.status);
++        const block = action("", () => onEdit(show));
++        block.className = "showtime-block";
++        block.dataset.status = show.status;
++        block.style.left = (160 + show.startMinute) + "px";
++        block.style.width = Math.max(1, show.endMinute - show.startMinute - 2) + "px";
++        block.style.top = (show.lane * 88 + 4) + "px";
++        block.title = description;
++        block.setAttribute("aria-label", "Sửa " + description);
++        block.append(element("strong", show.movieName), element("small", time(show.startsAt) + " → " + time(show.endsAt)), element("small", labels[show.status] || show.status));
++        row.append(block);
++      }
++      chart.append(row);
++    }
++    scroll.append(chart);
++    container.append(scroll);
++    const details = element("details", null, "showtime-accessible");
++    details.append(element("summary", "Danh sách đầy đủ trong ngày (" + items.length + " suất)"));
++    const tableScroll = element("div", null, "bang-cuon");
++    tableScroll.tabIndex = 0;
++    tableScroll.setAttribute("role", "region");
++    tableScroll.setAttribute("aria-label", "Danh sách suất chiếu trong ngày");
++    const table = element("table", null, "workspace-table");
++    table.append(element("caption", "Lịch chiếu ngày " + date + " · giờ Việt Nam"));
++    const header = element("tr");
++    for (const text of ["Phòng", "Phim", "Bắt đầu → kết thúc", "Trạng thái", "Thao tác"]) {
++      const th = element("th", text); th.scope = "col"; header.append(th);
++    }
++    const head = element("thead"); head.append(header); table.append(head);
++    const body = element("tbody");
++    for (const show of items) {
++      const tr = element("tr");
++      for (const text of [show.roomName, show.movieName, time(show.startsAt) + " → " + time(show.endsAt), labels[show.status] || show.status]) tr.append(element("td", text));
++      const td = element("td"); td.append(action("Sửa " + show.movieName, () => onEdit(show))); tr.append(td); body.append(tr);
++    }
++    table.append(body); tableScroll.append(table); details.append(tableScroll); container.append(details);
++  }
++  function init({ container, listElement, countElement, request, onEdit, onError }) {
++    let active = false, generation = 0, rooms = [], roomsLoaded = false;
++    const toolbar = element("div", null, "workspace-toolbar showtime-controls");
++    const controls = element("form", null, "workspace-form showtime-controls");
++    controls.hidden = true;
++    const view = element("div"); view.hidden = true;
++    const status = element("p", "", "workspace-hint"); status.setAttribute("role", "status");
++    const date = element("input"); date.type = "date"; date.required = true;
++    date.value = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Ho_Chi_Minh" }).format(new Date());
++    function labeled(text, input) {
++      const label = element("label", text);
++      input.setAttribute("aria-label", text);
++      label.append(input);
++      return label;
++    }
++    const room = element("select"), filter = element("select");
++    function option(select, value, text) { const node = element("option", text); node.value = value; select.append(node); }
++    option(room, "", "Tất cả phòng"); option(filter, "", "Tất cả trạng thái");
++    for (const [value, text] of Object.entries(labels)) option(filter, value, text);
++    const listButton = action("Danh sách", () => switchView(false));
++    const timelineButton = action("Timeline theo ngày", () => switchView(true));
++    toolbar.setAttribute("role", "group"); toolbar.setAttribute("aria-label", "Chế độ xem lịch chiếu");
++    toolbar.append(listButton, timelineButton);
++    controls.append(action("← Ngày trước", () => move(-1)), labeled("Ngày (giờ Việt Nam)", date), action("Ngày sau →", () => move(1)), labeled("Phòng", room), labeled("Trạng thái", filter));
++    const refreshButton = element("button", "Cập nhật", "account-button"); refreshButton.type = "submit"; controls.append(refreshButton);
++    container.append(toolbar, controls, status, view);
++    function edit(show) { Promise.resolve().then(() => onEdit(show)).catch(onError); }
++    async function refresh() {
++      if (!active || !controls.reportValidity()) return;
++      const current = ++generation, selectedDate = date.value;
++      status.textContent = "Đang tải lịch chiếu…"; view.replaceChildren(); view.setAttribute("aria-busy", "true");
++      try {
++        const params = new URLSearchParams({ date: selectedDate, status: filter.value });
++        if (room.value) params.set("roomId", room.value);
++        const [shows, loadedRooms] = await Promise.all([
++          request("/api/admin/showtimes/timeline?" + params),
++          roomsLoaded ? Promise.resolve(rooms) : request("/api/admin/rooms"),
++        ]);
++        if (current !== generation || !active) return;
++        rooms = loadedRooms; roomsLoaded = true;
++        const selectedRoom = room.value, known = new Map(rooms.map((r) => [Number(r.id), r.name]));
++        for (const show of shows) known.set(show.roomId, show.roomName);
++        // Keep archived rooms selectable after changing day or status.
++        for (const previous of [...room.options].slice(1)) if (!known.has(Number(previous.value))) known.set(Number(previous.value), previous.textContent);
++        room.replaceChildren(); option(room, "", "Tất cả phòng");
++        for (const [id, name] of [...known].sort((a, b) => a[0] - b[0])) option(room, id, name);
++        room.value = selectedRoom;
++        const visibleRooms = rooms.filter((r) => !selectedRoom || String(r.id) === selectedRoom);
++        render(view, shows, selectedDate, visibleRooms, edit);
++        status.textContent = selectedDate + " · " + shows.length + " suất · giờ Việt Nam";
++      } catch (error) {
++        if (current !== generation || !active) return;
++        status.textContent = "Không tải được lịch chiếu. " + error.message;
++      } finally { if (current === generation) view.removeAttribute("aria-busy"); }
++    }
++    function switchView(value) {
++      active = value; generation++;
++      controls.hidden = view.hidden = !value;
++      listElement.hidden = countElement.hidden = value;
++      listButton.setAttribute("aria-pressed", String(!value)); timelineButton.setAttribute("aria-pressed", String(value));
++      status.textContent = "";
++      if (value) refresh();
++    }
++    function move(delta) { if (date.value) { date.value = shiftDate(date.value, delta); refresh(); } }
++    controls.addEventListener("submit", (event) => { event.preventDefault(); refresh(); });
++    for (const input of [date, room, filter]) input.addEventListener("change", refresh);
++    switchView(false);
++    return { refresh };
++  }
++  const api = { layout, shiftDate, render, init };
++  if (typeof module !== "undefined" && module.exports) module.exports = api;
++  else root.CineSnackTimeline = api;
++})(typeof window === "undefined" ? globalThis : window);
+diff --git a/src/main/resources/UI/assets/js/theater-settings.js b/src/main/resources/UI/assets/js/theater-settings.js
+new file mode 100644
+index 0000000..bb25e08
+--- /dev/null
++++ b/src/main/resources/UI/assets/js/theater-settings.js
+@@ -0,0 +1,74 @@
++"use strict";
++window.CineSnackTheaterSettings = (() => {
++  let selectedRoom = null, generation = 0;
++  const byId = id => document.getElementById(id);
++  const field = (form, name) => form.elements.namedItem(name);
++  const priceNames = ["weekdayRegular", "weekdayVip", "weekendRegular", "weekendVip"];
++  async function save(form, status, work, isCurrent = () => true) {
++    const button = form.querySelector('[type="submit"]');
++    if (button.disabled || !form.reportValidity()) return;
++    status.textContent = "Đang lưu…";
++    button.disabled = true;
++    button.setAttribute("aria-busy", "true");
++    try { await work(); if (isCurrent()) status.textContent = "Đã lưu."; }
++    catch (err) { if (isCurrent()) status.textContent = err.message; }
++    finally { if (isCurrent()) { button.disabled = false; button.removeAttribute("aria-busy"); } }
++  }
++  async function selectRoom(room) {
++    const current = ++generation;
++    selectedRoom = room;
++    const form = byId("room-pricing-form"), status = byId("room-pricing-status");
++    form.reset();
++    byId("room-pricing-panel").hidden = false;
++    byId("room-pricing-title").textContent = "Bảng giá · " + room.name;
++    status.textContent = "Đang tải bảng giá…";
++    form.querySelector('[type="submit"]').disabled = true;
++    form.querySelector('[type="submit"]').removeAttribute("aria-busy");
++    try {
++      const data = await CineSnackApi.goi(`/api/admin/rooms/${room.id}/pricing`);
++      if (current !== generation) return;
++      for (const name of priceNames) field(form, name).value = data[name];
++      status.textContent = "";
++    } catch (err) {
++      if (current !== generation) return;
++      status.textContent = err.status === 409 ? "Phòng chưa có bảng giá. Nhập đủ bốn giá để dùng cho suất mới." : err.message;
++    } finally {
++      if (current === generation) form.querySelector('[type="submit"]').disabled = false;
++    }
++    if (current === generation) byId("room-pricing-title").focus();
++  }
++  function clearRoom() {
++    generation++;
++    selectedRoom = null;
++    byId("room-pricing-panel").hidden = true;
++  }
++  async function init() {
++    const prices = byId("room-pricing-form"), policy = byId("theater-policy-form");
++    prices.addEventListener("submit", event => {
++      event.preventDefault();
++      const room = selectedRoom;
++      const current = generation;
++      if (!room) return;
++      save(prices, byId("room-pricing-status"), async () => {
++        const body = Object.fromEntries(priceNames.map(name => [name, Number(field(prices, name).value)]));
++        if (body.weekdayVip < body.weekdayRegular || body.weekendVip < body.weekendRegular)
++          throw new Error("Giá VIP phải lớn hơn hoặc bằng giá thường cùng loại ngày.");
++        await CineSnackApi.goi(`/api/admin/rooms/${room.id}/pricing`, { method: "PUT", body });
++      }, () => current === generation);
++    });
++    policy.addEventListener("submit", event => {
++      event.preventDefault();
++      save(policy, byId("theater-policy-status"), () => CineSnackApi.goi("/api/admin/theater-policy", {
++        method: "PUT", body: { lateCheckInMinutes: field(policy, "lateCheckInMinutes").value === "" ? null : Number(field(policy, "lateCheckInMinutes").value) }
++      }));
++    });
++    byId("theater-policy-panel").hidden = false;
++    policy.querySelector('[type="submit"]').disabled = true;
++    try {
++      const data = await CineSnackApi.goi("/api/admin/theater-policy");
++      field(policy, "lateCheckInMinutes").value = data.lateCheckInMinutes ?? "";
++      policy.querySelector('[type="submit"]').disabled = false;
++    } catch (err) { byId("theater-policy-status").textContent = err.message; }
++  }
++  return { init, selectRoom, clearRoom };
++})();
+diff --git a/src/main/resources/UI/assets/js/theater.js b/src/main/resources/UI/assets/js/theater.js
+index 6c34148..2950c52 100644
+--- a/src/main/resources/UI/assets/js/theater.js
++++ b/src/main/resources/UI/assets/js/theater.js
+@@ -41,9 +41,10 @@
+     const video = layPhanTu("ticket-camera-video");
+     layPhanTu("ticket-camera").hidden = false;
+     layPhanTu("ticket-camera-status").textContent =
+-      "Đưa mã vạch trên vé vào khung hình.";
++      "Đưa mã QR hoặc mã vạch trên vé vào khung hình.";
+     try {
+-      const reader = new ZXingBrowser.BrowserMultiFormatOneDReader();
++      const reader = new ZXingBrowser.BrowserMultiFormatReader();
++      reader.possibleFormats = [ZXingBrowser.BarcodeFormat.QR_CODE, ZXingBrowser.BarcodeFormat.CODE_128];
+       const controls = await reader.decodeFromVideoDevice(
+         undefined,
+         video,
+@@ -126,6 +127,7 @@
+       const actions = node("td");
+       actions.append(
+         action("Sơ đồ ghế", () => openSeats(room)),
++        action("Bảng giá", () => CineSnackTheaterSettings.selectRoom(room)),
+         action("Sửa phòng", () => editRoom(room)),
+         action("Xóa phòng", async () => {
+           if (!confirm(`Xóa phòng “${room.name}”?`)) return;
+@@ -134,6 +136,7 @@
+             selectedRoom = null;
+             layPhanTu("seats-panel").hidden = true;
+           }
++          CineSnackTheaterSettings.clearRoom();
+           await loadRooms();
+           layPhanTu("theater-status").textContent = "Đã xóa phòng chiếu.";
+         }),
+@@ -387,6 +390,7 @@
+     layPhanTu("theater-workspace").hidden = false;
+     layPhanTu("tab-rooms").hidden = user.role !== "QUAN_TRI";
+     layPhanTu("issue-panel").hidden = user.role !== "NHAN_VIEN";
++    if (user.role === "QUAN_TRI") await CineSnackTheaterSettings.init();
+     await showPanel(location.hash === "#check-in" ? "checkin" : "rooms");
+   } catch (err) {
+     error(err);
+diff --git a/src/main/resources/UI/assets/js/ticket-code.js b/src/main/resources/UI/assets/js/ticket-code.js
+new file mode 100644
+index 0000000..b913509
+--- /dev/null
++++ b/src/main/resources/UI/assets/js/ticket-code.js
+@@ -0,0 +1,16 @@
++"use strict";
++window.CineSnackTicketCode = (() => {
++  function create(code) {
++    if (typeof code !== "string" || !/^[A-Za-z0-9]{1,30}$/.test(code))
++      throw new Error("Mã vé không hợp lệ.");
++    if (!window.ZXingBrowser?.BrowserQRCodeSvgWriter)
++      throw new Error("Không tải được bộ tạo QR vé. Bạn vẫn có thể dùng mã văn bản.");
++    const svg = new ZXingBrowser.BrowserQRCodeSvgWriter().write(code, 160, 160);
++    svg.classList.add("ticket-qr");
++    svg.setAttribute("role", "img");
++    svg.setAttribute("aria-label", "QR vé " + code);
++    svg.style.background = "#fff";
++    return svg;
++  }
++  return { create };
++})();
+diff --git a/src/main/resources/UI/assets/js/ticket-print.js b/src/main/resources/UI/assets/js/ticket-print.js
+index 14ae6cd..164fdd6 100644
+--- a/src/main/resources/UI/assets/js/ticket-print.js
++++ b/src/main/resources/UI/assets/js/ticket-print.js
+@@ -22,8 +22,14 @@ window.CineSnackPrint = (() => {
+     );
+     if (ticket.status === "DA_SOAT") {
+       card.append(e("strong", "VÉ ĐÃ SOÁT · KHÔNG ĐƯỢC DÙNG LẠI"));
++    } else {
++      try {
++        card.append(CineSnackTicketCode.create(ticket.code));
++      } catch (error) {
++        card.append(e("p", error.message));
++      }
+     }
+-    if (typeof JsBarcode === "function") {
++    if (ticket.status !== "DA_SOAT" && typeof JsBarcode === "function") {
+       const barcode = document.createElementNS(
+         "http://www.w3.org/2000/svg",
+         "svg",
+@@ -97,7 +103,8 @@ window.CineSnackPrint = (() => {
+       .print-brand { font-size: 14px; font-weight: bold; border-bottom: 1px dashed; padding-bottom: 10px; }
+       .print-seat { display: block; font-size: 30px; margin: 16px 0; }
+       .print-code { font: 11px monospace; text-align: center; }
+-      svg { width: 100%; height: auto; display: block; }
++       svg { width: 100%; height: auto; display: block; }
++       .ticket-qr { width: 36mm; height: 36mm; margin: 3mm auto; }
+       small { display: block; padding-top: 10px; border-top: 1px dashed; }
+     `;
+     doc.head.append(style);
+diff --git a/src/main/resources/UI/html/admin.html b/src/main/resources/UI/html/admin.html
+index 6ab1420..67bf865 100644
+--- a/src/main/resources/UI/html/admin.html
++++ b/src/main/resources/UI/html/admin.html
+@@ -9,6 +9,7 @@
+     <link rel="stylesheet" href="../assets/css/authentication.css" />
+     <link rel="stylesheet" href="../assets/css/orders.css" />
+     <link rel="stylesheet" href="../assets/css/admin.css" />
++    <link rel="stylesheet" href="../assets/css/showtime-timeline.css" />
+     <link rel="stylesheet" href="../assets/css/cinema-theme.css?v=2" />
+     <script src="../assets/js/api.js" defer></script>
+     <script src="../assets/js/cinema.js" defer></script>
+@@ -17,8 +18,14 @@
+       src="../assets/vendor/JsBarcode.code128-3.11.6.min.js"
+       defer
+     ></script>
++    <script src="../assets/vendor/zxing-browser-0.2.1.min.js" defer></script>
++    <script src="../assets/js/ticket-code.js" defer></script>
+     <script src="../assets/js/ticket-print.js?v=1" defer></script>
++    <script src="../assets/js/payment-deadline.js" defer></script>
++    <script src="../assets/js/order-payment-qr.js" defer></script>
+     <script src="../assets/js/orders.js?v=5" defer></script>
++    <script src="../assets/js/showtime-timeline.js" defer></script>
++    <script src="../assets/js/show-pricing.js" defer></script>
+     <script src="../assets/js/admin.js?v=3" defer></script>
+   </head>
+   <body class="ung-dung-trang quan-tri-trang">
+@@ -370,13 +377,14 @@
+             </p>
+           </section>
+           <section id="muc-suat" class="quan-tri-muc" hidden>
++            <div id="showtime-timeline"></div>
+             <div class="workspace-toolbar">
+               <p id="suat-so" class="workspace-hint"></p>
+               <button type="button" class="nut" id="them-suat">
+                 + Thêm suất chiếu
+               </button>
+             </div>
+-            <section class="workspace-card">
++            <section class="workspace-card" id="suat-list-panel">
+               <div
+                 class="bang-cuon"
+                 tabindex="0"
+@@ -448,6 +456,9 @@
+             ></textarea>
+           </label>
+           <label>Diễn viên<input name="actors" maxlength="500" /></label>
++          <label>Đạo diễn<input name="director" maxlength="200" /></label>
++          <label>Liên kết trailer (HTTPS)<input name="trailerUrl" type="url" maxlength="500" placeholder="https://…" /></label>
++          <p class="workspace-hint">Phim đã có vé chỉ sửa được mô tả, diễn viên, poster, đạo diễn và trailer.</p>
+           <div class="workspace-form-row">
+             <label
+               >Thời lượng (phút)<input
+@@ -509,6 +520,11 @@
+           ><label
+             >Phòng (sơ đồ ghế cố định)<select name="roomId" required></select
+           ></label>
++          <label>Chế độ giá<select name="pricingMode">
++            <option value="MANUAL">Nhập tay cho suất này</option>
++            <option value="POLICY">Lấy bảng giá của phòng</option>
++          </select></label>
++          <p class="workspace-hint">Bảng giá lấy theo ngày bắt đầu tại Việt Nam và chụp vào suất khi bấm lưu. Lưu lại suất ở chế độ bảng giá sẽ lấy giá mới nhất; không sửa được suất đã có lịch sử vé. Sửa bảng giá phòng không tự đổi suất hoặc vé cũ.</p>
+           <div class="workspace-form-row">
+             <label
+               >Giờ bắt đầu<input
+diff --git a/src/main/resources/UI/html/checkout.html b/src/main/resources/UI/html/checkout.html
+index c96eebb..98f463b 100644
+--- a/src/main/resources/UI/html/checkout.html
++++ b/src/main/resources/UI/html/checkout.html
+@@ -10,6 +10,7 @@
+     <script src="../assets/js/api.js" defer></script>
+     <script src="../assets/js/cinema.js" defer></script>
+     <script src="../assets/js/booking-summary.js" defer></script>
++    <script src="../assets/js/payment-deadline.js" defer></script>
+     <script src="../assets/js/checkout.js" defer></script>
+     <link rel="stylesheet" href="../assets/css/authentication.css" />
+     <link rel="stylesheet" href="../assets/css/checkout.css" />
+@@ -270,6 +271,7 @@
+       </form>
+       <h2 id="checkout-qr-title">Chuyển khoản thanh toán</h2>
+       <p>Mã đơn: <strong id="checkout-qr-code"></strong></p>
++      <p>Thời gian giữ chỗ còn lại: <output id="checkout-countdown" role="timer">--:--</output></p>
+       <div id="checkout-qr-image"></div>
+       <dl class="checkout-transfer-details">
+         <div>
+diff --git a/src/main/resources/UI/html/orders.html b/src/main/resources/UI/html/orders.html
+index f46f69c..8675e8a 100644
+--- a/src/main/resources/UI/html/orders.html
++++ b/src/main/resources/UI/html/orders.html
+@@ -14,7 +14,11 @@
+       src="../assets/vendor/JsBarcode.code128-3.11.6.min.js"
+       defer
+     ></script>
++    <script src="../assets/vendor/zxing-browser-0.2.1.min.js" defer></script>
++    <script src="../assets/js/ticket-code.js" defer></script>
+     <script src="../assets/js/ticket-print.js?v=1" defer></script>
++    <script src="../assets/js/payment-deadline.js" defer></script>
++    <script src="../assets/js/order-payment-qr.js" defer></script>
+     <script src="../assets/js/orders.js?v=5" defer></script>
+     <script src="../assets/js/authentication.js" defer></script>
+     <link rel="stylesheet" href="../assets/css/authentication.css" />
+diff --git a/src/main/resources/UI/html/theater.html b/src/main/resources/UI/html/theater.html
+index 34c69d6..3a318c3 100644
+--- a/src/main/resources/UI/html/theater.html
++++ b/src/main/resources/UI/html/theater.html
+@@ -17,7 +17,9 @@
+       defer
+     ></script>
+     <script src="../assets/vendor/zxing-browser-0.2.1.min.js" defer></script>
++    <script src="../assets/js/ticket-code.js" defer></script>
+     <script src="../assets/js/ticket-print.js?v=2" defer></script>
++    <script src="../assets/js/theater-settings.js" defer></script>
+     <script src="../assets/js/theater.js?v=4" defer></script>
+   </head>
+   <body class="ung-dung-trang quan-tri-trang">
+@@ -107,6 +109,33 @@
+               Trang sau
+             </button>
+           </div>
++          <section id="theater-policy-panel" class="workspace-card" aria-labelledby="theater-policy-title" hidden>
++            <h2 id="theater-policy-title">Chính sách soát vé toàn rạp</h2>
++            <p class="workspace-hint">Áp dụng cho các lần soát tiếp theo của mọi suất. Mở cổng từ 30 phút trước giờ chiếu; luôn đóng trước giờ kết thúc.</p>
++            <form id="theater-policy-form" class="workspace-form">
++              <label>Cho phép đến muộn (phút sau giờ bắt đầu)<input name="lateCheckInMinutes" type="number" min="0" max="600" step="1" aria-describedby="late-policy-hint" /></label>
++              <p id="late-policy-hint" class="workspace-hint">Để trống: không giới hạn muộn, vẫn phải trước giờ kết thúc. 0: chấp nhận đến đúng giờ bắt đầu. Có số: chấp nhận cả đúng mốc giới hạn.</p>
++              <button type="submit" class="nut">Lưu chính sách soát vé</button>
++              <p id="theater-policy-status" role="status"></p>
++            </form>
++          </section>
++          <section id="room-pricing-panel" class="workspace-card" aria-labelledby="room-pricing-title" hidden>
++            <h2 id="room-pricing-title" tabindex="-1">Bảng giá phòng</h2>
++            <p class="workspace-hint">VND nguyên. Ngày thường: thứ Hai–thứ Sáu; cuối tuần: thứ Bảy–Chủ nhật theo giờ Việt Nam. Giá VIP không thấp hơn giá thường.</p>
++            <form id="room-pricing-form" class="workspace-form">
++              <div class="workspace-form-row">
++                <label>Ngày thường · ghế thường<input name="weekdayRegular" type="number" min="0" max="9999999999" step="1" required /></label>
++                <label>Ngày thường · ghế VIP<input name="weekdayVip" type="number" min="0" max="9999999999" step="1" required /></label>
++              </div>
++              <div class="workspace-form-row">
++                <label>Cuối tuần · ghế thường<input name="weekendRegular" type="number" min="0" max="9999999999" step="1" required /></label>
++                <label>Cuối tuần · ghế VIP<input name="weekendVip" type="number" min="0" max="9999999999" step="1" required /></label>
++              </div>
++              <p class="workspace-hint">Chỉ lấy giá khi lưu suất với chế độ bảng giá. Sửa bảng giá không tự đổi giá suất đã tạo, đơn hoặc vé cũ.</p>
++              <button type="submit" class="nut">Lưu bảng giá</button>
++              <p id="room-pricing-status" role="status"></p>
++            </form>
++          </section>
+           <section
+             id="seats-panel"
+             class="workspace-card"
+diff --git a/src/test/java/com/cinesnack/controller/ApiSecurityTest.java b/src/test/java/com/cinesnack/controller/ApiSecurityTest.java
+index 435f48f..49fdefe 100644
+--- a/src/test/java/com/cinesnack/controller/ApiSecurityTest.java
++++ b/src/test/java/com/cinesnack/controller/ApiSecurityTest.java
+@@ -58,9 +58,15 @@ class ApiSecurityTest {
+         AdminOrderController.class,
+         GuestOrderController.class,
+         ApiExceptionHandler.class,
++        com.cinesnack.catalog.controller.TheaterPolicyController.class,
+     })
+     static class Config {
+ 
++        @Bean
++        com.cinesnack.catalog.service.TheaterPolicyService theaterPolicyService() {
++            return mock(com.cinesnack.catalog.service.TheaterPolicyService.class);
++        }
++
+         @Bean
+         MoviePosterService moviePosterService() {
+             return mock(MoviePosterService.class);
+@@ -136,6 +142,29 @@ class ApiSecurityTest {
+ 
+     private MockMvc kiemThuHttp;
+ 
++    @Test
++    void policyEndpointsValidateAndRequireAdminAndCsrf() throws Exception {
++        var policyService = nguCanh.getBean(com.cinesnack.catalog.service.TheaterPolicyService.class);
++        reset(policyService);
++        String valid = "{\"weekdayRegular\":70000,\"weekdayVip\":90000,\"weekendRegular\":100000,\"weekendVip\":130000}";
++        for (String role : new String[] {"NHAN_VIEN", "KHACH_HANG"}) {
++            kiemThuHttp.perform(get("/api/admin/theater-policy").with(user("user").roles(role))).andExpect(status().isForbidden());
++            kiemThuHttp.perform(put("/api/admin/rooms/1/pricing").with(user("user").roles(role)).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isForbidden());
++        }
++        kiemThuHttp.perform(put("/api/admin/theater-policy").with(user("admin").roles("QUAN_TRI")).contentType(MediaType.APPLICATION_JSON).content("{\"lateCheckInMinutes\":15}")).andExpect(status().isForbidden());
++        for (String invalid : new String[] {valid.replace("70000", "0.5"), valid.replace("90000", "1"), valid.replace("70000", "-1"), valid.replace("70000", "10000000000")}) {
++            kiemThuHttp.perform(put("/api/admin/rooms/1/pricing").with(user("admin").roles("QUAN_TRI")).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(invalid)).andExpect(status().isBadRequest());
++        }
++        for (String invalid : new String[] {"-1", "601", "0.5", "600.5"}) {
++            kiemThuHttp.perform(put("/api/admin/theater-policy").with(user("admin").roles("QUAN_TRI")).with(csrf()).contentType(MediaType.APPLICATION_JSON).content("{\"lateCheckInMinutes\":" + invalid + "}")).andExpect(status().isBadRequest());
++        }
++        verifyNoInteractions(policyService);
++        kiemThuHttp.perform(put("/api/admin/rooms/1/pricing").with(user("admin").roles("QUAN_TRI")).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isOk());
++        verify(policyService).savePricing(eq(1L), any(), eq("admin"));
++        kiemThuHttp.perform(put("/api/admin/theater-policy").with(user("admin").roles("QUAN_TRI")).with(csrf()).contentType(MediaType.APPLICATION_JSON).content("{\"lateCheckInMinutes\":null}")).andExpect(status().isOk());
++        verify(policyService).savePolicy(new com.cinesnack.catalog.dto.TheaterPolicy.Settings(null), "admin");
++    }
++
+     @Test
+     void multipartMovieRequiresAdminAndCsrf() throws Exception {
+         var movie = new org.springframework.mock.web.MockMultipartFile(
+@@ -224,6 +253,7 @@ class ApiSecurityTest {
+         for (String path : new String[] {
+             "/api/admin/movies",
+             "/api/admin/showtimes",
++            "/api/admin/showtimes/timeline?date=2026-11-09",
+             "/api/admin/rooms",
+         }) {
+             kiemThuHttp
+diff --git a/src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java b/src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java
+index 0abd435..de90514 100644
+--- a/src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java
++++ b/src/test/java/com/cinesnack/repository/CatalogRepositoryTest.java
+@@ -27,7 +27,7 @@ class CatalogRepositoryTest {
+             "CREATE TABLE PHONG_CHIEU(phong_id BIGINT,ten_phong VARCHAR(50),trang_thai VARCHAR(20))"
+         );
+         db.execute(
+-            "CREATE TABLE SUAT_CHIEU(suat_chieu_id BIGINT,phim_id BIGINT,phong_id BIGINT,bat_dau TIMESTAMP,ket_thuc TIMESTAMP,gia_co_ban DECIMAL(12,2),phu_thu_vip DECIMAL(12,2),trang_thai VARCHAR(20))"
++            "CREATE TABLE SUAT_CHIEU(suat_chieu_id BIGINT,phim_id BIGINT,phong_id BIGINT,bat_dau TIMESTAMP,ket_thuc TIMESTAMP,gia_co_ban DECIMAL(12,2),phu_thu_vip DECIMAL(12,2),trang_thai VARCHAR(20),che_do_gia VARCHAR(10))"
+         );
+         db.execute(
+             "CREATE TABLE GHE(ghe_id BIGINT,phong_id BIGINT,ma_ghe VARCHAR(10),loai_ghe VARCHAR(20),trang_thai VARCHAR(20))"
+@@ -38,9 +38,11 @@ class CatalogRepositoryTest {
+         db.update(
+             "INSERT INTO PHIM VALUES(1,'Phim','Han dong','Noi dung','Dien vien',90,'T13',NULL,'DANG_CHIEU')"
+         );
++        db.execute("ALTER TABLE PHIM ADD dao_dien VARCHAR(200)");
++        db.execute("ALTER TABLE PHIM ADD trailer_url VARCHAR(500)");
+         db.update("INSERT INTO PHONG_CHIEU VALUES(1,'Phong 1','HOAT_DONG')");
+         db.update(
+-            "INSERT INTO SUAT_CHIEU VALUES(1,1,1,TIMESTAMP '2026-10-14 13:00:00',TIMESTAMP '2026-10-14 14:30:00',80000,20000,'SAP_CHIEU')"
++            "INSERT INTO SUAT_CHIEU VALUES(1,1,1,TIMESTAMP '2026-10-14 13:00:00',TIMESTAMP '2026-10-14 14:30:00',80000,20000,'SAP_CHIEU','MANUAL')"
+         );
+         db.update(
+             "INSERT INTO GHE VALUES(11,1,'A1','THUONG','HOAT_DONG'),(12,1,'A2','VIP','HOAT_DONG')"
+@@ -54,6 +56,14 @@ class CatalogRepositoryTest {
+             kho.layPhim("", "DANG_CHIEU", 0, 20).get(0).moTa()
+         );
+         assertEquals("Dien vien", kho.timPhim(1).dienVien());
++        assertNull(kho.timPhim(1).daoDien());
++        var admin = new com.cinesnack.catalog.repository.AdminCatalogRepository(db);
++        admin.updateMovie(1, new com.cinesnack.catalog.dto.AdminCatalog.MovieRequest(
++            "Phim", "Han dong", "Noi dung", "Dien vien", 90, "T13", null, "DANG_CHIEU",
++            "<Đạo diễn>", "https://example.com/trailer"));
++        assertEquals("<Đạo diễn>", admin.movie(1).daoDien());
++        assertEquals("https://example.com/trailer", kho.timPhim(1).trailerUrl());
++        assertEquals("<Đạo diễn>", kho.layPhim("", "", 0, 20).get(0).daoDien());
+         assertEquals(0, kho.layPhim("khongcophim", "", 0, 20).size());
+         assertEquals(1, kho.laySuat(1L, luc).size());
+         assertEquals(
+diff --git a/src/test/java/com/cinesnack/repository/ShowtimeTimelineRepositoryTest.java b/src/test/java/com/cinesnack/repository/ShowtimeTimelineRepositoryTest.java
+new file mode 100644
+index 0000000..6a20e5d
+--- /dev/null
++++ b/src/test/java/com/cinesnack/repository/ShowtimeTimelineRepositoryTest.java
+@@ -0,0 +1,35 @@
++package com.cinesnack.repository;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++import com.cinesnack.catalog.repository.AdminCatalogRepository;
++import java.time.LocalDateTime;
++import org.junit.jupiter.api.Test;
++import org.springframework.jdbc.core.JdbcTemplate;
++import org.springframework.jdbc.datasource.DriverManagerDataSource;
++
++class ShowtimeTimelineRepositoryTest {
++    @Test
++    void intersectsDayIncludesOvernightFiltersAndDoesNotTruncateAt100() {
++        var db = new JdbcTemplate(new DriverManagerDataSource("jdbc:h2:mem:timeline;MODE=MSSQLServer;DB_CLOSE_DELAY=-1", "sa", ""));
++        db.execute("CREATE TABLE PHIM(phim_id BIGINT,ten_phim VARCHAR(200))");
++        db.execute("CREATE TABLE PHONG_CHIEU(phong_id BIGINT,ten_phong VARCHAR(50))");
++        db.execute("CREATE TABLE SUAT_CHIEU(suat_chieu_id BIGINT,phim_id BIGINT,phong_id BIGINT,bat_dau TIMESTAMP,ket_thuc TIMESTAMP,gia_co_ban DECIMAL(12,2),phu_thu_vip DECIMAL(12,2),trang_thai VARCHAR(20),che_do_gia VARCHAR(10))");
++        db.update("INSERT INTO PHIM VALUES(1,'Phim')");
++        db.update("INSERT INTO PHONG_CHIEU VALUES(1,'Room 1'),(2,'Room 2')");
++        var day = LocalDateTime.parse("2026-11-09T00:00:00");
++        for (int i = 1; i <= 105; i++) db.update("INSERT INTO SUAT_CHIEU VALUES(?,1,1,?,?,80000,0,'SAP_CHIEU','MANUAL')", i, day.plusMinutes(i), day.plusMinutes(i + 90));
++        db.update("INSERT INTO SUAT_CHIEU VALUES(106,1,2,?,?,80000,0,'HUY','MANUAL')", day.minusHours(1), day.plusHours(1));
++        db.update("INSERT INTO SUAT_CHIEU VALUES(107,1,2,?,?,80000,0,'SAP_CHIEU','MANUAL')", day.plusHours(23), day.plusHours(25));
++        db.update("INSERT INTO SUAT_CHIEU VALUES(108,1,2,?,?,80000,0,'SAP_CHIEU','MANUAL')", day.minusHours(2), day);
++        db.update("INSERT INTO SUAT_CHIEU VALUES(109,1,2,?,?,80000,0,'SAP_CHIEU','MANUAL')", day.plusDays(1), day.plusDays(1).plusHours(2));
++        var repo = new AdminCatalogRepository(db);
++        var all = repo.timeline(day, day.plusDays(1), null, "");
++        assertEquals(107, all.size());
++        assertEquals(106, all.get(105).maSo());
++        assertEquals("+07:00", all.get(105).batDau().getOffset().toString());
++        assertEquals(2, repo.timeline(day, day.plusDays(1), 2L, "").size());
++        assertEquals(106, repo.timeline(day, day.plusDays(1), 2L, "HUY").get(0).maSo());
++        assertTrue(repo.timeline(day.plusDays(3), day.plusDays(4), null, "").isEmpty());
++    }
++}
+diff --git a/src/test/java/com/cinesnack/repository/TheaterPolicyRepositoryTest.java b/src/test/java/com/cinesnack/repository/TheaterPolicyRepositoryTest.java
+new file mode 100644
+index 0000000..38a5f00
+--- /dev/null
++++ b/src/test/java/com/cinesnack/repository/TheaterPolicyRepositoryTest.java
+@@ -0,0 +1,42 @@
++package com.cinesnack.repository;
++
++import static org.junit.jupiter.api.Assertions.*;
++
++import com.cinesnack.catalog.dto.TheaterPolicy;
++import com.cinesnack.catalog.repository.TheaterPolicyRepository;
++import java.math.BigDecimal;
++import java.util.UUID;
++import org.junit.jupiter.api.Test;
++import org.springframework.jdbc.core.JdbcTemplate;
++import org.springframework.jdbc.datasource.DriverManagerDataSource;
++
++class TheaterPolicyRepositoryTest {
++    @Test
++    void roundTripsPricesAndNullablePolicyWithoutChangingSavedShowPrices() {
++        var db = new JdbcTemplate(new DriverManagerDataSource("jdbc:h2:mem:" + UUID.randomUUID() + ";DB_CLOSE_DELAY=-1", "sa", ""));
++        db.execute("CREATE TABLE PHONG_CHIEU(phong_id BIGINT PRIMARY KEY, trang_thai VARCHAR(20))");
++        db.execute("CREATE TABLE BANG_GIA_PHONG(phong_id BIGINT PRIMARY KEY REFERENCES PHONG_CHIEU(phong_id) ON DELETE CASCADE, gia_thuong_ngay_thuong DECIMAL(12,2),gia_vip_ngay_thuong DECIMAL(12,2),gia_thuong_cuoi_tuan DECIMAL(12,2),gia_vip_cuoi_tuan DECIMAL(12,2))");
++        db.execute("CREATE TABLE CHINH_SACH_RAP(chinh_sach_id INT PRIMARY KEY,gioi_han_soat_muon_phut INT)");
++        db.execute("CREATE TABLE SUAT_CHIEU(gia_co_ban DECIMAL(12,2),phu_thu_vip DECIMAL(12,2),che_do_gia VARCHAR(10))");
++        db.update("INSERT INTO PHONG_CHIEU VALUES(1,'HOAT_DONG'),(2,'DA_XOA')");
++        db.update("INSERT INTO CHINH_SACH_RAP VALUES(1,NULL)");
++        db.update("INSERT INTO SUAT_CHIEU VALUES(70000,20000,'POLICY')");
++        var repo = new TheaterPolicyRepository(db);
++        assertTrue(repo.roomExists(1));
++        assertFalse(repo.roomExists(2));
++        assertNull(repo.pricing(1));
++        var initial = new TheaterPolicy.RoomPricing(new BigDecimal("70000"),new BigDecimal("90000"),new BigDecimal("100000"),new BigDecimal("130000"));
++        repo.savePricing(1, initial);
++        assertEquals(0, initial.weekdayRegular().compareTo(repo.pricing(1).weekdayRegular()));
++        repo.savePricing(1, new TheaterPolicy.RoomPricing(BigDecimal.TEN,BigDecimal.TEN,BigDecimal.TEN,BigDecimal.TEN));
++        assertEquals(0, BigDecimal.TEN.compareTo(repo.pricing(1).weekendVip()));
++        assertEquals(70000, db.queryForObject("SELECT gia_co_ban FROM SUAT_CHIEU", Integer.class));
++        assertNull(repo.policy().lateCheckInMinutes());
++        repo.savePolicy(new TheaterPolicy.Settings(15));
++        assertEquals(15, repo.policy().lateCheckInMinutes());
++        repo.savePolicy(new TheaterPolicy.Settings(null));
++        assertNull(repo.policy().lateCheckInMinutes());
++        db.update("DELETE FROM PHONG_CHIEU WHERE phong_id=1");
++        assertNull(repo.pricing(1));
++    }
++}
+diff --git a/src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java b/src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java
+index d9d2d9b..d85f82b 100644
+--- a/src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java
++++ b/src/test/java/com/cinesnack/repository/TicketCheckInRepositoryTest.java
+@@ -50,10 +50,26 @@ class TicketCheckInRepositoryTest {
+         repo = new TicketCheckInRepository(db);
+     }
+ 
++    @Test
++    void lateCutoffIsInclusiveAndEndIsExclusive() {
++        assertEquals(0, repo.checkIn("VEabc123", 7, start.plusMinutes(15).plusSeconds(1), 15));
++        assertEquals(1, repo.checkIn("VEabc123", 7, start.plusMinutes(15), 15));
++        assertEquals(0, repo.checkIn("VEabc123", 8, start.plusMinutes(15), 15));
++    }
++    @Test
++    void zeroAllowsStartButNeverAfter() {
++        assertEquals(0, repo.checkIn("VEabc123", 7, start.plusSeconds(1), 0));
++        assertEquals(1, repo.checkIn("VEabc123", 7, start, 0));
++    }
++    @Test
++    void configuredLimitStillCannotAdmitAtEnd() {
++        assertEquals(0, repo.checkIn("VEabc123", 7, start.plusHours(2), 600));
++        assertEquals(1, repo.checkIn("VEabc123", 7, start.plusHours(2).minusSeconds(1), null));
++    }
+     @Test
+     void acceptsAtOpeningBoundaryOnlyOnceAndRecordsStaff() {
+-        assertEquals(1, repo.checkIn("VEABC123", 7, start.minusMinutes(30)));
+-        assertEquals(0, repo.checkIn("VEabc123", 8, start));
++        assertEquals(1, repo.checkIn("VEABC123", 7, start.minusMinutes(30), null));
++        assertEquals(0, repo.checkIn("VEabc123", 8, start, null));
+         assertEquals(
+             "DA_SOAT",
+             db.queryForObject("SELECT trang_thai FROM VE", String.class)
+@@ -75,17 +91,17 @@ class TicketCheckInRepositoryTest {
+ 
+     @Test
+     void rejectsTooEarlyAndAtEndOfShow() {
+-        assertEquals(0, repo.checkIn("VEabc123", 7, start.minusMinutes(31)));
+-        assertEquals(0, repo.checkIn("VEabc123", 7, start.plusHours(2)));
++        assertEquals(0, repo.checkIn("VEabc123", 7, start.minusMinutes(31), null));
++        assertEquals(0, repo.checkIn("VEabc123", 7, start.plusHours(2), null));
+     }
+ 
+     @Test
+     void rejectsUnpaidOrderOrCancelledShow() {
+         db.update("UPDATE DON_HANG SET trang_thai='CHO_THANH_TOAN'");
+-        assertEquals(0, repo.checkIn("VEabc123", 7, start));
++        assertEquals(0, repo.checkIn("VEabc123", 7, start, null));
+         db.update("UPDATE DON_HANG SET trang_thai='DA_THANH_TOAN'");
+         db.update("UPDATE SUAT_CHIEU SET trang_thai='HUY'");
+-        assertEquals(0, repo.checkIn("VEabc123", 7, start));
++        assertEquals(0, repo.checkIn("VEabc123", 7, start, null));
+     }
+ 
+     @Test
+@@ -95,11 +111,11 @@ class TicketCheckInRepositoryTest {
+         try {
+             var a = pool.submit(() -> {
+                 gate.await();
+-                return repo.checkIn("VEabc123", 7, start);
++                return repo.checkIn("VEabc123", 7, start, null);
+             });
+             var b = pool.submit(() -> {
+                 gate.await();
+-                return repo.checkIn("VEabc123", 8, start);
++                return repo.checkIn("VEabc123", 8, start, null);
+             });
+             gate.countDown();
+             assertEquals(
+@@ -139,7 +155,7 @@ class TicketCheckInRepositoryTest {
+ 
+     @Test
+     void scannedTicketCannotBePrinted() {
+-        assertEquals(1, repo.checkIn("VEabc123", 7, start));
++        assertEquals(1, repo.checkIn("VEabc123", 7, start, null));
+         assertEquals(0, repo.claimPrint("VEabc123", 7, start.plusHours(3)));
+     }
+ }
+diff --git a/src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java b/src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java
+index e20e402..b87f5da 100644
+--- a/src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java
++++ b/src/test/java/com/cinesnack/service/AdminCatalogServiceTest.java
+@@ -26,10 +26,12 @@ class AdminCatalogServiceTest {
+         Instant.parse("2026-10-14T03:00:00Z"),
+         ZoneId.of("Asia/Ho_Chi_Minh")
+     );
++    private final com.cinesnack.catalog.service.TheaterPolicyService policy = mock(com.cinesnack.catalog.service.TheaterPolicyService.class);
+     private final AdminCatalogService service = new AdminCatalogService(
+         repo,
+         users,
+-        clock
++        clock,
++        policy
+     );
+     private final Catalog.Movie movie = new Catalog.Movie(
+         1,
+@@ -86,6 +88,26 @@ class AdminCatalogServiceTest {
+         );
+     }
+ 
++    @Test
++    void policySnapshotsServerPricesRatherThanClientAmountsAndProtectsSoldShows() {
++        when(policy.pricesForShow(2, request.startsAt())).thenReturn(
++            new com.cinesnack.catalog.dto.TheaterPolicy.ShowPrices(new BigDecimal("100000"), new BigDecimal("130000")));
++        var fromPolicy = new AdminCatalog.ShowRequest(1L, 2L, request.startsAt(), BigDecimal.ONE, BigDecimal.ONE, "SAP_CHIEU", "POLICY");
++        service.saveShow(null, fromPolicy, "admin");
++        var captured = org.mockito.ArgumentCaptor.forClass(AdminCatalog.ShowRequest.class);
++        verify(repo).insertShow(captured.capture(), any(), any());
++        assertEquals(new BigDecimal("100000"), captured.getValue().price());
++        assertEquals(new BigDecimal("30000"), captured.getValue().vipSurcharge());
++        assertEquals("POLICY", captured.getValue().pricingMode());
++
++        when(repo.lockShow(3)).thenReturn(new Catalog.Show(3, 1, "Phim", 2, "Phòng", request.startsAt(), request.startsAt().plusHours(2), request.price(), "SAP_CHIEU"));
++        when(repo.showHasTickets(3)).thenReturn(true);
++        clearInvocations(policy);
++        assertEquals(409, assertThrows(ResponseStatusException.class, () -> service.saveShow(3L, fromPolicy, "admin")).getStatusCode().value());
++        verifyNoInteractions(policy);
++        verify(repo, never()).updateShow(anyLong(), any(), any(), any());
++    }
++
+     @Test
+     void overlappingShowIsRejectedBeforeWriting() {
+         when(
+diff --git a/src/test/java/com/cinesnack/service/MovieMetadataTimelineTest.java b/src/test/java/com/cinesnack/service/MovieMetadataTimelineTest.java
+new file mode 100644
+index 0000000..3b1a0b6
+--- /dev/null
++++ b/src/test/java/com/cinesnack/service/MovieMetadataTimelineTest.java
+@@ -0,0 +1,71 @@
++package com.cinesnack.service;
++
++import static org.junit.jupiter.api.Assertions.*;
++import static org.mockito.Mockito.*;
++
++import com.cinesnack.account.entity.User;
++import com.cinesnack.account.service.UserService;
++import com.cinesnack.catalog.dto.AdminCatalog;
++import com.cinesnack.catalog.dto.Catalog;
++import com.cinesnack.catalog.repository.AdminCatalogRepository;
++import com.cinesnack.catalog.service.AdminCatalogService;
++import jakarta.validation.Validation;
++import java.time.*;
++import java.util.List;
++import org.junit.jupiter.api.Test;
++import org.springframework.web.server.ResponseStatusException;
++
++class MovieMetadataTimelineTest {
++    private final AdminCatalogRepository repo = mock(AdminCatalogRepository.class);
++    private final UserService users = mock(UserService.class);
++    private final AdminCatalogService service = new AdminCatalogService(repo, users, Clock.systemUTC(), mock(com.cinesnack.catalog.service.TheaterPolicyService.class));
++
++    private AdminCatalog.MovieRequest edit(String name, String genre, int duration, String rating, String status, String director, String trailer) {
++        return new AdminCatalog.MovieRequest(name, genre, "New description", "New actors", duration, rating,
++            "/new.png", status, director, trailer);
++    }
++
++    @Test
++    void trailerMustBeHttpsWithHostAndWithoutCredentials() {
++        try (var factory = Validation.buildDefaultValidatorFactory()) {
++            var validator = factory.getValidator();
++            for (String trailer : new String[] {"http://example.com/a", "javascript:alert(1)", "https://user:pass@example.com/a", "https:/nohost", "https://example.com/" + "x".repeat(500)}) {
++                assertFalse(validator.validate(edit("Phim", "Hài", 90, "P", "DANG_CHIEU", "Đạo diễn", trailer)).isEmpty(), trailer);
++            }
++            for (String trailer : new String[] {null, "", "https://example.com/watch?v=1"}) {
++                assertTrue(validator.validate(edit("Phim", "Hài", 90, "P", "DANG_CHIEU", null, trailer)).isEmpty());
++            }
++            assertFalse(validator.validate(edit("Phim", "Hài", 90, "P", "DANG_CHIEU", "x".repeat(201), null)).isEmpty());
++        }
++    }
++
++    @Test
++    void soldMovieAllowsMetadataButProtectsHistoricalAttributes() {
++        when(users.layTaiKhoanHoatDong("admin")).thenReturn(new User(1, "admin", "", "QUAN_TRI", "HOAT_DONG"));
++        var old = new Catalog.Movie(1, "Phim", "Hài", "Old", "Old actors", 90, "P", null, "DANG_CHIEU");
++        when(repo.lockMovie(1)).thenReturn(old);
++        when(repo.movieHasTickets(1)).thenReturn(true);
++        var metadata = edit("Phim", "Hài", 90, "P", "DANG_CHIEU", "Đạo diễn", "https://example.com/trailer");
++        when(repo.movie(1)).thenReturn(old);
++        assertDoesNotThrow(() -> service.saveMovie(1L, metadata, "admin"));
++        verify(repo).updateMovie(1, metadata);
++        for (var protectedEdit : List.of(
++            edit("Other", "Hài", 90, "P", "DANG_CHIEU", null, null),
++            edit("Phim", "Other", 90, "P", "DANG_CHIEU", null, null),
++            edit("Phim", "Hài", 91, "P", "DANG_CHIEU", null, null),
++            edit("Phim", "Hài", 90, "T18", "DANG_CHIEU", null, null),
++            edit("Phim", "Hài", 90, "P", "NGUNG_CHIEU", null, null))) {
++            assertEquals(409, assertThrows(ResponseStatusException.class, () -> service.saveMovie(1L, protectedEdit, "admin")).getStatusCode().value());
++        }
++    }
++
++    @Test
++    void timelineUsesVietnamDayBoundariesAndCurrentAdminRole() {
++        when(users.layTaiKhoanHoatDong("admin")).thenReturn(new User(1, "admin", "", "QUAN_TRI", "HOAT_DONG"));
++        service.timeline("admin", LocalDate.of(2026, 11, 9), 2L, "HUY");
++        verify(repo).timeline(LocalDateTime.parse("2026-11-09T00:00:00"), LocalDateTime.parse("2026-11-10T00:00:00"), 2L, "HUY");
++        assertEquals(400, assertThrows(ResponseStatusException.class, () -> service.timeline("admin", LocalDate.now(), 2L, "UNKNOWN")).getStatusCode().value());
++        when(users.layTaiKhoanHoatDong("admin")).thenReturn(new User(1, "admin", "", "NHAN_VIEN", "HOAT_DONG"));
++        assertEquals(403, assertThrows(ResponseStatusException.class, () -> service.timeline("admin", LocalDate.now(), null, "")).getStatusCode().value());
++    }
++}
+diff --git a/src/test/java/com/cinesnack/service/MoviePosterServiceTest.java b/src/test/java/com/cinesnack/service/MoviePosterServiceTest.java
+index 08e1f5b..68467ed 100644
+--- a/src/test/java/com/cinesnack/service/MoviePosterServiceTest.java
++++ b/src/test/java/com/cinesnack/service/MoviePosterServiceTest.java
+@@ -30,7 +30,9 @@ class MoviePosterServiceTest {
+             120,
+             "T13",
+             null,
+-            "SAP_CHIEU"
++            "SAP_CHIEU",
++            "Đạo diễn",
++            "https://example.com/trailer"
+         );
+     private final MockMultipartFile file = new MockMultipartFile(
+         "poster",
+@@ -77,7 +79,9 @@ class MoviePosterServiceTest {
+                 r ->
+                     "/posters/test.png".equals(r.posterUrl()) &&
+                     "Nội dung".equals(r.description()) &&
+-                    "Diễn viên".equals(r.actors())
++                    "Diễn viên".equals(r.actors()) &&
++                    "Đạo diễn".equals(r.director()) &&
++                    "https://example.com/trailer".equals(r.trailerUrl())
+             ),
+             eq("admin")
+         );
+diff --git a/src/test/java/com/cinesnack/service/QrPaymentServiceTest.java b/src/test/java/com/cinesnack/service/QrPaymentServiceTest.java
+index 207550e..5266c49 100644
+--- a/src/test/java/com/cinesnack/service/QrPaymentServiceTest.java
++++ b/src/test/java/com/cinesnack/service/QrPaymentServiceTest.java
+@@ -39,6 +39,8 @@ class QrPaymentServiceTest {
+         assertTrue(qr.diaChiAnh().contains("-qr_only.svg?"));
+         assertEquals("123456789", qr.soTaiKhoan());
+         assertEquals("Cine Snack", qr.tenChuTaiKhoan());
++        assertEquals(OffsetDateTime.parse("2026-10-13T10:10:00+07:00"), qr.hetHanLuc());
++        assertEquals(OffsetDateTime.parse("2026-10-13T10:00:00+07:00"), qr.gioServer());
+     }
+ 
+     @Test
+diff --git a/src/test/java/com/cinesnack/service/SqlServerPaymentIT.java b/src/test/java/com/cinesnack/service/SqlServerPaymentIT.java
+index aadc6c4..54b9287 100644
+--- a/src/test/java/com/cinesnack/service/SqlServerPaymentIT.java
++++ b/src/test/java/com/cinesnack/service/SqlServerPaymentIT.java
+@@ -50,6 +50,8 @@ class SqlServerPaymentIT {
+         UserRepository.class,
+         AdminCatalogRepository.class,
+         AdminCatalogService.class,
++        com.cinesnack.catalog.service.TheaterPolicyService.class,
++        com.cinesnack.catalog.repository.TheaterPolicyRepository.class,
+     })
+     static class Config {
+ 
+diff --git a/src/test/java/com/cinesnack/service/TheaterPolicyServiceTest.java b/src/test/java/com/cinesnack/service/TheaterPolicyServiceTest.java
+new file mode 100644
+index 0000000..4df8a5c
+--- /dev/null
++++ b/src/test/java/com/cinesnack/service/TheaterPolicyServiceTest.java
+@@ -0,0 +1,45 @@
++package com.cinesnack.service;
++import static org.junit.jupiter.api.Assertions.*;
++import static org.mockito.Mockito.*;
++import com.cinesnack.account.entity.User;
++import com.cinesnack.account.service.UserService;
++import com.cinesnack.catalog.dto.TheaterPolicy;
++import com.cinesnack.catalog.repository.TheaterPolicyRepository;
++import com.cinesnack.catalog.service.TheaterPolicyService;
++import jakarta.validation.Validation;
++import java.math.BigDecimal;
++import java.time.OffsetDateTime;
++import org.junit.jupiter.api.Test;
++import org.springframework.web.server.ResponseStatusException;
++class TheaterPolicyServiceTest {
++ final TheaterPolicyRepository repo=mock(TheaterPolicyRepository.class);
++ final UserService users=mock(UserService.class);
++ final TheaterPolicyService service=new TheaterPolicyService(repo,users);
++ final TheaterPolicy.RoomPricing prices=new TheaterPolicy.RoomPricing(new BigDecimal("70000"),new BigDecimal("90000"),new BigDecimal("100000"),new BigDecimal("130000"));
++ @Test void selectsVietnamFridayAndSaturdayAcrossUtcDateBoundary() {
++  when(repo.pricing(2)).thenReturn(prices);
++  assertEquals(new BigDecimal("70000"),service.pricesForShow(2,OffsetDateTime.parse("2026-11-12T18:00:00Z")).regular());
++  assertEquals(new BigDecimal("100000"),service.pricesForShow(2,OffsetDateTime.parse("2026-11-13T18:00:00Z")).regular());
++  assertEquals(new BigDecimal("130000"),service.pricesForShow(2,OffsetDateTime.parse("2026-11-13T18:00:00Z")).vip());
++ }
++ @Test void absentPolicyIsConflictRatherThanZeroPrice() {
++  assertEquals(409,assertThrows(ResponseStatusException.class,()->service.pricesForShow(2,OffsetDateTime.now())).getStatusCode().value());
++ }
++ @Test void currentStaffCannotReadOrWriteAdminPolicy() {
++  when(users.layTaiKhoanHoatDong("oldAdmin")).thenReturn(new User(1,"oldAdmin","","NHAN_VIEN","HOAT_DONG"));
++  assertEquals(403,assertThrows(ResponseStatusException.class,()->service.savePricing(2,prices,"oldAdmin")).getStatusCode().value());
++  assertEquals(403,assertThrows(ResponseStatusException.class,()->service.policy("oldAdmin")).getStatusCode().value());
++  verifyNoInteractions(repo);
++ }
++ @Test void rejectsInvalidPricesAndLateBounds() {
++  try(var factory=Validation.buildDefaultValidatorFactory()) {
++   var v=factory.getValidator();
++   for(String amount:new String[]{"1.5","-1","10000000000"})
++    assertFalse(v.validate(new TheaterPolicy.RoomPricing(new BigDecimal(amount),new BigDecimal("9999999999"),BigDecimal.ZERO,BigDecimal.ZERO)).isEmpty());
++   assertFalse(v.validate(new TheaterPolicy.RoomPricing(BigDecimal.TEN,BigDecimal.ONE,BigDecimal.ZERO,BigDecimal.ZERO)).isEmpty());
++   assertFalse(v.validate(new TheaterPolicy.Settings(-1)).isEmpty());
++   assertFalse(v.validate(new TheaterPolicy.Settings(601)).isEmpty());
++   assertTrue(v.validate(new TheaterPolicy.Settings(null)).isEmpty());
++  }
++ }
++}
+diff --git a/src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java b/src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java
+index 611bd85..b1874c5 100644
+--- a/src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java
++++ b/src/test/java/com/cinesnack/service/TicketCheckInServiceTest.java
+@@ -16,12 +16,17 @@ class TicketCheckInServiceTest {
+ 
+     final TicketCheckInRepository repo = mock(TicketCheckInRepository.class);
+     final UserService users = mock(UserService.class);
++    final com.cinesnack.catalog.service.TheaterPolicyService policy = mock(com.cinesnack.catalog.service.TheaterPolicyService.class);
+     final TicketCheckInService service = new TicketCheckInService(
+         repo,
+         users,
+-        Clock.fixed(Instant.parse("2026-11-03T12:00:00Z"), ZoneOffset.UTC)
++        Clock.fixed(Instant.parse("2026-11-03T12:00:00Z"), ZoneOffset.UTC),
++        policy
+     );
+ 
++    @org.junit.jupiter.api.BeforeEach
++    void setupPolicy() { when(policy.currentPolicy()).thenReturn(new com.cinesnack.catalog.dto.TheaterPolicy.Settings(null)); }
++
+     @Test
+     void rechecksCurrentRoleBeforeTouchingTicket() {
+         when(users.layTaiKhoanHoatDong("staff")).thenReturn(
+@@ -43,7 +48,7 @@ class TicketCheckInServiceTest {
+         when(users.layTaiKhoanHoatDong("staff")).thenReturn(
+             new User(7, "staff", "", "NHAN_VIEN", "HOAT_DONG")
+         );
+-        when(repo.checkIn(eq("VE1"), eq(7L), any())).thenReturn(1);
++        when(repo.checkIn(eq("VE1"), eq(7L), any(), isNull())).thenReturn(1);
+         var result = service.checkIn(" VE1 ", "staff");
+         assertEquals(
+             OffsetDateTime.parse("2026-11-03T19:00:00+07:00"),
+@@ -52,6 +57,14 @@ class TicketCheckInServiceTest {
+         assertEquals(7, result.staffId());
+     }
+ 
++    @Test
++    void passesConfiguredLateLimitToAtomicUpdate() {
++        when(users.layTaiKhoanHoatDong("staff")).thenReturn(new User(7,"staff","","NHAN_VIEN","HOAT_DONG"));
++        when(policy.currentPolicy()).thenReturn(new com.cinesnack.catalog.dto.TheaterPolicy.Settings(15));
++        when(repo.checkIn(eq("VE1"), eq(7L), any(), eq(15))).thenReturn(1);
++        service.checkIn("VE1", "staff");
++        verify(repo).checkIn("VE1",7,LocalDateTime.parse("2026-11-03T19:00:00"),15);
++    }
+     @Test
+     void rejectedTicketDoesNotReturnDetails() {
+         when(users.layTaiKhoanHoatDong("staff")).thenReturn(
+diff --git a/src/test/js/showtime-timeline.test.cjs b/src/test/js/showtime-timeline.test.cjs
+new file mode 100644
+index 0000000..45b4d15
+--- /dev/null
++++ b/src/test/js/showtime-timeline.test.cjs
+@@ -0,0 +1,25 @@
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const timeline = require('../../main/resources/UI/assets/js/showtime-timeline.js');
++
++test('Vietnam day clips both overnight edges and excludes exact day boundaries', () => {
++  const shows = [
++    { id: 1, roomId: 2, startsAt: '2026-11-08T23:00:00+07:00', endsAt: '2026-11-09T01:00:00+07:00' },
++    { id: 2, roomId: 2, startsAt: '2026-11-09T16:00:00Z', endsAt: '2026-11-09T18:00:00Z' },
++    { id: 3, roomId: 2, startsAt: '2026-11-08T22:00:00+07:00', endsAt: '2026-11-09T00:00:00+07:00' },
++    { id: 4, roomId: 2, startsAt: '2026-11-10T00:00:00+07:00', endsAt: '2026-11-10T01:00:00+07:00' },
++  ];
++  const items = timeline.layout(shows, '2026-11-09');
++  assert.deepEqual(items.map(s => [s.id, s.startMinute, s.endMinute]), [[1, 0, 60], [2, 1380, 1440]]);
++});
++
++test('room ordering is stable and overlapping cancelled shows use separate lanes', () => {
++  const base = { startsAt: '2026-11-09T10:00:00+07:00', endsAt: '2026-11-09T12:00:00+07:00' };
++  const result = timeline.layout([{ ...base, id: 3, roomId: 2 }, { ...base, id: 2, roomId: 1 }, { ...base, id: 1, roomId: 1 }], '2026-11-09');
++  assert.deepEqual(result.map(s => [s.id, s.lane]), [[1, 0], [2, 1], [3, 0]]);
++});
++
++test('date navigation stays in Vietnam regardless of browser timezone', () => {
++  assert.equal(timeline.shiftDate('2026-12-31', 1), '2027-01-01');
++  assert.equal(timeline.shiftDate('2026-01-01', -1), '2025-12-31');
++});
+diff --git a/tests/frontend/browser/movie-timeline.test.cjs b/tests/frontend/browser/movie-timeline.test.cjs
+new file mode 100644
+index 0000000..e68dd28
+--- /dev/null
++++ b/tests/frontend/browser/movie-timeline.test.cjs
+@@ -0,0 +1,77 @@
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const { chuanBi } = require('./helpers.cjs');
++const fs = require('node:fs');
++
++test('movie metadata remains text, trailer opens safely, admin sends new fields', async t => {
++  const app = await chuanBi(t), page = await app.trangMoi();
++  Object.assign(app.catalog.movie, { director: '<img src=x onerror=alert(1)>', trailerUrl: 'https://example.com/trailer' });
++  await app.mo(page, 'movies.html?phim=1');
++  await page.locator('#hop-phim[open]').waitFor();
++  assert.match(await page.locator('#phim-chi-tiet').textContent(), /Đạo diễn: <img src=x onerror=alert\(1\)>/);
++  assert.equal(await page.locator('#phim-chi-tiet img').count(), 0);
++  const trailer = page.getByRole('link', { name: 'Xem trailer (mở tab mới)' });
++  assert.equal(await trailer.getAttribute('href'), 'https://example.com/trailer');
++  assert.equal(await trailer.getAttribute('target'), '_blank');
++  assert.equal(await trailer.getAttribute('rel'), 'noopener noreferrer');
++  await page.locator('#hop-phim').evaluate(node => node.close());
++  await app.dangNhap(page, 'admin@example.test', 'admin.html');
++  await page.locator('[data-edit-movie="1"]').click();
++  assert.equal(await page.locator('#phim-form [name=director]').inputValue(), app.catalog.movie.director);
++  assert.equal(await page.locator('#phim-form [name=trailerUrl]').inputValue(), app.catalog.movie.trailerUrl);
++  await page.locator('#phim-form [name=director]').fill('Đạo diễn mới');
++  let saved;
++  await page.route('**/api/admin/movies/1', async route => {
++    const raw = route.request().postDataBuffer().toString('utf8');
++    saved = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
++    await route.fulfill({ json: { ...saved, id: 1 } });
++  });
++  await page.locator('#phim-form [type=submit]').click();
++  await page.locator('#phim-hop').waitFor({ state: 'hidden' });
++  assert.equal(saved.director, 'Đạo diễn mới');
++  assert.equal(saved.trailerUrl, 'https://example.com/trailer');
++  assert.deepEqual(app.loi, []);
++});
++
++test('daily timeline shows all rows, overnight clipping, filters, keyboard editing and mobile scroll', async t => {
++  const app = await chuanBi(t), page = await app.trangMoi();
++  const day = '2026-11-09';
++  const base = { ...app.catalog.showTime, startsAt: day + 'T10:00:00+07:00', endsAt: day + 'T12:00:00+07:00' };
++  const shows = Array.from({ length: 101 }, (_, index) => ({ ...base, id: index + 1 }));
++  shows.push({ ...base, id: 102, roomId: 2, roomName: 'Phòng 02', startsAt: '2026-11-08T23:00:00+07:00', endsAt: day + 'T01:00:00+07:00', status: 'HUY' });
++  shows.push({ ...base, id: 103, roomId: 2, roomName: 'Phòng 02', startsAt: day + 'T23:00:00+07:00', endsAt: '2026-11-10T01:00:00+07:00' });
++  await page.route('**/api/admin/showtimes/timeline?*', route => {
++    const q = new URL(route.request().url()).searchParams;
++    return route.fulfill({ json: q.get('date') === day ? shows.filter(s => (!q.get('roomId') || String(s.roomId) === q.get('roomId')) && (!q.get('status') || s.status === q.get('status'))) : [] });
++  });
++  await app.dangNhap(page, 'admin@example.test', 'admin.html');
++  await page.locator('[data-muc=suat]').click();
++  await page.getByRole('button', { name: 'Timeline theo ngày', exact: true }).click();
++  await page.getByLabel('Ngày (giờ Việt Nam)').fill(day);
++  await page.getByLabel('Ngày (giờ Việt Nam)').dispatchEvent('change');
++  await page.waitForFunction(() => document.querySelectorAll('.showtime-block').length === 103);
++  await page.locator('.showtime-accessible summary').click();
++  assert.equal(await page.locator('.showtime-accessible tbody tr').count(), 103);
++  assert.equal(await page.locator('.showtime-block[data-status=HUY]').evaluate(node => node.style.left), '160px');
++  await page.getByLabel('Phòng', { exact: true }).selectOption('2');
++  await page.waitForFunction(() => document.querySelectorAll('.showtime-block').length === 2);
++  fs.mkdirSync('.review/ui', { recursive: true });
++  await page.locator('#muc-suat').screenshot({ path: '.review/ui/timeline-desktop.png' });
++  await page.getByLabel('Trạng thái', { exact: true }).selectOption('HUY');
++  await page.waitForFunction(() => document.querySelectorAll('.showtime-block').length === 1);
++  const block = page.locator('.showtime-block');
++  await block.focus();
++  await page.keyboard.press('Enter');
++  await page.locator('#suat-hop[open]').waitFor();
++  assert.equal(await page.locator('#suat-form [name=id]').inputValue(), '102');
++  await page.locator('#suat-hop').evaluate(node => node.close());
++  await page.setViewportSize({ width: 390, height: 844 });
++  assert.equal(await page.locator('.showtime-scroll').evaluate(node => node.scrollWidth > node.clientWidth), true);
++  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true,
++    JSON.stringify(await page.evaluate(() => [...document.querySelectorAll('body *')].filter(node => node.getBoundingClientRect().width > innerWidth && getComputedStyle(node).position !== 'absolute').map(node => [node.tagName, node.className, node.getBoundingClientRect().width]).slice(0, 20))));
++  await page.locator('#muc-suat').screenshot({ path: '.review/ui/timeline-mobile.png' });
++  await page.getByRole('button', { name: 'Ngày sau →', exact: true }).click();
++  await page.getByText('Không có suất chiếu phù hợp trong ngày này.', { exact: true }).waitFor();
++  assert.equal(await page.getByLabel('Ngày (giờ Việt Nam)').inputValue(), '2026-11-10');
++  assert.deepEqual(app.loi, []);
++});
+diff --git a/tests/frontend/browser/payment-deadline.test.cjs b/tests/frontend/browser/payment-deadline.test.cjs
+new file mode 100644
+index 0000000..aca03d9
+--- /dev/null
++++ b/tests/frontend/browser/payment-deadline.test.cjs
+@@ -0,0 +1,164 @@
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const { chuanBi } = require('./helpers.cjs');
++
++async function checkout(t, delayed = false) {
++  const app=await chuanBi(t), page=await app.trangMoi();
++  const now=Date.now();
++  await page.clock.install({time:new Date(now)});
++  await app.mo(page,'index.html');
++  await page.evaluate(({now})=>sessionStorage.setItem('cinesnack-gio-v2',JSON.stringify({
++    version:2,maSuatChieu:null,phim:null,suat:null,ghe:[],snacks:[{productId:31,name:'Nước',quantity:1,unitPrice:30000}],combos:[]
++  })),{now});
++  const order={code:'DHTIMER',createdAt:new Date(now).toISOString(),expiresAt:new Date(now+5000).toISOString()};
++  await page.route('**/api/guest/orders',r=>r.fulfill({status:201,json:order}));
++  let release;
++  const gate = new Promise(r=>release=r);
++  let requested;
++  const pending=new Promise(r=>requested=r);
++  await page.route('**/api/guest/orders/DHTIMER/payment-qr',async r=>{
++    requested(); if(delayed)await gate;
++    await r.fulfill({json:{amount:30000,content:order.code,accountNo:'12345678',bankName:'Demo',accountName:'CineSnack',
++      imageUrl:'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20"%3E%3Crect width="20" height="20"/%3E%3C/svg%3E',serverTime:order.createdAt,expiresAt:order.expiresAt}});
++  });
++  await app.mo(page,'checkout.html');
++  await page.locator('#khach-email').fill('buyer@example.test');
++  await page.locator('#mau-dong-y').check();
++  return {app,page,pending,release,order};
++}
++test('checkout counts down and removes QR, download and copy actions at expiry',async t=>{
++  const {app,page}=await checkout(t);
++  await page.locator('#thanh-toan-bieu-mau button[type=submit]').click();
++  await page.locator('#checkout-qr-image img').waitFor();
++  assert.match(await page.locator('#checkout-countdown').textContent(),/00:0[1-5]/);
++  await page.clock.fastForward(6000);
++  assert.equal(await page.locator('#checkout-qr-image img').count(),0);
++  assert.equal(await page.locator('#checkout-download-qr').isVisible(),false);
++  assert.equal(await page.locator('#checkout-copy-content').isDisabled(),true);
++  assert.match(await page.locator('#checkout-qr-error').textContent(),/hết/);
++  assert.deepEqual(app.loi,[]);
++});
++test('a late QR response cannot restore expired payment actions',async t=>{
++  const {app,page,pending,release}=await checkout(t,true);
++  await page.locator('#thanh-toan-bieu-mau button[type=submit]').click(); await pending;
++  await page.clock.fastForward(6000); release();
++  await page.waitForTimeout(100);
++  assert.equal(await page.locator('#checkout-qr-image img').count(),0);
++  assert.equal(await page.locator('#checkout-open-qr').isDisabled(),true);
++  assert.deepEqual(app.loi,[]);
++});
++test('a QR response arriving before expiry cannot extend the checkout deadline',async t=>{
++  const {app,page,pending,release}=await checkout(t,true);
++  await page.locator('#thanh-toan-bieu-mau button[type=submit]').click();await pending;
++  await page.clock.fastForward(2000);release();
++  await page.locator('#checkout-qr-image img').waitFor();
++  await page.clock.fastForward(3500);
++  assert.equal(await page.locator('#checkout-qr-image img').count(),0);
++  assert.deepEqual(app.loi,[]);
++});
++test('a delayed order response does not extend the hold when QR is unavailable',async t=>{
++  const {app,page,order}=await checkout(t);
++  let release,requested;const gate=new Promise(r=>release=r),pending=new Promise(r=>requested=r);
++  await page.route('**/api/guest/orders',async r=>{requested();await gate;await r.fulfill({status:201,json:order});});
++  await page.route('**/api/guest/orders/DHTIMER/payment-qr',r=>r.fulfill({status:503,json:{message:'Chưa cấu hình QR'}}));
++  await page.locator('#thanh-toan-bieu-mau button[type=submit]').click();await pending;
++  await page.clock.fastForward(2000);release();
++  await page.locator('#checkout-qr-error').filter({hasText:'Chưa cấu hình QR'}).waitFor();
++  await page.clock.fastForward(3500);
++  assert.equal(await page.locator('#checkout-countdown').textContent(),'00:00');
++  assert.equal(await page.locator('#checkout-open-qr').isDisabled(),true);
++  assert.deepEqual(app.loi,[]);
++});
++test('a PNG finishing after expiry is revoked without restoring download',async t=>{
++  const {app,page}=await checkout(t);
++  await page.evaluate(()=>{
++    window.revoked=[];
++    URL.revokeObjectURL=url=>window.revoked.push(url);
++    CineSnack.qrPngUrl=()=>new Promise(resolve=>window.finishPng=resolve);
++  });
++  await page.locator('#thanh-toan-bieu-mau button[type=submit]').click();
++  await page.waitForFunction(()=>typeof window.finishPng==='function');
++  await page.clock.fastForward(6000);
++  await page.evaluate(()=>window.finishPng('blob:late-qr'));
++  await page.waitForFunction(()=>window.revoked.includes('blob:late-qr'));
++  assert.equal(await page.locator('#checkout-download-qr').isVisible(),false);
++  assert.deepEqual(app.loi,[]);
++});
++test('order details count down even when QR API is unavailable and retire expired controls',async t=>{
++  const app=await chuanBi(t),page=await app.trangMoi();const now=Date.now();
++  await page.clock.install({time:new Date(now)});
++  const order={code:'DHTIMER',status:'CHO_THANH_TOAN',total:30000,email:'buyer@example.test',createdAt:new Date(now).toISOString(),expiresAt:new Date(now+5000).toISOString()};
++  await page.route('**/api/guest/orders?*',r=>r.fulfill({json:[order]}));
++  await page.route('**/api/guest/orders/DHTIMER',r=>r.fulfill({json:{order,tickets:[],snacks:[]}}));
++  await page.route('**/api/guest/orders/DHTIMER/payment-qr',r=>r.fulfill({status:503,json:{message:'Chưa cấu hình QR'}}));
++  await app.mo(page,'orders.html?guest=1&code=DHTIMER');
++  await page.locator('.order-payment-qr output').waitFor();
++  await page.clock.fastForward(6000);
++  assert.match(await page.locator('.order-payment-qr').textContent(),/hết thời gian/);
++  assert.equal(await page.locator('.order-payment-qr img').count(),0);
++  assert.deepEqual(app.loi,[]);
++});
++test('returning to a cached checkout revalidates through the order page',async t=>{
++  const {app,page,order}=await checkout(t);
++  const details={order:{...order,status:'CHO_THANH_TOAN',total:30000,email:'buyer@example.test'},tickets:[],snacks:[]};
++  await page.route('**/api/guest/orders?*',r=>r.fulfill({json:[details.order]}));
++  await page.route('**/api/guest/orders/DHTIMER',r=>r.fulfill({json:details}));
++  await page.locator('#thanh-toan-bieu-mau button[type=submit]').click();
++  await page.locator('#checkout-qr-image img').waitFor();
++  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
++  await page.waitForURL('**/orders.html?code=DHTIMER&guest=1');
++  await page.locator('.order-payment-qr').waitFor();
++  assert.deepEqual(app.loi,[]);
++});
++
++async function orderPage(t, skew = 0) {
++  const app=await chuanBi(t),page=await app.trangMoi();page.setDefaultTimeout(5000);
++  const now=Date.now();await page.clock.install({time:new Date(now+skew)});
++  const order={code:'DHORDER',status:'CHO_THANH_TOAN',total:30000,email:'buyer@example.test',createdAt:new Date(now).toISOString(),expiresAt:new Date(now+5000).toISOString()};
++  const state={details:0,qr:0,failDetails:false};
++  await page.route('**/api/guest/orders?*',r=>r.fulfill({json:[order]}));
++  await page.route('**/api/guest/orders/DHORDER',r=>{
++    state.details++;
++    return state.failDetails?r.fulfill({status:503,json:{message:'Không tải được đơn'}}):r.fulfill({json:{order,tickets:[],snacks:[]}});
++  });
++  await page.route('**/api/guest/orders/DHORDER/payment-qr',r=>{
++    state.qr++;return r.fulfill({json:{expiresAt:order.expiresAt,serverTime:new Date(now).toISOString(),amount:30000,content:order.code,
++      accountNo:'12345678',imageUrl:'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20"%3E%3Crect width="20" height="20"/%3E%3C/svg%3E'}});
++  });
++  await app.mo(page,'orders.html?guest=1&code=DHORDER');
++  return {app,page,order,state};
++}
++test('order QR requests authoritative server time before applying an ahead client clock',async t=>{
++  const {app,page,state}=await orderPage(t,7*60000);
++  await page.locator('.order-payment-qr img').waitFor();
++  assert.equal(state.qr,1);
++  assert.match(await page.locator('.order-payment-qr output').textContent(),/00:0[1-5]/);
++  await page.clock.fastForward(6000);
++  assert.equal(await page.locator('.order-payment-qr img').count(),0);
++  assert.deepEqual(app.loi,[]);
++});
++test('cached order pages reload current state instead of preserving an expired QR',async t=>{
++  const {app,page,order,state}=await orderPage(t);
++  await page.locator('.order-payment-qr img').waitFor();
++  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true})));
++  assert.equal(await page.locator('.order-payment-qr img').count(),0);
++  order.status='HUY';await page.clock.fastForward(6000);
++  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
++  await page.locator('#trang-thai-don').filter({hasText:'Đã hủy'}).waitFor();
++  assert.ok(state.details>=2);
++  assert.equal(await page.locator('.order-payment-qr img').count(),0);
++  assert.deepEqual(app.loi,[]);
++});
++test('cancel success removes payment QR even when subsequent detail refresh fails',async t=>{
++  const {app,page,order,state}=await orderPage(t);
++  await page.locator('.order-payment-qr img').waitFor();
++  await page.route('**/api/guest/orders/DHORDER/cancel',r=>{
++    state.failDetails=true;return r.fulfill({json:{...order,status:'HUY'}});
++  });
++  await page.locator('#huy-don').click();
++  await page.getByText('Không tải được đơn',{exact:true}).waitFor();
++  assert.equal(await page.locator('.order-payment-qr img').count(),0);
++  assert.equal(await page.locator('#huy-don').isDisabled(),true);
++  assert.match(await page.locator('#trang-thai-don').textContent(),/Đã hủy/);
++  assert.deepEqual(app.loi,[]);
++});
+diff --git a/tests/frontend/browser/theater-policy.test.cjs b/tests/frontend/browser/theater-policy.test.cjs
+new file mode 100644
+index 0000000..dde5f07
+--- /dev/null
++++ b/tests/frontend/browser/theater-policy.test.cjs
+@@ -0,0 +1,130 @@
++const test = require("node:test");
++const assert = require("node:assert/strict");
++const fs = require("node:fs");
++const { chuanBi } = require("./helpers.cjs");
++const initialPrices = { weekdayRegular: 70000, weekdayVip: 90000, weekendRegular: 100000, weekendVip: 130000 };
++async function routeSettings(page) {
++  let prices = { ...initialPrices }, settings = { lateCheckInMinutes: null };
++  const requests = [];
++  await page.route("**/api/admin/rooms/1/pricing", async route => {
++    if (route.request().method() === "PUT") { prices = route.request().postDataJSON(); requests.push(["prices", prices]); }
++    await route.fulfill({ json: prices });
++  });
++  await page.route("**/api/admin/theater-policy", async route => {
++    if (route.request().method() === "PUT") { settings = route.request().postDataJSON(); requests.push(["settings", settings]); }
++    await route.fulfill({ json: settings });
++  });
++  await page.route("**/api/admin/rooms/management?*", route => route.fulfill({ json: [{ id: 1, name: "Phòng 01", type: "2D", status: "HOAT_DONG", seatCount: 0 }] }));
++  await page.route("**/api/admin/rooms/1/seats", route => route.fulfill({ json: [] }));
++  return requests;
++}
++test("admin saves room four prices and nullable global late cutoff on desktop and mobile", async t => {
++  const app = await chuanBi(t), page = await app.trangMoi(), requests = await routeSettings(page);
++  await app.dangNhap(page, "admin@example.test", "theater.html");
++  await page.getByRole("button", { name: "Bảng giá", exact: true }).click();
++  const form = page.locator("#room-pricing-form");
++  await form.locator("[name=weekdayRegular]").fill("75000");
++  await form.getByRole("button", { name: "Lưu bảng giá" }).click();
++  await page.locator("#room-pricing-status").filter({ hasText: "Đã lưu" }).waitFor();
++  assert.deepEqual(requests[0], ["prices", { ...initialPrices, weekdayRegular: 75000 }]);
++  const policy = page.locator("#theater-policy-form");
++  await policy.locator("[name=lateCheckInMinutes]").fill("15");
++  await policy.getByRole("button", { name: "Lưu chính sách soát vé" }).click();
++  await page.locator("#theater-policy-status").filter({ hasText: "Đã lưu" }).waitFor();
++  assert.deepEqual(requests[1], ["settings", { lateCheckInMinutes: 15 }]);
++  fs.mkdirSync(".review/ui", { recursive: true });
++  await page.screenshot({ path: ".review/ui/policies-desktop.png", fullPage: true });
++  await page.setViewportSize({ width: 390, height: 844 });
++  await policy.locator("[name=lateCheckInMinutes]").fill("");
++  await policy.getByRole("button", { name: "Lưu chính sách soát vé" }).click();
++  await page.waitForFunction(() => document.querySelector("#theater-policy-status").textContent.includes("Đã lưu"));
++  assert.deepEqual(requests.at(-1), ["settings", { lateCheckInMinutes: null }]);
++  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
++  await page.screenshot({ path: ".review/ui/policies-mobile.png", fullPage: true });
++  assert.deepEqual(app.loi, []);
++});
++test("POLICY show sends no manual price and restores persisted mode when edited", async t => {
++  const app = await chuanBi(t), page = await app.trangMoi();
++  app.catalog.showTime.pricingMode = "POLICY";
++  let saved;
++  await page.route("**/api/admin/showtimes/101", async route => { saved = route.request().postDataJSON(); await route.fulfill({ json: { ...app.catalog.showTime, ...saved } }); });
++  await app.dangNhap(page, "admin@example.test", "admin.html");
++  await page.locator("[data-muc=suat]").click();
++  await page.getByRole("button", { name: "Sửa", exact: true }).first().click();
++  await page.locator("#suat-hop[open]").waitFor();
++  const form = page.locator("#suat-form");
++  assert.equal(await form.locator("[name=pricingMode]").inputValue(), "POLICY");
++  assert.equal(await form.locator("[name=price]").isDisabled(), true);
++  await form.getByRole("button", { name: "Lưu suất chiếu" }).click();
++  await page.locator("#suat-hop").waitFor({ state: "hidden" });
++  assert.equal(saved.pricingMode, "POLICY");
++  assert.equal(saved.price, undefined);
++  assert.equal(saved.vipSurcharge, undefined);
++  assert.deepEqual(app.loi, []);
++});
++test("staff cannot see or request admin policy forms", async t => {
++  const app = await chuanBi(t), page = await app.trangMoi();
++  const requests = [];
++  page.on("request", r => { if (r.url().includes("theater-policy") || r.url().endsWith("/pricing")) requests.push(r.url()); });
++  await app.dangNhap(page, "nhanvien@example.test", "theater.html");
++  assert.equal(await page.locator("#theater-policy-panel").isVisible(), false);
++  assert.equal(await page.locator("#room-pricing-panel").isVisible(), false);
++  assert.deepEqual(requests, []);
++  assert.deepEqual(app.loi, []);
++});
++
++test("late room save and load cannot change the newly selected room form", async t => {
++  const app = await chuanBi(t), page = await app.trangMoi();
++  await routeSettings(page);
++  await page.route("**/api/admin/rooms/management?*", route => route.fulfill({ json: [1, 2].map(id => ({ id, name: `Phòng 0${id}`, type: "2D", status: "HOAT_DONG", seatCount: 0 })) }));
++  let finishSave, finishLoad, saveStarted, loadStarted;
++  let delayRoomOneLoad = false, delayRoomTwoLoad = true, finishOldLoad, oldLoadStarted;
++  const oldLoadReady = new Promise(resolve => { oldLoadStarted = resolve; });
++  const saveReady = new Promise(resolve => { saveStarted = resolve; });
++  const loadReady = new Promise(resolve => { loadStarted = resolve; });
++  await page.route("**/api/admin/rooms/1/pricing", async route => {
++    if (route.request().method() === "PUT") {
++      saveStarted();
++      await new Promise(resolve => { finishSave = resolve; });
++    } else if (delayRoomOneLoad) {
++      oldLoadStarted();
++      await new Promise(resolve => { finishOldLoad = resolve; });
++    }
++    await route.fulfill({ json: initialPrices });
++  });
++  await page.route("**/api/admin/rooms/2/pricing", async route => {
++    if (delayRoomTwoLoad) {
++      loadStarted();
++      await new Promise(resolve => { finishLoad = resolve; });
++    }
++    await route.fulfill({ json: { ...initialPrices, weekdayRegular: 80000 } });
++  });
++  await app.dangNhap(page, "admin@example.test", "theater.html");
++  const prices = page.locator("#room-pricing-form"), save = prices.getByRole("button", { name: "Lưu bảng giá" });
++  await page.getByRole("button", { name: "Bảng giá", exact: true }).nth(0).click();
++  await prices.locator("[name=weekdayRegular]").waitFor();
++  await page.waitForFunction(() => document.querySelector("[name=weekdayRegular]").value === "70000");
++  await save.click();
++  await saveReady;
++  await page.getByRole("button", { name: "Bảng giá", exact: true }).nth(1).click();
++  await loadReady;
++  finishSave();
++  await page.waitForTimeout(100);
++  assert.equal(await save.isDisabled(), true);
++  assert.match(await page.locator("#room-pricing-status").textContent(), /Đang tải/);
++  finishLoad();
++  await page.waitForFunction(() => document.querySelector("[name=weekdayRegular]").value === "80000");
++  assert.equal(await save.isDisabled(), false);
++  assert.equal(await page.locator("#room-pricing-status").textContent(), "");
++  delayRoomOneLoad = true;
++  delayRoomTwoLoad = false;
++  await page.getByRole("button", { name: "Bảng giá", exact: true }).nth(0).click();
++  await oldLoadReady;
++  await page.getByRole("button", { name: "Bảng giá", exact: true }).nth(1).click();
++  await page.waitForFunction(() => document.querySelector("[name=weekdayRegular]").value === "80000");
++  finishOldLoad();
++  await page.waitForTimeout(100);
++  assert.equal(await prices.locator("[name=weekdayRegular]").inputValue(), "80000");
++  assert.equal(await page.locator("#room-pricing-title").textContent(), "Bảng giá · Phòng 02");
++  assert.deepEqual(app.loi, []);
++});
+diff --git a/tests/frontend/browser/ticket-camera.test.cjs b/tests/frontend/browser/ticket-camera.test.cjs
+index 46dd781..65e17ed 100644
+--- a/tests/frontend/browser/ticket-camera.test.cjs
++++ b/tests/frontend/browser/ticket-camera.test.cjs
+@@ -10,7 +10,9 @@ test("Camera điền mã cho hai bước và không tự sử dụng lượt in
+     route.fulfill({
+       contentType: "text/javascript",
+       body: `window.ZXingBrowser = {
+-        BrowserMultiFormatOneDReader: class {
++        BarcodeFormat: { QR_CODE: 11, CODE_128: 4 },
++        BrowserMultiFormatReader: class {
++          set possibleFormats(value) { window.cameraFormats = value; }
+           async decodeFromVideoDevice(device, video, callback) {
+             const controls = { stop() { window.cameraStopped = true; } };
+             window.fakeCameraScan = (code) => callback({ getText: () => code }, null, controls);
+@@ -47,6 +49,7 @@ test("Camera điền mã cho hai bước và không tự sử dụng lượt in
+   await page.evaluate(() => window.fakeCameraScan("VE123"));
+   assert.equal(await page.locator("#issue-code").inputValue(), "VE123");
+   assert.equal(issueCount, 0);
++  assert.deepEqual(await page.evaluate(() => window.cameraFormats), [11, 4]);
+   assert.equal(await page.evaluate(() => window.cameraStopped), true);
+ 
+   await page.locator("#checkin-camera-start").click();
+diff --git a/tests/frontend/browser/ticket-qr.test.cjs b/tests/frontend/browser/ticket-qr.test.cjs
+new file mode 100644
+index 0000000..c0b9ba5
+--- /dev/null
++++ b/tests/frontend/browser/ticket-qr.test.cjs
+@@ -0,0 +1,28 @@
++const test=require('node:test');
++const assert=require('node:assert/strict');
++const {chuanBi}=require('./helpers.cjs');
++test('each paid ticket has a local readable QR and scanned tickets lose the QR',async t=>{
++  const app=await chuanBi(t),page=await app.trangMoi();
++  const data={order:{code:'DHQR',status:'DA_THANH_TOAN',total:160000,email:'buyer@example.test',createdAt:new Date().toISOString()},snacks:[],tickets:[
++    {code:'VEQR1',seatCode:'A1',status:'DA_THANH_TOAN',unitPrice:80000},
++    {code:'VEQR2',seatCode:'A2',status:'DA_THANH_TOAN',unitPrice:80000}]};
++  await page.route('**/api/guest/orders?*',r=>r.fulfill({json:[data.order]}));
++  await page.route('**/api/guest/orders/DHQR',r=>r.fulfill({json:data}));
++  await page.route('**/api/guest/orders/DHQR/invoices',r=>r.fulfill({json:[]}));
++  await app.mo(page,'orders.html?guest=1&code=DHQR');
++  await page.locator('.ticket-codes summary').click();
++  assert.equal(await page.locator('.ticket-codes .ticket-qr').count(),2);
++  const values=await page.evaluate(async()=>{
++    const codes=[];
++    for(const svg of document.querySelectorAll('.ticket-codes .ticket-qr')){
++      const image=new Image();const url=URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(svg)],{type:'image/svg+xml'}));
++      try {image.src=url;await image.decode();codes.push((await new ZXingBrowser.BrowserQRCodeReader().decodeFromImageElement(image)).getText());}
++      finally{URL.revokeObjectURL(url);}
++    }return codes;
++  });
++  assert.deepEqual(values,['VEQR1','VEQR2']);
++  data.tickets[1].status='DA_SOAT';await page.locator('#tai-lai-don').click();
++  await page.locator('.ticket-codes').filter({hasText:'Vé đã soát'}).waitFor();
++  assert.equal(await page.locator('.ticket-codes .ticket-qr').count(),1);
++  assert.deepEqual(app.loi,[]);
++});
+diff --git a/tests/frontend/unit/payment-deadline.test.cjs b/tests/frontend/unit/payment-deadline.test.cjs
+new file mode 100644
+index 0000000..002901e
+--- /dev/null
++++ b/tests/frontend/unit/payment-deadline.test.cjs
+@@ -0,0 +1,37 @@
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const { start } = require('../../../src/main/resources/UI/assets/js/payment-deadline.js');
++
++function clock() {
++  let time = Date.parse('2026-11-09T10:00:00+07:00');
++  const jobs = new Set();
++  return { now: () => time, schedule: fn => (jobs.add(fn), fn), cancel: fn => jobs.delete(fn),
++    advance(ms) { time += ms; for (const job of [...jobs]) job(); }, jobs };
++}
++test('uses server time despite a client clock seven minutes ahead', () => {
++  const c = clock(); const ticks = []; let expired = 0;
++  const d = start({ expiresAt: '2026-11-09T10:03:00+07:00', serverTime: '2026-11-09T09:53:00+07:00',
++    now:c.now, schedule:c.schedule, cancel:c.cancel, onTick:v=>ticks.push(v), onExpire:()=>expired++ });
++  assert.equal(ticks.at(-1),'10:00'); c.advance(600000);
++  assert.equal(ticks.at(-1),'00:00'); assert.equal(expired,1); assert.equal(d.isActive(),false);
++  c.advance(1000); assert.equal(expired,1); assert.equal(c.jobs.size,0);
++});
++test('recomputes after a sleeping tab and stop prevents late callbacks', () => {
++  const c=clock(); let expired=0;
++  const d=start({expiresAt:'2026-11-09T10:00:30+07:00',now:c.now,schedule:c.schedule,cancel:c.cancel,onExpire:()=>expired++});
++  c.advance(31000); assert.equal(d.isActive(),false); assert.equal(expired,1);
++  const other=start({expiresAt:'2026-11-09T11:00:00+07:00',now:c.now,schedule:c.schedule,cancel:c.cancel,onExpire:()=>expired++});
++  other.stop(); c.advance(3600000); assert.equal(other.isActive(),false); assert.equal(expired,1);
++});
++test('rejects invalid deadlines and expires immediately at the boundary', () => {
++  const c=clock(); assert.throws(()=>start({expiresAt:null}),/hạn/);
++  let expired=0;
++  const d=start({expiresAt:'2026-11-09T10:00:00+07:00',now:c.now,schedule:c.schedule,cancel:c.cancel,onExpire:()=>expired++});
++  assert.equal(expired,1); assert.equal(d.isActive(),false); assert.equal(c.jobs.size,0);
++});
++test('response latency is charged against the server deadline', () => {
++  const c=clock(),requestedAt=c.now(),ticks=[];c.advance(10000);
++  const d=start({expiresAt:'2026-11-09T10:00:30+07:00',serverTime:'2026-11-09T10:00:00+07:00',requestedAt,
++    now:c.now,schedule:c.schedule,cancel:c.cancel,onTick:v=>ticks.push(v)});
++  assert.equal(ticks.at(-1),'00:20');c.advance(20000);assert.equal(d.isActive(),false);
++});

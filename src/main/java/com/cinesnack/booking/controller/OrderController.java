@@ -20,22 +20,32 @@ public class OrderController {
     private final OrderService dichVuDonHang;
     private final OrderExpiryService hetHan;
 
-    public OrderController(OrderService dichVuDonHang, OrderExpiryService hetHan) {
+    public OrderController(
+        OrderService dichVuDonHang,
+        OrderExpiryService hetHan
+    ) {
         this.dichVuDonHang = dichVuDonHang;
         this.hetHan = hetHan;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Order taoDonHang(@Valid @RequestBody CreateOrderRequest yeuCau, Principal nguoiDung) {
+    public Order taoDonHang(
+        @Valid @RequestBody CreateOrderRequest yeuCau,
+        Principal nguoiDung
+    ) {
         hetHan.xuLyHetHan();
         return dichVuDonHang.taoDonHang(yeuCau, nguoiDung.getName());
     }
 
     @GetMapping
     public List<Order> layDanhSach(
-        @RequestParam(name = "page", defaultValue = "0") @Min(0) @Max(1000000) int trang,
-        @RequestParam(name = "size", defaultValue = "20") @Min(1) @Max(100) int kichThuoc,
+        @RequestParam(name = "page", defaultValue = "0") @Min(0) @Max(
+            1000000
+        ) int trang,
+        @RequestParam(name = "size", defaultValue = "20") @Min(1) @Max(
+            100
+        ) int kichThuoc,
         Principal nguoiDung
     ) {
         return dichVuDonHang.layDanhSach(nguoiDung.getName(), trang, kichThuoc);
@@ -43,7 +53,9 @@ public class OrderController {
 
     @GetMapping("/{code}")
     public OrderService.Details layChiTiet(
-        @PathVariable("code") @Pattern(regexp = "[A-Za-z0-9]{1,30}") String maDonHang,
+        @PathVariable("code") @Pattern(
+            regexp = "[A-Za-z0-9]{1,30}"
+        ) String maDonHang,
         Principal nguoiDung
     ) {
         return dichVuDonHang.layChiTiet(maDonHang, nguoiDung.getName());
@@ -51,7 +63,9 @@ public class OrderController {
 
     @PostMapping("/{code}/cancel")
     public Order huyDonHang(
-        @PathVariable("code") @Pattern(regexp = "[A-Za-z0-9]{1,30}") String maDonHang,
+        @PathVariable("code") @Pattern(
+            regexp = "[A-Za-z0-9]{1,30}"
+        ) String maDonHang,
         Principal nguoiDung
     ) {
         return dichVuDonHang.huyDonHang(maDonHang, nguoiDung.getName());

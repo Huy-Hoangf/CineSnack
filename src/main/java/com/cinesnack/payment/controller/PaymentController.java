@@ -24,7 +24,9 @@ public class PaymentController {
 
     @PostMapping("/cash")
     public PaymentService.Receipt thanhToanTaiQuay(
-        @PathVariable("code") @Pattern(regexp = "[A-Za-z0-9]{1,30}") String maDonHang,
+        @PathVariable("code") @Pattern(
+            regexp = "[A-Za-z0-9]{1,30}"
+        ) String maDonHang,
         @Valid @RequestBody CashPaymentRequest yeuCau,
         Principal nguoiDung
     ) {
@@ -37,16 +39,25 @@ public class PaymentController {
 
     @PostMapping("/transfer")
     public Payment xacNhanChuyenKhoan(
-        @PathVariable("code") @Pattern(regexp = "[A-Za-z0-9]{1,30}") String maDonHang,
+        @PathVariable("code") @Pattern(
+            regexp = "[A-Za-z0-9]{1,30}"
+        ) String maDonHang,
         @Valid @RequestBody TransferConfirmRequest yeuCau,
         Principal nguoiDung
     ) {
-        return dichVuThanhToan.xacNhanChuyenKhoan(maDonHang, yeuCau.maGiaoDich(), yeuCau.soTienNhan(), nguoiDung.getName());
+        return dichVuThanhToan.xacNhanChuyenKhoan(
+            maDonHang,
+            yeuCau.maGiaoDich(),
+            yeuCau.soTienNhan(),
+            nguoiDung.getName()
+        );
     }
 
     @GetMapping
     public List<Payment> layDanhSach(
-        @PathVariable("code") @Pattern(regexp = "[A-Za-z0-9]{1,30}") String maDonHang,
+        @PathVariable("code") @Pattern(
+            regexp = "[A-Za-z0-9]{1,30}"
+        ) String maDonHang,
         Principal nguoiDung
     ) {
         return dichVuThanhToan.layDanhSach(maDonHang, nguoiDung.getName());

@@ -126,7 +126,8 @@
   min-width: 200px;
 }
 .workspace input,
-.workspace select {
+.workspace select,
+.workspace textarea {
   min-height: 46px;
   border: 1px solid #b9c8d8;
   border-radius: 8px;
@@ -267,8 +268,13 @@
   font-weight: 600;
 }
 .workspace-form input,
-.workspace-form select {
+.workspace-form select,
+.workspace-form textarea {
   width: 100%;
+}
+.workspace-form textarea:focus-visible {
+  outline: 3px solid #bf7410;
+  outline-offset: 3px;
 }
 .workspace-form input[type="hidden"] {
   display: none;
@@ -322,8 +328,16 @@
   }
 }
 @media (max-width: 600px) {
-  .quan-tri-dieu-huong { flex-wrap: nowrap; overflow-x: auto; }
-  .quan-tri-dieu-huong .workspace-nav { width: auto; flex: 0 0 auto; margin: 0; white-space: nowrap; }
+  .quan-tri-dieu-huong {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+  .quan-tri-dieu-huong .workspace-nav {
+    width: auto;
+    flex: 0 0 auto;
+    margin: 0;
+    white-space: nowrap;
+  }
   .workspace-header {
     padding: 18px 16px;
     flex-wrap: wrap;
@@ -362,6 +376,16 @@
     flex: 1;
     min-width: 160px;
   }
+  @media (max-width: 600px) {
+    #don-search-form {
+      flex: 1 0 100%;
+      flex-wrap: nowrap;
+    }
+
+    #quan-tri-don-tim {
+      min-width: 0;
+    }
+  }
   .workspace-table thead {
     position: absolute;
     width: 1px;
@@ -395,6 +419,17 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
-.workspace-poster { display: grid; gap: 8px; }
-#poster-preview img { display: block; width: min(160px, 100%); max-height: 240px; object-fit: contain; border-radius: 8px; }
-#poster-preview[hidden] { display: none; }
+.workspace-poster {
+  display: grid;
+  gap: 8px;
+}
+#poster-preview img {
+  display: block;
+  width: min(160px, 100%);
+  max-height: 240px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+#poster-preview[hidden] {
+  display: none;
+}

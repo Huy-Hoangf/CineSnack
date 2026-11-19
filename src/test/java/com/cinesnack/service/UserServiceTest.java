@@ -1,13 +1,12 @@
 package com.cinesnack.service;
 
-import com.cinesnack.account.entity.User;
-import com.cinesnack.account.service.UserService;
-import com.cinesnack.booking.entity.Order;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.cinesnack.account.entity.User;
 import com.cinesnack.account.repository.UserRepository;
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.booking.entity.Order;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Test;
@@ -31,12 +30,18 @@ class UserServiceTest {
     @Test
     void khachChiXemDonCuaMinh() {
         assertDoesNotThrow(() ->
-            dichVuNguoiDung.kiemTraQuyenTruyCapDon(nguoiDung(1, "KHACH_HANG"), donHang)
+            dichVuNguoiDung.kiemTraQuyenTruyCapDon(
+                nguoiDung(1, "KHACH_HANG"),
+                donHang
+            )
         );
         assertEquals(
             403,
             assertThrows(ResponseStatusException.class, () ->
-                dichVuNguoiDung.kiemTraQuyenTruyCapDon(nguoiDung(2, "KHACH_HANG"), donHang)
+                dichVuNguoiDung.kiemTraQuyenTruyCapDon(
+                    nguoiDung(2, "KHACH_HANG"),
+                    donHang
+                )
             )
                 .getStatusCode()
                 .value()
@@ -46,12 +51,18 @@ class UserServiceTest {
     @Test
     void nhanVienDuocXemDonVaBaoDonKhongTonTai() {
         assertDoesNotThrow(() ->
-            dichVuNguoiDung.kiemTraQuyenTruyCapDon(nguoiDung(2, "NHAN_VIEN"), donHang)
+            dichVuNguoiDung.kiemTraQuyenTruyCapDon(
+                nguoiDung(2, "NHAN_VIEN"),
+                donHang
+            )
         );
         assertEquals(
             404,
             assertThrows(ResponseStatusException.class, () ->
-                dichVuNguoiDung.kiemTraQuyenTruyCapDon(nguoiDung(1, "KHACH_HANG"), null)
+                dichVuNguoiDung.kiemTraQuyenTruyCapDon(
+                    nguoiDung(1, "KHACH_HANG"),
+                    null
+                )
             )
                 .getStatusCode()
                 .value()

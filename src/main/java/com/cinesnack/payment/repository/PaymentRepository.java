@@ -1,8 +1,8 @@
 package com.cinesnack.payment.repository;
 
-import com.cinesnack.payment.entity.Payment;
 import com.cinesnack.common.support.Codes;
 import com.cinesnack.common.support.Sql;
+import com.cinesnack.payment.entity.Payment;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +18,11 @@ public class PaymentRepository {
         this.truyVan = truyVan;
     }
 
-    public Payment taoThanhToanTienMat(long maDonHang, BigDecimal soTien, LocalDateTime hienTai) {
+    public Payment taoThanhToanTienMat(
+        long maDonHang,
+        BigDecimal soTien,
+        LocalDateTime hienTai
+    ) {
         String ma = Codes.taoMa("TM");
         long maSo = Sql.themVaLayMa(
             truyVan,
@@ -31,14 +35,40 @@ public class PaymentRepository {
             soTien,
             hienTai
         );
-        return new Payment(maSo, maDonHang, ma, "TIEN_MAT", soTien, "THANH_CONG", hienTai);
+        return new Payment(
+            maSo,
+            maDonHang,
+            ma,
+            "TIEN_MAT",
+            soTien,
+            "THANH_CONG",
+            hienTai
+        );
     }
 
-    public Payment taoThanhToanChuyenKhoan(long maDonHang, BigDecimal soTien, String maGiaoDich, LocalDateTime hienTai) {
-        long maSo = Sql.themVaLayMa(truyVan,
+    public Payment taoThanhToanChuyenKhoan(
+        long maDonHang,
+        BigDecimal soTien,
+        String maGiaoDich,
+        LocalDateTime hienTai
+    ) {
+        long maSo = Sql.themVaLayMa(
+            truyVan,
             "INSERT INTO THANH_TOAN(don_hang_id,nha_cung_cap,ma_giao_dich,phuong_thuc,so_tien,trang_thai,thanh_toan_luc) OUTPUT INSERTED.thanh_toan_id VALUES(?,'DOI_SOAT_TAI_QUAY',?,'CHUYEN_KHOAN',?,'THANH_CONG',?)",
-            maDonHang, maGiaoDich, soTien, hienTai);
-        return new Payment(maSo, maDonHang, maGiaoDich, "CHUYEN_KHOAN", soTien, "THANH_CONG", hienTai);
+            maDonHang,
+            maGiaoDich,
+            soTien,
+            hienTai
+        );
+        return new Payment(
+            maSo,
+            maDonHang,
+            maGiaoDich,
+            "CHUYEN_KHOAN",
+            soTien,
+            "THANH_CONG",
+            hienTai
+        );
     }
 
     public List<Payment> layDanhSach(long maDonHang) {

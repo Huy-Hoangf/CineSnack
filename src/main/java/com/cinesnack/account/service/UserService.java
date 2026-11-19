@@ -1,8 +1,8 @@
 package com.cinesnack.account.service;
 
-import com.cinesnack.booking.entity.Order;
 import com.cinesnack.account.entity.User;
 import com.cinesnack.account.repository.UserRepository;
+import com.cinesnack.booking.entity.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,7 +19,10 @@ public class UserService {
     public User layTaiKhoanHoatDong(String thuDienTu) {
         User nguoiDung = khoNguoiDung.timTheoThuDienTu(thuDienTu);
         if (nguoiDung == null || !"HOAT_DONG".equals(nguoiDung.trangThai())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Tài khoản không hoạt động");
+            throw new ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Tài khoản không hoạt động"
+            );
         }
         return nguoiDung;
     }
@@ -30,7 +33,8 @@ public class UserService {
             "Không tìm thấy đơn hàng"
         );
         if (
-            !nguoiDung.laNhanVien() && !Long.valueOf(nguoiDung.maSo()).equals(donHang.maNguoiDung())
+            !nguoiDung.laNhanVien() &&
+            !Long.valueOf(nguoiDung.maSo()).equals(donHang.maNguoiDung())
         ) {
             throw new ResponseStatusException(
                 HttpStatus.FORBIDDEN,

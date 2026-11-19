@@ -1,31 +1,31 @@
 package com.cinesnack.controller;
 
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.cinesnack.account.config.ApiSecurityConfig;
+import com.cinesnack.account.entity.User;
+import com.cinesnack.account.repository.UserRepository;
 import com.cinesnack.booking.controller.AdminOrderController;
 import com.cinesnack.booking.controller.GuestOrderController;
 import com.cinesnack.booking.controller.OrderController;
 import com.cinesnack.booking.service.OrderExpiryService;
 import com.cinesnack.booking.service.OrderService;
 import com.cinesnack.catalog.controller.AdminCatalogController;
-import com.cinesnack.catalog.controller.MoviePosterController;
-import com.cinesnack.catalog.service.MoviePosterService;
 import com.cinesnack.catalog.controller.CatalogController;
+import com.cinesnack.catalog.controller.MoviePosterController;
 import com.cinesnack.catalog.service.AdminCatalogService;
 import com.cinesnack.catalog.service.CatalogService;
+import com.cinesnack.catalog.service.MoviePosterService;
 import com.cinesnack.common.controller.ApiExceptionHandler;
 import com.cinesnack.common.controller.CsrfController;
 import com.cinesnack.invoice.controller.InvoiceController;
 import com.cinesnack.invoice.service.InvoiceService;
 import com.cinesnack.payment.controller.PaymentController;
 import com.cinesnack.payment.service.PaymentService;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import com.cinesnack.account.config.ApiSecurityConfig;
-import com.cinesnack.account.entity.User;
-import com.cinesnack.account.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,11 +58,19 @@ class ApiSecurityTest {
         AdminOrderController.class,
         GuestOrderController.class,
         ApiExceptionHandler.class,
+        com.cinesnack.catalog.controller.TheaterPolicyController.class,
     })
     static class Config {
 
         @Bean
-        MoviePosterService moviePosterService() { return mock(MoviePosterService.class); }
+        com.cinesnack.catalog.service.TheaterPolicyService theaterPolicyService() {
+            return mock(com.cinesnack.catalog.service.TheaterPolicyService.class);
+        }
+
+        @Bean
+        MoviePosterService moviePosterService() {
+            return mock(MoviePosterService.class);
+        }
 
         @Bean
         UserRepository khoNguoiDung() {
@@ -92,6 +100,13 @@ class ApiSecurityTest {
         @Bean
         com.cinesnack.booking.security.GuestOrderAccess quyenKhach() {
             return new com.cinesnack.booking.security.GuestOrderAccess();
+        }
+
+        @Bean
+        com.cinesnack.booking.security.GuestOrderTokenService guestOrderTokens() {
+            return mock(
+                com.cinesnack.booking.security.GuestOrderTokenService.class
+            );
         }
 
         @Bean
@@ -128,32 +143,114 @@ class ApiSecurityTest {
     private MockMvc kiemThuHttp;
 
     @Test
+    void workersAreRedirectedAwayFromPublicHomeWhileBuyersPassThrough() throws Exception {
+        for (String path : new String[] {"/", "/index.html", "/html/index.html"}) {
+            for (String role : new String[] {"QUAN_TRI", "NHAN_VIEN"}) {
+                kiemThuHttp.perform(get(path).with(user("worker").roles(role)))
+                    .andExpect(status().isFound()).andExpect(redirectedUrl("/html/admin.html"));
+            }
+            // This test context has no static homepage; 404 means security passed it through.
+            kiemThuHttp.perform(get(path)).andExpect(status().isNotFound());
+            for (String role : new String[] {"KHACH_HANG"}) {
+                kiemThuHttp.perform(get(path).with(user("other").roles(role)))
+                    .andExpect(status().isNotFound());
+            }
+        }
+    }
+
+    @Test
+    void workersCannotUseOnlineOrGuestCreationEndpoints() throws Exception {
+        String body = "{\"email\":\"buyer@example.com\",\"seatIds\":[],\"snacks\":[],\"combos\":[{\"comboId\":1,\"quantity\":1}]}";
+        for (String role : new String[] {"NHAN_VIEN", "QUAN_TRI"}) {
+            for (String path : new String[] {"/api/orders", "/api/guest/orders"}) {
+                kiemThuHttp.perform(post(path).with(user("worker").roles(role)).with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON).content(body)).andExpect(status().isForbidden());
+            }
+        }
+        verifyNoInteractions(dichVuDonHang);
+    }
+
+    @Test
+    void policyEndpointsValidateAndRequireAdminAndCsrf() throws Exception {
+        var policyService = nguCanh.getBean(com.cinesnack.catalog.service.TheaterPolicyService.class);
+        reset(policyService);
+        String valid = "{\"weekdayRegular\":70000,\"weekdayVip\":90000,\"weekendRegular\":100000,\"weekendVip\":130000}";
+        for (String role : new String[] {"NHAN_VIEN", "KHACH_HANG"}) {
+            kiemThuHttp.perform(get("/api/admin/theater-policy").with(user("user").roles(role))).andExpect(status().isForbidden());
+            kiemThuHttp.perform(put("/api/admin/rooms/1/pricing").with(user("user").roles(role)).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isForbidden());
+        }
+        kiemThuHttp.perform(put("/api/admin/theater-policy").with(user("admin").roles("QUAN_TRI")).contentType(MediaType.APPLICATION_JSON).content("{\"lateCheckInMinutes\":15}")).andExpect(status().isForbidden());
+        for (String invalid : new String[] {valid.replace("70000", "0.5"), valid.replace("90000", "1"), valid.replace("70000", "-1"), valid.replace("70000", "10000000000")}) {
+            kiemThuHttp.perform(put("/api/admin/rooms/1/pricing").with(user("admin").roles("QUAN_TRI")).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(invalid)).andExpect(status().isBadRequest());
+        }
+        for (String invalid : new String[] {"-1", "601", "0.5", "600.5"}) {
+            kiemThuHttp.perform(put("/api/admin/theater-policy").with(user("admin").roles("QUAN_TRI")).with(csrf()).contentType(MediaType.APPLICATION_JSON).content("{\"lateCheckInMinutes\":" + invalid + "}")).andExpect(status().isBadRequest());
+        }
+        verifyNoInteractions(policyService);
+        kiemThuHttp.perform(put("/api/admin/rooms/1/pricing").with(user("admin").roles("QUAN_TRI")).with(csrf()).contentType(MediaType.APPLICATION_JSON).content(valid)).andExpect(status().isOk());
+        verify(policyService).savePricing(eq(1L), any(), eq("admin"));
+        kiemThuHttp.perform(put("/api/admin/theater-policy").with(user("admin").roles("QUAN_TRI")).with(csrf()).contentType(MediaType.APPLICATION_JSON).content("{\"lateCheckInMinutes\":null}")).andExpect(status().isOk());
+        verify(policyService).savePolicy(new com.cinesnack.catalog.dto.TheaterPolicy.Settings(null), "admin");
+    }
+
+    @Test
     void multipartMovieRequiresAdminAndCsrf() throws Exception {
-        var movie = new org.springframework.mock.web.MockMultipartFile("movie", "", "application/json",
-            "{\"name\":\"Phim\",\"genre\":\"Drama\",\"duration\":120,\"ageRating\":\"P\",\"status\":\"SAP_CHIEU\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        kiemThuHttp.perform(multipart("/api/admin/movies").file(movie).with(user("staff").roles("NHAN_VIEN")).with(csrf())).andExpect(status().isForbidden());
-        kiemThuHttp.perform(multipart("/api/admin/movies").file(movie).with(user("admin").roles("QUAN_TRI"))).andExpect(status().isForbidden());
-        kiemThuHttp.perform(multipart("/api/admin/movies").file(movie).with(user("admin").roles("QUAN_TRI")).with(csrf())).andExpect(status().isCreated());
+        var movie = new org.springframework.mock.web.MockMultipartFile(
+            "movie",
+            "",
+            "application/json",
+            "{\"name\":\"Phim\",\"genre\":\"Drama\",\"duration\":120,\"ageRating\":\"P\",\"status\":\"SAP_CHIEU\"}".getBytes(
+                java.nio.charset.StandardCharsets.UTF_8
+            )
+        );
+        kiemThuHttp
+            .perform(
+                multipart("/api/admin/movies")
+                    .file(movie)
+                    .with(user("staff").roles("NHAN_VIEN"))
+                    .with(csrf())
+            )
+            .andExpect(status().isForbidden());
+        kiemThuHttp
+            .perform(
+                multipart("/api/admin/movies")
+                    .file(movie)
+                    .with(user("admin").roles("QUAN_TRI"))
+            )
+            .andExpect(status().isForbidden());
+        kiemThuHttp
+            .perform(
+                multipart("/api/admin/movies")
+                    .file(movie)
+                    .with(user("admin").roles("QUAN_TRI"))
+                    .with(csrf())
+            )
+            .andExpect(status().isCreated());
     }
 
     @BeforeEach
     void chuanBi() {
         reset(dichVuThanhToan, dichVuDonHang, khoNguoiDung);
-        kiemThuHttp = org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(
-            nguCanh
-        )
-            .apply(springSecurity())
-            .build();
+        kiemThuHttp =
+            org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(
+                nguCanh
+            )
+                .apply(springSecurity())
+                .build();
     }
 
     @Test
     void guestGetsSessionOrdersAndStillNeedsCsrfToCreate() throws Exception {
-        kiemThuHttp.perform(get("/api/guest/orders")).andExpect(status().isOk());
+        kiemThuHttp
+            .perform(get("/api/guest/orders"))
+            .andExpect(status().isOk());
         String body =
             "{\"email\":\"guest@example.com\",\"seatIds\":[],\"snacks\":[],\"combos\":[{\"comboId\":1,\"quantity\":1}]}";
         kiemThuHttp
             .perform(
-                post("/api/guest/orders").contentType(MediaType.APPLICATION_JSON).content(body)
+                post("/api/guest/orders")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
             )
             .andExpect(status().isForbidden());
         when(dichVuDonHang.taoDonKhach(any())).thenReturn(
@@ -184,6 +281,7 @@ class ApiSecurityTest {
         for (String path : new String[] {
             "/api/admin/movies",
             "/api/admin/showtimes",
+            "/api/admin/showtimes/timeline?date=2026-11-09",
             "/api/admin/rooms",
         }) {
             kiemThuHttp
@@ -193,24 +291,48 @@ class ApiSecurityTest {
                 .perform(get(path).with(user("admin").roles("QUAN_TRI")))
                 .andExpect(status().isOk());
         }
-        for (String path : new String[] { "/api/admin/movies/1", "/api/admin/showtimes/1" }) {
+        for (String path : new String[] {
+            "/api/admin/movies/1",
+            "/api/admin/showtimes/1",
+        }) {
             kiemThuHttp
-                .perform(delete(path).with(user("staff").roles("NHAN_VIEN")).with(csrf()))
+                .perform(
+                    delete(path)
+                        .with(user("staff").roles("NHAN_VIEN"))
+                        .with(csrf())
+                )
                 .andExpect(status().isForbidden());
             kiemThuHttp
-                .perform(delete(path).with(user("admin").roles("QUAN_TRI")).with(csrf()))
+                .perform(
+                    delete(path)
+                        .with(user("admin").roles("QUAN_TRI"))
+                        .with(csrf())
+                )
                 .andExpect(status().isNoContent());
         }
     }
 
     @Test
     void chiNhanVienDuocTaoDonTaiQuay() throws Exception {
-        String body = "{\"email\":\"guest@example.com\",\"seatIds\":[],\"snacks\":[],\"combos\":[{\"comboId\":1,\"quantity\":1}]}";
-        kiemThuHttp.perform(post("/api/admin/orders").with(user("admin").roles("QUAN_TRI"))
-            .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+        String body =
+            "{\"email\":\"guest@example.com\",\"seatIds\":[],\"snacks\":[],\"combos\":[{\"comboId\":1,\"quantity\":1}]}";
+        kiemThuHttp
+            .perform(
+                post("/api/admin/orders")
+                    .with(user("admin").roles("QUAN_TRI"))
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
+            )
             .andExpect(status().isForbidden());
-        kiemThuHttp.perform(post("/api/admin/orders").with(user("staff").roles("NHAN_VIEN"))
-            .with(csrf()).contentType(MediaType.APPLICATION_JSON).content(body))
+        kiemThuHttp
+            .perform(
+                post("/api/admin/orders")
+                    .with(user("staff").roles("NHAN_VIEN"))
+                    .with(csrf())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body)
+            )
             .andExpect(status().isCreated());
         verify(dichVuDonHang).taoDonTaiQuay(any(), eq("staff"));
     }
@@ -221,22 +343,34 @@ class ApiSecurityTest {
             .perform(get("/api/movies"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$").isArray());
-        kiemThuHttp.perform(get("/api/movies?size=101")).andExpect(status().isBadRequest());
-        kiemThuHttp.perform(get("/api/showtimes?movieId=0")).andExpect(status().isBadRequest());
         kiemThuHttp
-            .perform(get("/api/admin/orders").with(user("customer").roles("KHACH_HANG")))
+            .perform(get("/api/movies?size=101"))
+            .andExpect(status().isBadRequest());
+        kiemThuHttp
+            .perform(get("/api/showtimes?movieId=0"))
+            .andExpect(status().isBadRequest());
+        kiemThuHttp
+            .perform(
+                get("/api/admin/orders").with(
+                    user("customer").roles("KHACH_HANG")
+                )
+            )
             .andExpect(status().isForbidden());
     }
 
     @Test
     void guestDuocLayPhimTheoMa() throws Exception {
         kiemThuHttp.perform(get("/api/movies/1")).andExpect(status().isOk());
-        kiemThuHttp.perform(get("/api/movies/0")).andExpect(status().isBadRequest());
+        kiemThuHttp
+            .perform(get("/api/movies/0"))
+            .andExpect(status().isBadRequest());
     }
 
     @Test
     void chuaDangNhapKhongDuocXemDon() throws Exception {
-        kiemThuHttp.perform(get("/api/orders/DH01")).andExpect(status().isUnauthorized());
+        kiemThuHttp
+            .perform(get("/api/orders/DH01"))
+            .andExpect(status().isUnauthorized());
         verifyNoInteractions(dichVuDonHang);
     }
 
@@ -279,8 +413,17 @@ class ApiSecurityTest {
             java.time.LocalDateTime.of(2026, 10, 14, 10, 0)
         );
         when(
-            dichVuThanhToan.thanhToanTaiQuay("DH01", new java.math.BigDecimal("250000"), "staff")
-        ).thenReturn(new PaymentService.Receipt(thanhToan, new java.math.BigDecimal("21000")));
+            dichVuThanhToan.thanhToanTaiQuay(
+                "DH01",
+                new java.math.BigDecimal("250000"),
+                "staff"
+            )
+        ).thenReturn(
+            new PaymentService.Receipt(
+                thanhToan,
+                new java.math.BigDecimal("21000")
+            )
+        );
         kiemThuHttp
             .perform(
                 post("/api/orders/DH01/payments/cash")
@@ -312,10 +455,18 @@ class ApiSecurityTest {
             java.time.LocalDateTime.of(2026, 10, 14, 10, 0)
         );
         when(dichVuDonHang.layChiTiet("DH01", "customer")).thenReturn(
-            new OrderService.Details(donHang, java.util.List.of(), java.util.List.of())
+            new OrderService.Details(
+                donHang,
+                java.util.List.of(),
+                java.util.List.of()
+            )
         );
         kiemThuHttp
-            .perform(get("/api/orders/DH01").with(user("customer").roles("KHACH_HANG")))
+            .perform(
+                get("/api/orders/DH01").with(
+                    user("customer").roles("KHACH_HANG")
+                )
+            )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.order.code").value("DH01"))
             .andExpect(jsonPath("$.order.total").value(10))
@@ -326,7 +477,11 @@ class ApiSecurityTest {
 
     @Test
     void tuChoiTienLeVaJsonSaiTruocXuLy() throws Exception {
-        for (String noiDung : new String[] { "{\"amountReceived\":0.5}", "{}", "not json" }) {
+        for (String noiDung : new String[] {
+            "{\"amountReceived\":0.5}",
+            "{}",
+            "not json",
+        }) {
             kiemThuHttp
                 .perform(
                     post("/api/orders/DH01/payments/cash")
@@ -363,10 +518,18 @@ class ApiSecurityTest {
     @Test
     void tuChoiKichThuocTrangVaMaDonSai() throws Exception {
         kiemThuHttp
-            .perform(get("/api/orders?size=101").with(user("customer").roles("KHACH_HANG")))
+            .perform(
+                get("/api/orders?size=101").with(
+                    user("customer").roles("KHACH_HANG")
+                )
+            )
             .andExpect(status().isBadRequest());
         kiemThuHttp
-            .perform(get("/api/orders/bad-code").with(user("customer").roles("KHACH_HANG")))
+            .perform(
+                get("/api/orders/bad-code").with(
+                    user("customer").roles("KHACH_HANG")
+                )
+            )
             .andExpect(status().isBadRequest());
         verifyNoInteractions(dichVuDonHang);
     }
@@ -375,14 +538,24 @@ class ApiSecurityTest {
     void xacThucKiemTraMatKhauBcrypt() throws Exception {
         String matKhau = "test-only-password";
         when(khoNguoiDung.timTheoThuDienTu("staff@example.com")).thenReturn(
-            new User(2, "staff@example.com", boMaHoa.encode(matKhau), "NHAN_VIEN", "HOAT_DONG")
+            new User(
+                2,
+                "staff@example.com",
+                boMaHoa.encode(matKhau),
+                "NHAN_VIEN",
+                "HOAT_DONG"
+            )
         );
         kiemThuHttp
-            .perform(get("/api/csrf").with(httpBasic("staff@example.com", matKhau)))
+            .perform(
+                get("/api/csrf").with(httpBasic("staff@example.com", matKhau))
+            )
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.token").isNotEmpty());
         kiemThuHttp
-            .perform(get("/api/csrf").with(httpBasic("staff@example.com", "wrong")))
+            .perform(
+                get("/api/csrf").with(httpBasic("staff@example.com", "wrong"))
+            )
             .andExpect(status().isUnauthorized());
     }
 }

@@ -1,21 +1,20 @@
 package com.cinesnack.service;
 
-import com.cinesnack.account.repository.UserRepository;
-import com.cinesnack.account.service.UserService;
-import com.cinesnack.booking.repository.OrderRepository;
-import com.cinesnack.booking.service.OrderService;
-import com.cinesnack.catalog.repository.BookingCatalogRepository;
-import com.cinesnack.invoice.service.InvoiceService;
-import com.cinesnack.payment.repository.PaymentRepository;
-import com.cinesnack.payment.service.PaymentService;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import com.cinesnack.booking.entity.Order;
-import com.cinesnack.payment.entity.Payment;
 import com.cinesnack.account.entity.User;
+import com.cinesnack.account.repository.UserRepository;
+import com.cinesnack.account.service.UserService;
+import com.cinesnack.booking.entity.Order;
+import com.cinesnack.booking.repository.OrderRepository;
+import com.cinesnack.booking.service.OrderService;
+import com.cinesnack.catalog.repository.BookingCatalogRepository;
+import com.cinesnack.invoice.service.InvoiceService;
+import com.cinesnack.payment.entity.Payment;
+import com.cinesnack.payment.repository.PaymentRepository;
+import com.cinesnack.payment.service.PaymentService;
 import java.math.BigDecimal;
 import java.time.*;
 import org.junit.jupiter.api.Test;
@@ -51,11 +50,25 @@ class GuestOrderServiceTest {
             new User(2, "staff@example.com", "unused", "NHAN_VIEN", "HOAT_DONG")
         );
         when(userRepository.timTheoThuDienTu("guest@example.com")).thenReturn(
-            new User(3, "guest@example.com", "unused", "KHACH_HANG", "HOAT_DONG")
+            new User(
+                3,
+                "guest@example.com",
+                "unused",
+                "KHACH_HANG",
+                "HOAT_DONG"
+            )
         );
-        var service = new OrderService(orders, mock(BookingCatalogRepository.class), users, clock);
+        var service = new OrderService(
+            orders,
+            mock(BookingCatalogRepository.class),
+            users,
+            clock
+        );
 
-        assertEquals(guestOrder, service.layChiTiet("DHGUEST", "staff@example.com").donHang());
+        assertEquals(
+            guestOrder,
+            service.layChiTiet("DHGUEST", "staff@example.com").donHang()
+        );
         assertEquals(
             403,
             assertThrows(ResponseStatusException.class, () ->
@@ -67,7 +80,9 @@ class GuestOrderServiceTest {
 
         when(orders.coTheThanhToan(7, now)).thenReturn(true);
         when(orders.tinhTongChiTiet(7)).thenReturn(new BigDecimal("75000"));
-        when(orders.doiTrangThai(7, "CHO_THANH_TOAN", "DA_THANH_TOAN")).thenReturn(1);
+        when(
+            orders.doiTrangThai(7, "CHO_THANH_TOAN", "DA_THANH_TOAN")
+        ).thenReturn(1);
         var payment = new Payment(
             8,
             7,
@@ -77,8 +92,17 @@ class GuestOrderServiceTest {
             "THANH_CONG",
             now
         );
-        when(payments.taoThanhToanTienMat(eq(7L), any(), eq(now))).thenReturn(payment);
-        var receipt = new PaymentService(orders, payments, invoices, users, clock).thanhToanTaiQuay(
+        when(payments.taoThanhToanTienMat(eq(7L), any(), eq(now))).thenReturn(
+            payment
+        );
+        var receipt = new PaymentService(
+            orders,
+            payments,
+            invoices,
+            users,
+            clock,
+            event -> {}
+        ).thanhToanTaiQuay(
             "DHGUEST",
             new BigDecimal("100000"),
             "staff@example.com"

@@ -224,6 +224,40 @@ body:has(.welcome-dialog[open]) {
   background: #fff;
 }
 
+.authentication-password {
+  position: relative;
+}
+.authentication-password input {
+  padding-right: 60px;
+}
+.mat-khau-hien {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--xanh-dam);
+  cursor: pointer;
+}
+.mat-khau-hien:hover {
+  background: #e8f3fb;
+}
+.mat-khau-hien svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+.mat-khau-hien[aria-pressed="true"] .mat-khau-gach {
+  display: none;
+}
+
 .authentication-hint {
   margin-top: 6px;
 }

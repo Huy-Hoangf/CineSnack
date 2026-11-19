@@ -1,0 +1,116 @@
+:root {
+  --brand: #a33128;
+  --brand-hover: #78231d;
+  --page: #f7f3ea;
+  --surface: #fff;
+  --text: #25231f;
+  --text-muted: #62594e;
+  --border: #d8cfc2;
+  --control-border: #8d8072;
+  --selected: #f6e5df;
+  --success: #136044;
+  --success-bg: #e2f3eb;
+  --warning: #784a09;
+  --warning-bg: #fff0cf;
+  --danger: #8c2634;
+  --danger-bg: #fce8eb;
+  --focus: #185397;
+  --xanh: var(--brand);
+  --xanh-dam: var(--brand-hover);
+  --chu: var(--text);
+  --chu-phu: var(--text-muted);
+  --vien: var(--border);
+  --nen: var(--page);
+  --nen-noi-dung: var(--surface);
+  --bo-goc-nut: 6px;
+  --bo-goc-khung: 10px;
+}
+body, body.ops {
+  --ops-bg: var(--page);
+  --ops-surface: var(--surface);
+  --ops-text: var(--text);
+  --ops-muted: var(--text-muted);
+  --ops-rule: var(--border);
+  --ops-brand: var(--brand);
+  --ops-selected: var(--selected);
+  background: var(--page);
+  color: var(--text);
+  font-family: "Segoe UI", Arial, sans-serif;
+  line-height: 1.5;
+}
+h1, h2, h3, h4, button, input, select, textarea, summary {
+  font-family: inherit;
+}
+::selection { background: var(--selected); color: var(--text); }
+.web-dau, .workspace-header, .authentication-page .web-dau {
+  border-top-color: var(--brand);
+  border-bottom-color: var(--border);
+}
+.thuong-hieu { color: var(--brand); }
+.thuong-hieu-nhan { color: var(--text); }
+.trang-mo-dau, .uu-dai-muc { background: var(--page); }
+.trang-mo-dau h1, .authentication-card h1 { color: var(--text); }
+.noi-bat-trong, .noi-bat picture { background: var(--text); }
+.noi-bat-nhan { color: #f1e1cf; }
+.noi-bat h1 { color: white; }
+.nut:not(.phu), .account-primary, .phim-nut {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: white;
+  border-radius: var(--bo-goc-nut);
+  min-height: 44px;
+}
+.nut:not(.phu):not(:disabled):hover, .account-primary:hover, .phim-nut:hover {
+  background: var(--brand-hover);
+  color: white;
+}
+.nut.phu, .account-button:not(.account-primary), .account-secondary {
+  background: var(--surface);
+  border-color: var(--control-border);
+  color: var(--text);
+  min-height: 44px;
+  border-radius: var(--bo-goc-nut);
+}
+body .nut.phu:hover, .account-button:not(.account-primary):not(:disabled):hover {
+  background: #f1eae0;
+  color: var(--text);
+}
+.khung, .authentication-card, .workspace-card, .workspace-dialog, .hop-thoai {
+  border-color: var(--border);
+  border-radius: var(--bo-goc-khung);
+}
+input:not([type="radio"]):not([type="checkbox"]), select, textarea {
+  border-color: var(--control-border);
+  color: var(--text);
+  font-size: 16px;
+}
+.nhan-lua-chon input:checked + span, .order-list .order-card-button[aria-pressed="true"],
+.account-secondary:hover { background: var(--selected); border-color: var(--brand); color: var(--brand-hover); }
+.muc-so, .order-show, .guest-order-note { background: #f1eae0; color: var(--text); }
+.combo-bieu-tuong, .mat-khau-hien:hover { background: var(--selected); color: var(--brand-hover); }
+.order-show p, .ticket-codes, .man-hinh, .theater-screen { color: var(--text-muted); }
+.man-hinh, .theater-screen { border-top-color: var(--control-border); }
+.ung-dung-trang .nut-ghe {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--control-border);
+}
+.ung-dung-trang .nut-ghe.vip { background: var(--warning-bg); border-color: #a6792c; color: var(--warning); }
+.ung-dung-trang .nut-ghe[aria-pressed="true"] {
+  background: var(--brand); border-color: var(--brand); color: white;
+}
+.ung-dung-trang .nut-ghe:disabled {
+  background: #e7e0d7; border-color: #a99c8c; color: var(--text-muted);
+}
+.tom-tat-tong, .workspace-stat, .tong-tien-don { font-variant-numeric: tabular-nums; }
+.tom-tat-tong strong { color: var(--text); }
+.loi, .authentication-message.error { color: var(--danger); }
+.authentication-tabs [aria-selected="true"] { background: var(--selected); color: var(--brand-hover); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, summary:focus-visible, label:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

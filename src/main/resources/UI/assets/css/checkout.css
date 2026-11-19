@@ -28,6 +28,81 @@
   font-size: 12px;
 }
 
+#checkout-staff-method {
+  border: 0;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+#checkout-staff-method label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 20px 0 0;
+}
+
+.checkout-qr-dialog {
+  width: min(420px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  border: 1px solid #d8e1e8;
+  border-radius: 16px;
+  padding: 24px;
+  color: #102b40;
+}
+
+.checkout-qr-dialog::backdrop {
+  background: rgb(7 24 38 / 70%);
+}
+
+.checkout-qr-close {
+  float: right;
+}
+
+.checkout-qr-close button {
+  min-width: 40px;
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+#checkout-qr-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px auto;
+}
+
+.checkout-transfer-details {
+  margin: 12px 0;
+}
+.checkout-transfer-details > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 7px 0;
+  border-bottom: 1px solid #e1e8ee;
+}
+.checkout-transfer-details dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+.checkout-qr-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.checkout-qr-actions .nut {
+  min-height: 44px;
+}
+.checkout-qr-actions [hidden] {
+  display: none;
+}
+
 @media (max-width: 600px) {
   .checkout-page .tien-trinh-buoc li {
     font-size: 12px;

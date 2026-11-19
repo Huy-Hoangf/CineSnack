@@ -19,7 +19,10 @@ public class QrPaymentController {
     private final QrPaymentService qr;
     private final GuestOrderAccess quyenKhach;
 
-    public QrPaymentController(QrPaymentService qr, GuestOrderAccess quyenKhach) {
+    public QrPaymentController(
+        QrPaymentService qr,
+        GuestOrderAccess quyenKhach
+    ) {
         this.qr = qr;
         this.quyenKhach = quyenKhach;
     }

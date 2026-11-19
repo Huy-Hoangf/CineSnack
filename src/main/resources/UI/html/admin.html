@@ -9,36 +9,64 @@
     <link rel="stylesheet" href="../assets/css/authentication.css" />
     <link rel="stylesheet" href="../assets/css/orders.css" />
     <link rel="stylesheet" href="../assets/css/admin.css" />
+    <link rel="stylesheet" href="../assets/css/showtime-timeline.css" />
     <link rel="stylesheet" href="../assets/css/cinema-theme.css?v=2" />
     <script src="../assets/js/api.js" defer></script>
     <script src="../assets/js/cinema.js" defer></script>
-    <script src="../assets/js/orders.js" defer></script>
-    <script src="../assets/js/admin.js" defer></script>
+    <link rel="stylesheet" href="../assets/css/ticket-print.css?v=1" />
+    <script
+      src="../assets/vendor/JsBarcode.code128-3.11.6.min.js"
+      defer
+    ></script>
+    <script src="../assets/vendor/zxing-browser-0.2.1.min.js" defer></script>
+    <script src="../assets/js/ticket-code.js" defer></script>
+    <script src="../assets/js/ticket-print.js?v=3" defer></script>
+    <script src="../assets/js/payment-deadline.js" defer></script>
+    <script src="../assets/js/order-payment-qr.js" defer></script>
+    <script src="../assets/js/orders.js?v=6" defer></script>
+    <script src="../assets/js/showtime-timeline.js" defer></script>
+    <script src="../assets/js/show-pricing.js" defer></script>
+    <script src="../assets/js/report.js" defer></script>
+    <script src="../assets/js/admin.js?v=5" defer></script>
+    <link rel="stylesheet" href="../assets/css/operations.css" media="screen" />
+    <link rel="stylesheet" href="../assets/css/shared-theme.css?v=1" media="screen" />
+    <link rel="stylesheet" href="../assets/css/report.css" />
   </head>
-  <body class="ung-dung-trang quan-tri-trang">
+  <body class="ung-dung-trang quan-tri-trang ops">
     <a class="bo-qua-lien-ket" href="#noi-dung">Bỏ qua điều hướng</a>
     <header class="workspace-header">
-      <a class="thuong-hieu" href="index.html" aria-label="CineSnack — Về website"
+      <a
+        class="thuong-hieu"
+        href="admin.html"
+        aria-label="CineSnack — Không gian làm việc"
         >Cine<span class="thuong-hieu-nhan">Snack</span></a
       >
       <div class="workspace-account">
         <div>
-          <strong id="admin-role">Không gian làm việc</strong><small id="admin-email"></small>
+          <strong id="admin-role">Không gian làm việc</strong
+          ><small id="admin-email"></small>
         </div>
-        <button type="button" id="admin-logout" class="account-button" hidden>Đăng xuất</button>
+        <button type="button" id="admin-logout" class="account-button" hidden>
+          Đăng xuất
+        </button>
       </div>
     </header>
     <main id="noi-dung" class="workspace" tabindex="-1">
       <p id="admin-loi" class="loi" role="alert" tabindex="-1"></p>
       <p id="admin-status" class="workspace-notice" role="status" hidden></p>
-      <a id="admin-login" class="nut" href="authentication.html?next=admin.html" hidden
+      <a
+        id="admin-login"
+        class="nut"
+        href="authentication.html?next=admin.html"
+        hidden
         >Đăng nhập nhân viên / quản trị</a
       >
       <noscript><p>Bật JavaScript để sử dụng không gian làm việc.</p></noscript>
       <div id="admin-workspace" class="workspace-grid" hidden>
         <aside class="workspace-sidebar">
           <p class="workspace-caption">CINESNACK · VẬN HÀNH</p>
-          <nav class="quan-tri-dieu-huong" aria-label="Không gian làm việc">
+          <button id="ops-menu" type="button" aria-expanded="false" aria-controls="ops-navigation">Chức năng</button>
+          <nav id="ops-navigation" class="quan-tri-dieu-huong" aria-label="Không gian làm việc">
             <button
               type="button"
               class="workspace-nav"
@@ -48,7 +76,25 @@
             >
               Đơn hàng
             </button>
-            <a class="workspace-nav" href="booking.html" data-staff-only hidden>Tạo đơn tại quầy</a>
+            <a class="workspace-nav" href="booking.html" data-staff-only hidden>Xem lịch & ghế</a>
+            <a class="workspace-nav" href="booking.html?mode=counter" data-staff-only hidden
+              >Tạo đơn tại quầy</a
+            >
+            <a class="workspace-nav" href="theater.html#check-in"
+              >Nhận vé / Soát vé</a
+            >
+            <button
+              type="button"
+              class="workspace-nav"
+              data-muc="giao"
+              aria-controls="muc-giao"
+              aria-pressed="false"
+            >
+              Giao bắp nước
+            </button>
+            <a class="workspace-nav" href="theater.html" data-admin-only hidden
+              >Phòng & ghế</a
+            >
             <button
               type="button"
               class="workspace-nav"
@@ -71,13 +117,44 @@
             >
               Lịch chiếu
             </button>
+            <button
+              type="button"
+              class="workspace-nav"
+              data-muc="bap"
+              data-admin-only
+              aria-controls="muc-bap"
+              aria-pressed="false"
+              hidden
+            >
+              Bắp nước
+            </button>
+            <button
+              type="button"
+              class="workspace-nav"
+              data-muc="baocao"
+              data-admin-only
+              aria-controls="muc-baocao"
+              aria-pressed="false"
+              hidden
+            >
+              Báo cáo
+            </button>
+            <button
+              type="button"
+              class="workspace-nav"
+              data-muc="nhanvien"
+              data-admin-only
+              aria-controls="muc-nhanvien"
+              aria-pressed="false"
+              hidden
+            >
+              Nhân sự
+            </button>
           </nav>
-          <a href="index.html" class="workspace-back">← Về website CineSnack</a>
         </aside>
         <div class="workspace-content">
           <div class="workspace-heading">
             <div>
-              <p id="quan-tri-duong-dan" class="workspace-caption">Đơn toàn rạp</p>
               <h1 id="quan-tri-tieu-de">Đơn toàn rạp</h1>
               <p id="quan-tri-phu" class="workspace-subtitle">
                 Đơn của user và guest, tra cứu và xử lý tại quầy.
@@ -85,35 +162,172 @@
             </div>
             <span id="quan-tri-ngay"></span>
           </div>
-          <section id="muc-don" class="quan-tri-muc">
-            <div id="thong-ke" class="workspace-stats"></div>
-            <section class="workspace-card">
-              <div class="loc-nhanh" role="group" aria-label="Lọc đơn hàng">
-                <button type="button" data-loc-don="" aria-pressed="true">Tất cả</button>
-                <button type="button" data-loc-don="CHO_THANH_TOAN" aria-pressed="false">Chờ thanh toán</button>
-                <button type="button" data-loc-don="DA_THANH_TOAN" aria-pressed="false">Đã thanh toán / Hóa đơn</button>
+          <section id="muc-giao" class="quan-tri-muc" hidden>
+            <form id="giao-scan-form" class="workspace-form workspace-card">
+              <label for="giao-scan-code">Quét mã vạch hóa đơn bỏng nước</label>
+              <input id="giao-scan-code" name="code" required maxlength="100"
+                pattern="[A-Za-z0-9]{1,100}" autocomplete="off" spellcheck="false" />
+              <p class="workspace-hint">Dùng máy quét mã vạch hoặc nhập mã hóa đơn. Chỉ xác nhận sau khi giao đủ các món còn chờ cho khách.</p>
+              <button type="submit" class="nut">Giao theo hóa đơn</button>
+              <p id="giao-scan-result" role="status" aria-live="polite"></p>
+            </form>
+            <div class="pickup-counter">
+              <section aria-labelledby="pickup-queue-title">
+                <header class="workspace-toolbar">
+                  <h2 id="pickup-queue-title">Đơn chờ nhận</h2>
+                  <button id="giao-refresh" type="button" class="account-button">Cập nhật</button>
+                </header>
+                <div id="giao-list"></div>
+              </section>
+              <div id="pickup-slip-slot">
+                <section class="pickup-slip" aria-labelledby="pickup-slip-title">
+                  <h2 id="pickup-slip-title" tabindex="-1">Phiếu soạn món</h2>
+                  <div id="giao-phieu"><p>Chọn một mã đơn để xem các món cần giao.</p></div>
+                </section>
               </div>
+            </div>
+            <dialog id="pickup-dialog" aria-labelledby="pickup-slip-title">
+              <form method="dialog"><button class="account-button">← Hàng chờ</button></form>
+            </dialog>
+          </section>
+          <section id="muc-bap" class="quan-tri-muc" hidden>
+            <p class="workspace-hint">
+              Thay đổi món và giá chỉ áp dụng cho đơn mới. Món đã có trong đơn
+              hoặc combo cần ngừng bán thay vì xóa.
+            </p>
+            <details class="ops-add"><summary>Thêm món</summary>
+              <form id="snack-create" class="workspace-form workspace-card">
+                <label
+                  >Danh mục
+                  <select name="kind">
+                    <option value="products">Món lẻ</option>
+                    <option value="combos">Combo</option>
+                  </select>
+                </label>
+                <label
+                  >Tên món hoặc combo
+                  <input name="name" maxlength="100" required />
+                </label>
+                <label id="snack-product-type-row"
+                  >Loại món
+                  <select name="productType">
+                    <option value="BAP">Bắp</option>
+                    <option value="NUOC">Nước</option>
+                    <option value="KHAC">Khác</option>
+                  </select>
+                </label>
+                <label
+                  >Giá bán (đồng)
+                  <input name="price" type="number" min="0" step="1" required />
+                </label>
+                <label
+                  >Tình trạng
+                  <select name="status">
+                    <option value="HOAT_DONG">Đang bán</option>
+                    <option value="NGUNG_HOAT_DONG">Ngừng bán</option>
+                  </select>
+                </label>
+                <button type="submit" class="nut">Thêm vào danh mục</button>
+              </form>
+            </details>
+            <div id="bap-list" class="workspace-card"></div>
+          </section>
+          <section id="muc-baocao" class="quan-tri-muc" hidden>
+            <form id="baocao-form" class="workspace-form workspace-card">
+              <label>Từ ngày<input name="from" type="date" required /></label>
+              <label>Đến ngày<input name="to" type="date" required /></label>
+              <button type="submit" class="nut">Xem báo cáo</button>
+              <div class="report-presets" role="group" aria-label="Khoảng báo cáo">
+                <button type="button" class="account-button" data-report-days="1">Hôm nay</button>
+                <button type="button" class="account-button" data-report-days="7">7 ngày</button>
+                <button type="button" class="account-button" data-report-days="30">30 ngày</button>
+              </div>
+            </form>
+            <p id="report-status" role="status"></p>
+            <div id="baocao-result"></div>
+          </section>
+          <section id="muc-nhanvien" class="quan-tri-muc" hidden>
+            <details class="ops-add"><summary>Thêm tài khoản</summary>
+              <form id="nhanvien-form" class="workspace-form workspace-card">
+                <label
+                  >Họ tên<input name="name" maxlength="100" required
+                /></label>
+                <label
+                  >Email<input name="email" type="email" maxlength="150" required
+                /></label>
+                <label
+                  >Mật khẩu ban đầu<input
+                    name="password"
+                    type="password"
+                    minlength="8"
+                    maxlength="100"
+                    autocomplete="new-password"
+                    required
+                /></label>
+                <label
+                  >Vai trò<select name="role">
+                    <option value="NHAN_VIEN">Nhân viên</option>
+                    <option value="QUAN_TRI">Quản trị</option>
+                  </select></label
+                >
+                <button type="submit" class="nut">Tạo tài khoản</button>
+              </form>
+            </details>
+            <div id="nhanvien-list" class="workspace-card"></div>
+          </section>
+          <section id="muc-don" class="quan-tri-muc">
+            <section class="workspace-card">
               <div class="workspace-toolbar">
                 <form id="don-search-form" class="workspace-search">
-                  <label class="doc-rieng" for="quan-tri-don-tim">Tìm mã đơn hoặc email</label
+                  <label class="doc-rieng" for="quan-tri-don-tim"
+                    >Tìm mã đơn hoặc email</label
                   ><input
                     id="quan-tri-don-tim"
                     maxlength="100"
                     type="search"
                     placeholder="Tìm mã đơn hoặc email toàn rạp"
-                  /><button class="account-button" type="submit">Tìm kiếm</button>
+                  /><button class="account-button" type="submit">
+                    Tìm kiếm
+                  </button>
                 </form>
-                <label class="doc-rieng" for="don-trang-thai">Trạng thái đơn</label
+                <label class="doc-rieng" for="don-trang-thai"
+                  >Trạng thái đơn</label
                 ><select id="don-trang-thai">
                   <option value="">Tất cả trạng thái</option>
                   <option value="CHO_THANH_TOAN">Chờ thanh toán</option>
                   <option value="DA_THANH_TOAN">Đã thanh toán</option>
                   <option value="HUY">Đã hủy</option>
                 </select>
-                <button id="admin-refresh" type="button" class="account-button">Cập nhật</button>
+                <button id="admin-refresh" type="button" class="account-button">
+                  Cập nhật
+                </button>
+              </div>
+              <div class="loc-nhanh" role="group" aria-label="Lọc đơn hàng">
+                <button type="button" data-loc-don="" aria-pressed="true">
+                  Tất cả
+                </button>
+                <button
+                  type="button"
+                  data-loc-don="CHO_THANH_TOAN"
+                  aria-pressed="false"
+                >
+                  Chờ thanh toán
+                </button>
+                <button
+                  type="button"
+                  data-loc-don="DA_THANH_TOAN"
+                  aria-pressed="false"
+                >
+                  Đã thanh toán / Hóa đơn
+                </button>
               </div>
               <p id="don-so" class="workspace-hint"></p>
-              <div class="bang-cuon" tabindex="0" role="region" aria-label="Danh sách đơn toàn rạp">
+              <div
+                class="bang-cuon"
+                tabindex="0"
+                role="region"
+                aria-label="Danh sách đơn toàn rạp"
+              >
                 <table class="workspace-table">
                   <thead>
                     <tr>
@@ -128,8 +342,11 @@
                 </table>
               </div>
               <div class="phan-trang">
-                <button id="admin-truoc" type="button" class="account-button">Trang trước</button
-                ><button id="admin-sau" type="button" class="account-button">Trang sau</button>
+                <button id="admin-truoc" type="button" class="account-button">
+                  Trang trước</button
+                ><button id="admin-sau" type="button" class="account-button">
+                  Trang sau
+                </button>
               </div>
             </section>
             <form id="tra-don-form" class="workspace-card workspace-lookup">
@@ -146,10 +363,17 @@
           <section id="muc-phim" class="quan-tri-muc" hidden>
             <div class="workspace-toolbar">
               <p id="dem-phim" class="workspace-hint"></p>
-              <button type="button" class="nut" id="them-phim">+ Thêm phim</button>
+              <button type="button" class="nut" id="them-phim">
+                + Thêm phim
+              </button>
             </div>
             <section class="workspace-card">
-              <div class="bang-cuon" tabindex="0" role="region" aria-label="Danh mục phim">
+              <div
+                class="bang-cuon"
+                tabindex="0"
+                role="region"
+                aria-label="Danh mục phim"
+              >
                 <table class="workspace-table">
                   <thead>
                     <tr>
@@ -164,28 +388,40 @@
                 </table>
               </div>
               <div class="phan-trang">
-                <button id="phim-truoc" class="account-button" type="button">Trang trước</button
-                ><button id="phim-sau" class="account-button" type="button">Trang sau</button>
+                <button id="phim-truoc" class="account-button" type="button">
+                  Trang trước</button
+                ><button id="phim-sau" class="account-button" type="button">
+                  Trang sau
+                </button>
               </div>
             </section>
             <p class="workspace-hint">
-              Phim có lịch chiếu được chuyển sang ngừng chiếu khi xóa. Phim có đơn đang giữ chỗ sẽ
-              được bảo vệ.
+              Phim có lịch chiếu được chuyển sang ngừng chiếu khi xóa. Phim có
+              đơn đang giữ chỗ sẽ được bảo vệ.
             </p>
           </section>
           <section id="muc-suat" class="quan-tri-muc" hidden>
-            <div class="workspace-toolbar">
-              <p id="suat-so" class="workspace-hint"></p>
-              <button type="button" class="nut" id="them-suat">+ Thêm suất chiếu</button>
-            </div>
-            <section class="workspace-card">
-              <div class="bang-cuon" tabindex="0" role="region" aria-label="Lịch chiếu">
+            <header class="workspace-toolbar schedule-heading">
+              <h2>Lịch theo phòng</h2>
+              <button type="button" class="nut" id="them-suat">
+                + Thêm suất chiếu
+              </button>
+            </header>
+            <p id="suat-so" class="workspace-hint"></p>
+            <div id="showtime-timeline"></div>
+            <section class="workspace-card" id="suat-list-panel">
+              <div
+                class="bang-cuon"
+                tabindex="0"
+                role="region"
+                aria-label="Lịch chiếu"
+              >
                 <table class="workspace-table">
                   <thead>
                     <tr>
                       <th>Phim / phòng</th>
                       <th>Bắt đầu / kết thúc</th>
-                      <th>Giá vé</th>
+                      <th>Giá thường / VIP</th>
                       <th>Trạng thái</th>
                       <th>Thao tác</th>
                     </tr>
@@ -194,80 +430,142 @@
                 </table>
               </div>
               <div class="phan-trang">
-                <button id="suat-truoc" class="account-button" type="button">Trang trước</button
-                ><button id="suat-sau" class="account-button" type="button">Trang sau</button>
+                <button id="suat-truoc" class="account-button" type="button">
+                  Trang trước</button
+                ><button id="suat-sau" class="account-button" type="button">
+                  Trang sau
+                </button>
               </div>
             </section>
             <p class="workspace-hint">
-              Sơ đồ ghế cố định theo phòng, không có chức năng chỉnh sửa. Suất đã có vé được bảo vệ
-              khi thay đổi.
+              Sơ đồ ghế cố định theo phòng, không có chức năng chỉnh sửa. Suất
+              đã có vé được bảo vệ khi thay đổi.
             </p>
           </section>
         </div>
       </div>
-      <dialog id="don-hop" class="workspace-dialog" aria-labelledby="don-chi-tiet-tieu-de">
+      <dialog
+        id="don-hop"
+        class="workspace-dialog"
+        aria-labelledby="don-chi-tiet-tieu-de"
+      >
         <form method="dialog" class="workspace-dialog-close">
-          <button class="account-button" aria-label="Đóng chi tiết đơn">×</button>
+          <button class="account-button" aria-label="Đóng chi tiết đơn">
+            ×
+          </button>
         </form>
         <p class="workspace-caption">ĐƠN HÀNG</p>
         <h2 id="don-chi-tiet-tieu-de">Chi tiết đơn</h2>
         <div id="don-chi-tiet"></div>
       </dialog>
-      <dialog id="phim-hop" class="workspace-dialog" aria-labelledby="phim-form-title">
+      <dialog
+        id="phim-hop"
+        class="workspace-dialog"
+        aria-labelledby="phim-form-title"
+      >
         <form method="dialog" class="workspace-dialog-close">
           <button class="account-button" aria-label="Đóng form phim">×</button>
         </form>
         <h2 id="phim-form-title">Thêm phim</h2>
         <form id="phim-form" class="workspace-form">
-          <input type="hidden" name="id" /><label
-            >Tên phim<input name="name" required maxlength="200" /></label
-          ><label>Thể loại<input name="genre" required maxlength="100" /></label>
-          <div class="workspace-form-row">
+          <input type="hidden" name="id" />
+          <p class="workspace-hint">Phim đã có vé chỉ sửa được mô tả, diễn viên, poster, đạo diễn và trailer.</p>
+          <fieldset class="ops-fields">
+            <legend>Thông tin phim</legend>
             <label
-              >Thời lượng (phút)<input
-                name="duration"
-                type="number"
-                min="1"
-                max="600"
-                step="1"
-                required /></label
+              >Tên phim<input name="name" required maxlength="200" /></label
             ><label
-              >Phân loại<select name="ageRating">
-                <option>P</option>
-                <option>K</option>
-                <option>T13</option>
-                <option>T16</option>
-                <option>T18</option>
+              >Thể loại<input name="genre" required maxlength="100"
+            /></label>
+            <div class="workspace-form-row">
+              <label
+                >Thời lượng (phút)<input
+                  name="duration"
+                  type="number"
+                  min="1"
+                  max="600"
+                  step="1"
+                  required /></label
+              ><label
+                >Phân loại<select name="ageRating">
+                  <option>P</option>
+                  <option>K</option>
+                  <option>T13</option>
+                  <option>T16</option>
+                  <option>T18</option>
+                </select></label
+              >
+            </div>
+            <label
+              >Trạng thái<select name="status">
+                <option value="SAP_CHIEU">Sắp chiếu</option>
+                <option value="DANG_CHIEU">Đang chiếu</option>
+                <option value="NGUNG_CHIEU">Ngừng chiếu</option>
               </select></label
             >
-          </div>
-          <div class="workspace-poster">
-            <label for="poster-file">Ảnh poster</label>
-            <input id="poster-file" name="posterFile" type="file" accept="image/jpeg,image/png" aria-describedby="poster-hint" />
-            <p id="poster-hint" class="workspace-hint">Chọn ảnh JPG hoặc PNG, tối đa 5 MB.</p>
-            <div id="poster-preview" hidden></div>
-          </div><label
-            >Trạng thái<select name="status">
-              <option value="SAP_CHIEU">Sắp chiếu</option>
-              <option value="DANG_CHIEU">Đang chiếu</option>
-              <option value="NGUNG_CHIEU">Ngừng chiếu</option>
-            </select></label
-          >
+          </fieldset>
+          <fieldset class="ops-fields">
+            <legend>Nội dung</legend>
+            <label
+              >Mô tả (nội dung)<textarea
+                name="description"
+                maxlength="2000"
+                rows="5"
+              ></textarea>
+            </label>
+            <label>Diễn viên<input name="actors" maxlength="500" /></label>
+            <label>Đạo diễn<input name="director" maxlength="200" /></label>
+          </fieldset>
+          <fieldset class="ops-fields">
+            <legend>Poster và trailer</legend>
+            <div class="workspace-poster">
+              <label for="poster-file">Ảnh poster</label>
+              <input
+                id="poster-file"
+                name="posterFile"
+                type="file"
+                accept="image/jpeg,image/png"
+                aria-describedby="poster-hint"
+              />
+              <p id="poster-hint" class="workspace-hint">
+                Chọn ảnh JPG hoặc PNG, tối đa 5 MB.
+              </p>
+              <div id="poster-preview" hidden></div>
+            </div>
+            <label>Liên kết trailer (HTTPS)<input name="trailerUrl" type="url" maxlength="500" placeholder="https://…" /></label>
+          </fieldset>
           <p id="phim-form-error" class="loi" role="alert"></p>
           <button type="submit" class="nut">Lưu phim</button>
         </form>
       </dialog>
-      <dialog id="suat-hop" class="workspace-dialog" aria-labelledby="suat-form-title">
+      <dialog
+        id="suat-hop"
+        class="workspace-dialog"
+        aria-labelledby="suat-form-title"
+      >
         <form method="dialog" class="workspace-dialog-close">
-          <button class="account-button" aria-label="Đóng form suất chiếu">×</button>
+          <button class="account-button" aria-label="Đóng form suất chiếu">
+            ×
+          </button>
         </form>
         <h2 id="suat-form-title">Thêm suất chiếu</h2>
         <form id="suat-form" class="workspace-form">
           <input type="hidden" name="id" /><label
             >Phim<select name="movieId" required></select></label
-          ><label>Phòng (sơ đồ ghế cố định)<select name="roomId" required></select></label>
+          ><label
+            >Phòng (sơ đồ ghế cố định)<select name="roomId" required></select
+          ></label>
+          <label>Chế độ giá<select name="pricingMode">
+            <option value="MANUAL">Nhập tay cho suất này</option>
+            <option value="POLICY">Lấy bảng giá của phòng</option>
+          </select></label>
+          <p class="workspace-hint">Bảng giá lấy theo ngày bắt đầu tại Việt Nam và chụp vào suất khi bấm lưu. Lưu lại suất ở chế độ bảng giá sẽ lấy giá mới nhất; không sửa được suất đã có lịch sử vé. Sửa bảng giá phòng không tự đổi suất hoặc vé cũ.</p>
           <div class="workspace-form-row">
-            <label>Giờ bắt đầu<input name="startsAt" type="datetime-local" required /></label
+            <label
+              >Giờ bắt đầu<input
+                name="startsAt"
+                type="datetime-local"
+                required /></label
             ><label
               >Giá vé (VND)<input
                 name="price"
@@ -278,6 +576,20 @@
                 required
             /></label>
           </div>
+          <label
+            >Phụ thu ghế VIP (VND)<input
+              name="vipSurcharge"
+              type="number"
+              min="0"
+              max="9999999999"
+              step="1"
+              value="0"
+              required
+          /></label>
+          <p class="workspace-hint">
+            Giá VIP = giá vé thường + phụ thu VIP của suất chiếu. Đơn đã đặt giữ
+            giá tại lúc mua.
+          </p>
           <label
             >Trạng thái<select name="status">
               <option value="SAP_CHIEU">Sắp chiếu</option>
@@ -293,13 +605,19 @@
           <button type="submit" class="nut">Lưu suất chiếu</button>
         </form>
       </dialog>
-      <dialog id="confirm-hop" class="workspace-dialog" aria-labelledby="confirm-title">
+      <dialog
+        id="confirm-hop"
+        class="workspace-dialog"
+        aria-labelledby="confirm-title"
+      >
         <h2 id="confirm-title">Xác nhận xóa</h2>
         <p id="confirm-message"></p>
         <p id="confirm-error" class="loi" role="alert"></p>
         <div class="order-actions">
           <button id="confirm-delete" class="nut" type="button">Xác nhận</button
-          ><button class="account-button" type="button" id="confirm-cancel">Quay lại</button>
+          ><button class="account-button" type="button" id="confirm-cancel">
+            Quay lại
+          </button>
         </div>
       </dialog>
     </main>

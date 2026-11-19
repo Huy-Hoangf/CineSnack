@@ -14,7 +14,9 @@ public class GuestOrderAccess {
 
     public void ghiNhanDonDaTao(HttpSession session, Order donHang) {
         if (donHang.maNguoiDung() != null) {
-            throw new IllegalArgumentException("Chỉ ghi nhận đơn khách vãng lai");
+            throw new IllegalArgumentException(
+                "Chỉ ghi nhận đơn khách vãng lai"
+            );
         }
         synchronized (session) {
             @SuppressWarnings("unchecked")

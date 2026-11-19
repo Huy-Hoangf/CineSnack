@@ -6,17 +6,26 @@
     <meta name="theme-color" content="#0769b1" />
     <title>Đăng nhập | CineSnack</title>
     <link rel="stylesheet" href="../assets/css/site.css" />
-    <link rel="stylesheet" href="../assets/css/authentication.css" />
-    <link rel="stylesheet" href="../assets/css/cinema-theme.css?v=2" />
+    <link rel="stylesheet" href="../assets/css/authentication.css?v=3" />
+    <link rel="stylesheet" href="../assets/css/cinema-theme.css?v=3" />
     <script src="../assets/js/api.js" defer></script>
-    <script src="../assets/js/authentication.js" defer></script>
+    <script src="../assets/js/authentication.js?v=4" defer></script>
+    <link rel="stylesheet" href="../assets/css/operations.css" media="screen" />
+    <link rel="stylesheet" href="../assets/css/shared-theme.css?v=1" media="screen" />
   </head>
   <body class="authentication-page">
     <a class="bo-qua-lien-ket" href="#noi-dung">Bỏ qua điều hướng</a>
     <header class="web-dau">
       <div class="bao dau-trong">
-        <a class="thuong-hieu" href="index.html" aria-label="CineSnack — Trang chủ">
-          <span>Cine<span class="thuong-hieu-nhan">Snack</span><small>CINEMA & MORE</small></span>
+        <a
+          class="thuong-hieu"
+          href="index.html"
+          aria-label="CineSnack — Trang chủ"
+        >
+          <span
+            >Cine<span class="thuong-hieu-nhan">Snack</span
+            ><small>CINEMA & MORE</small></span
+          >
         </a>
         <a class="chu-lien-ket" href="index.html">Về trang chủ</a>
       </div>
@@ -25,16 +34,28 @@
       <section class="authentication-card" aria-labelledby="tieu-de-tai-khoan">
         <!-- Chọn đăng nhập hoặc đăng ký. -->
         <nav class="authentication-tabs" aria-label="Tài khoản">
-          <a class="account-login" href="authentication.html?mode=login" data-che-do="login"
+          <a
+            class="account-login"
+            href="authentication.html?mode=login"
+            data-che-do="login"
             >Đăng nhập</a
           >
-          <a class="account-login" href="authentication.html?mode=register" data-che-do="register">Đăng ký</a>
+          <a
+            class="account-login"
+            href="authentication.html?mode=register"
+            data-che-do="register"
+            >Đăng ký</a
+          >
         </nav>
         <h1 id="tieu-de-tai-khoan">Đăng nhập</h1>
         <p id="mo-ta-tai-khoan" class="authentication-description">
           Chào mừng bạn trở lại với CineSnack.
         </p>
-        <noscript><p>Bạn cần bật JavaScript để sử dụng giao diện tài khoản.</p></noscript>
+        <noscript
+          ><p>
+            Bạn cần bật JavaScript để sử dụng giao diện tài khoản.
+          </p></noscript
+        >
         <!-- Form dùng chung; JavaScript điều chỉnh các trường theo chế độ. -->
         <form id="bieu-mau-tai-khoan" class="authentication-form" method="post">
           <div class="authentication-field" data-dang-ky hidden>
@@ -61,30 +82,71 @@
           </div>
           <div class="authentication-field">
             <label for="mat-khau">Mật khẩu</label>
-            <input
-              id="mat-khau"
-              name="matKhau"
-              type="password"
-              autocomplete="current-password"
-              required
-              aria-describedby="goi-y-mat-khau"
-            />
-            <p id="goi-y-mat-khau" class="authentication-hint" hidden>Sử dụng ít nhất 8 ký tự.</p>
-            <button type="button" class="chu-nut mat-khau-hien" data-hien-mat-khau="mat-khau" data-nhan-mat-khau="mật khẩu" aria-controls="mat-khau" aria-pressed="false">Hiện mật khẩu</button>
+            <div class="authentication-password">
+              <input
+                id="mat-khau"
+                name="matKhau"
+                type="password"
+                autocomplete="current-password"
+                required
+                aria-describedby="goi-y-mat-khau"
+              />
+              <button
+                type="button"
+                class="mat-khau-hien"
+                data-hien-mat-khau="mat-khau"
+                data-nhan-mat-khau="mật khẩu"
+                aria-controls="mat-khau"
+                aria-pressed="false"
+                aria-label="Hiện mật khẩu"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12s3.5-5 10-5 10 5 10 5-3.5 5-10 5S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="2.5" />
+                  <path class="mat-khau-gach" d="M4 4 20 20" />
+                </svg>
+              </button>
+            </div>
+            <p id="goi-y-mat-khau" class="authentication-hint" hidden>
+              Sử dụng ít nhất 8 ký tự.
+            </p>
           </div>
           <div class="authentication-field" data-dang-ky hidden>
             <label for="xac-nhan-mat-khau">Xác nhận mật khẩu</label>
-            <input
-              id="xac-nhan-mat-khau"
-              name="xacNhanMatKhau"
-              type="password"
-              autocomplete="new-password"
-              disabled
-            />
-            <button type="button" class="chu-nut mat-khau-hien" data-hien-mat-khau="xac-nhan-mat-khau" data-nhan-mat-khau="mật khẩu xác nhận" aria-controls="xac-nhan-mat-khau" aria-pressed="false">Hiện mật khẩu xác nhận</button>
+            <div class="authentication-password">
+              <input
+                id="xac-nhan-mat-khau"
+                name="xacNhanMatKhau"
+                type="password"
+                autocomplete="new-password"
+                disabled
+              />
+              <button
+                type="button"
+                class="mat-khau-hien"
+                data-hien-mat-khau="xac-nhan-mat-khau"
+                data-nhan-mat-khau="mật khẩu xác nhận"
+                aria-controls="xac-nhan-mat-khau"
+                aria-pressed="false"
+                aria-label="Hiện mật khẩu xác nhận"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12s3.5-5 10-5 10 5 10 5-3.5 5-10 5S2 12 2 12Z" />
+                  <circle cx="12" cy="12" r="2.5" />
+                  <path class="mat-khau-gach" d="M4 4 20 20" />
+                </svg>
+              </button>
+            </div>
           </div>
-          <button id="gui-tai-khoan" class="nut" type="submit">Đăng nhập</button>
-          <p id="thong-bao-tai-khoan" class="authentication-status" role="status" tabindex="-1"></p>
+          <button id="gui-tai-khoan" class="nut" type="submit">
+            Đăng nhập
+          </button>
+          <p
+            id="thong-bao-tai-khoan"
+            class="authentication-status"
+            role="status"
+            tabindex="-1"
+          ></p>
         </form>
         <!-- Thông báo trạng thái hiện tại và lựa chọn Guest. -->
         <a class="guest-button" href="index.html" data-tiep-tuc-khach

@@ -1,11 +1,5 @@
 package com.cinesnack.controller;
 
-import com.cinesnack.account.controller.UserController;
-import com.cinesnack.account.controller.RegistrationController;
-import com.cinesnack.account.service.RegistrationService;
-import com.cinesnack.common.controller.ApiExceptionHandler;
-import com.cinesnack.common.controller.CsrfController;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -14,9 +8,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.cinesnack.account.config.ApiSecurityConfig;
+import com.cinesnack.account.controller.RegistrationController;
+import com.cinesnack.account.controller.UserController;
 import com.cinesnack.account.entity.User;
 import com.cinesnack.account.repository.UserRepository;
+import com.cinesnack.account.service.RegistrationService;
 import com.cinesnack.account.service.UserService;
+import com.cinesnack.common.controller.ApiExceptionHandler;
+import com.cinesnack.common.controller.CsrfController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,14 @@ class SessionSecurityTest {
     @Configuration
     @EnableWebMvc
     @EnableWebSecurity
-    @Import({ ApiSecurityConfig.class, CsrfController.class, ApiExceptionHandler.class, UserController.class, RegistrationController.class, RegistrationService.class })
+    @Import({
+        ApiSecurityConfig.class,
+        CsrfController.class,
+        ApiExceptionHandler.class,
+        UserController.class,
+        RegistrationController.class,
+        RegistrationService.class,
+    })
     static class Config {
 
         @Bean
@@ -67,15 +73,32 @@ class SessionSecurityTest {
 
     @Test
     void dangKyCongKhaiNhungCanCsrfVaDuLieuHopLe() throws Exception {
-        String valid = "{\"hoTen\":\"An\",\"email\":\"an@example.com\",\"matKhau\":\"matkhau123\"}";
-        http.perform(post("/api/auth/register").contentType("application/json").content(valid))
-            .andExpect(status().isForbidden());
-        http.perform(post("/api/auth/register").with(csrf()).contentType("application/json").content(valid))
-            .andExpect(status().isCreated());
-        verify(khoNguoiDung).taoKhachHang(eq("An"), eq("an@example.com"), anyString());
-        http.perform(post("/api/auth/register").with(csrf()).contentType("application/json")
-            .content("{\"hoTen\":\"An\",\"email\":\"bad\",\"matKhau\":\"123\"}"))
-            .andExpect(status().isBadRequest());
+        String valid =
+            "{\"hoTen\":\"An\",\"email\":\"an@example.com\",\"matKhau\":\"matkhau123\"}";
+        http.perform(
+            post("/api/auth/register")
+                .contentType("application/json")
+                .content(valid)
+        ).andExpect(status().isForbidden());
+        http.perform(
+            post("/api/auth/register")
+                .with(csrf())
+                .contentType("application/json")
+                .content(valid)
+        ).andExpect(status().isCreated());
+        verify(khoNguoiDung).taoKhachHang(
+            eq("An"),
+            eq("an@example.com"),
+            anyString()
+        );
+        http.perform(
+            post("/api/auth/register")
+                .with(csrf())
+                .contentType("application/json")
+                .content(
+                    "{\"hoTen\":\"An\",\"email\":\"bad\",\"matKhau\":\"123\"}"
+                )
+        ).andExpect(status().isBadRequest());
     }
 
     @BeforeEach
@@ -88,13 +111,18 @@ class SessionSecurityTest {
             "KHACH_HANG",
             "HOAT_DONG"
         );
-        when(khoNguoiDung.timTheoThuDienTu(khach.thuDienTu())).thenReturn(khach);
-        when(dichVuNguoiDung.layTaiKhoanHoatDong(khach.thuDienTu())).thenReturn(khach);
-        http = org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(
-            nguCanh
-        )
-            .apply(springSecurity())
-            .build();
+        when(khoNguoiDung.timTheoThuDienTu(khach.thuDienTu())).thenReturn(
+            khach
+        );
+        when(dichVuNguoiDung.layTaiKhoanHoatDong(khach.thuDienTu())).thenReturn(
+            khach
+        );
+        http =
+            org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup(
+                nguCanh
+            )
+                .apply(springSecurity())
+                .build();
     }
 
     @Test
@@ -109,7 +137,10 @@ class SessionSecurityTest {
             .andExpect(status().isNoContent())
             .andReturn();
         var session = (MockHttpSession) ketQua.getRequest().getSession(false);
-        assertNotNull(session, "Login must create a session usable by subsequent browser requests");
+        assertNotNull(
+            session,
+            "Login must create a session usable by subsequent browser requests"
+        );
 
         http.perform(get("/api/auth/me").session(session))
             .andExpect(status().isOk())
@@ -141,7 +172,10 @@ class SessionSecurityTest {
 
     @Test
     void tokenCsrfCuSauLoginKhongDungDuocVaTokenMoiDungDuoc() throws Exception {
-        var truoc = http.perform(get("/api/csrf")).andExpect(status().isOk()).andReturn();
+        var truoc = http
+            .perform(get("/api/csrf"))
+            .andExpect(status().isOk())
+            .andReturn();
         var phienCu = (MockHttpSession) truoc.getRequest().getSession(false);
         String tokenCu = com.jayway.jsonpath.JsonPath.read(
             truoc.getResponse().getContentAsString(),
@@ -159,7 +193,9 @@ class SessionSecurityTest {
             .andReturn();
         var phienMoi = (MockHttpSession) login.getRequest().getSession(false);
         http.perform(
-            post("/api/auth/logout").session(phienMoi).header("X-CSRF-TOKEN", tokenCu)
+            post("/api/auth/logout")
+                .session(phienMoi)
+                .header("X-CSRF-TOKEN", tokenCu)
         ).andExpect(status().isForbidden());
         var sau = http
             .perform(get("/api/csrf").session(phienMoi))
@@ -170,7 +206,9 @@ class SessionSecurityTest {
             "$.token"
         );
         http.perform(
-            post("/api/auth/logout").session(phienMoi).header("X-CSRF-TOKEN", tokenMoi)
+            post("/api/auth/logout")
+                .session(phienMoi)
+                .header("X-CSRF-TOKEN", tokenMoi)
         ).andExpect(status().isNoContent());
     }
 
@@ -188,10 +226,13 @@ class SessionSecurityTest {
         var session = (MockHttpSession) ketQua.getRequest().getSession(false);
         assertNotNull(session);
 
-        http.perform(post("/api/auth/logout").session(session).with(csrf())).andExpect(
-            status().isNoContent()
+        http.perform(
+            post("/api/auth/logout").session(session).with(csrf())
+        ).andExpect(status().isNoContent());
+        assertTrue(
+            session.isInvalid(),
+            "Logout must invalidate the authenticated session"
         );
-        assertTrue(session.isInvalid(), "Logout must invalidate the authenticated session");
         http.perform(get("/api/auth/me")).andExpect(status().isUnauthorized());
     }
 }

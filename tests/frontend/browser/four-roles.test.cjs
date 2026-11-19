@@ -3,11 +3,16 @@ const assert = require("node:assert/strict");
 const { chuanBi } = require("./helpers.cjs");
 
 async function loginDefault(m, p, email, next) {
-  await m.mo(p, "authentication.html" + (next ? "?next=" + encodeURIComponent(next) : ""));
+  await m.mo(
+    p,
+    "authentication.html" + (next ? "?next=" + encodeURIComponent(next) : ""),
+  );
   await p.locator("#email").fill(email);
   await p.locator("#mat-khau").fill("MoPhong123!");
   await p.locator("#gui-tai-khoan").click();
-  await p.waitForURL((url) => !url.pathname.endsWith("authentication.html"), { timeout: 5000 });
+  await p.waitForURL((url) => !url.pathname.endsWith("authentication.html"), {
+    timeout: 5000,
+  });
 }
 async function csrf(m, p) {
   return (await p.request.get(new URL("/api/csrf", m.goc).href)).json();
@@ -32,8 +37,16 @@ test("Guest đăng nhập trong cùng phiên vẫn mở được đơn guest và
   const m = await chuanBi(t),
     page = await m.trangMoi();
   const order = await taoDon(m, page, "/api/guest/orders", null);
-  await loginDefault(m, page, "khach@example.test", "orders.html?code=" + order.code);
-  await page.locator("#ma-don").filter({ hasText: order.code }).waitFor({ timeout: 5000 });
+  await loginDefault(
+    m,
+    page,
+    "khach@example.test",
+    "orders.html?code=" + order.code,
+  );
+  await page
+    .locator("#ma-don")
+    .filter({ hasText: order.code })
+    .waitFor({ timeout: 5000 });
   assert.equal(await page.locator("#orders-scope").inputValue(), "guest");
   assert.equal(await page.locator("#huy-don").isEnabled(), true);
   await page.locator("#orders-scope").selectOption("account");
@@ -58,26 +71,54 @@ test("4 role: default login, customer next, styled header and privileged navigat
     if (role !== "User") {
       await p
         .locator("#admin-role")
-        .filter({ hasText: role === "Admin" ? "Quản trị viên" : "Nhân viên quầy" })
+        .filter({
+          hasText: role === "Admin" ? "Quản trị viên" : "Nhân viên quầy",
+        })
         .waitFor({ timeout: 5000 });
       assert.equal(await p.locator('[data-muc="don"]').isVisible(), true);
       await p.locator('[data-muc="don"]').click();
-      assert.equal(await p.locator('[data-loc-don="DA_THANH_TOAN"]').isVisible(), true);
-      assert.equal(await p.locator('[data-muc="phim"]').isVisible(), role === "Admin");
-      assert.equal(await p.locator('[data-muc="suat"]').isVisible(), role === "Admin");
+      assert.equal(
+        await p.locator('[data-loc-don="DA_THANH_TOAN"]').isVisible(),
+        true,
+      );
+      assert.equal(
+        await p.locator('[data-muc="phim"]').isVisible(),
+        role === "Admin",
+      );
+      assert.equal(
+        await p.locator('[data-muc="suat"]').isVisible(),
+        role === "Admin",
+      );
       assert.equal(await p.locator('[data-muc="ghe"]').count(), 0);
-      const logoutStyle = await p.locator("#admin-logout").evaluate((button) => {
-        const style = getComputedStyle(button);
-        return { border: parseFloat(style.borderTopWidth), height: button.offsetHeight };
-      });
-      assert.ok(logoutStyle.border >= 1, "Logout must have a visible button border");
-      assert.ok(logoutStyle.height >= 44, "Logout must have an accessible touch target");
+      const logoutStyle = await p
+        .locator("#admin-logout")
+        .evaluate((button) => {
+          const style = getComputedStyle(button);
+          return {
+            border: parseFloat(style.borderTopWidth),
+            height: button.offsetHeight,
+          };
+        });
+      assert.ok(
+        logoutStyle.border >= 1,
+        "Logout must have a visible button border",
+      );
+      assert.ok(
+        logoutStyle.height >= 44,
+        "Logout must have an accessible touch target",
+      );
       await p.locator("#admin-logout").click();
       await p.waitForURL("**/index.html", { timeout: 5000 });
-      assert.equal((await p.request.get(new URL("/api/auth/me", m.goc).href)).status(), 401);
+      assert.equal(
+        (await p.request.get(new URL("/api/auth/me", m.goc).href)).status(),
+        401,
+      );
     }
     await m.mo(p, "index.html");
-    await p.locator(".account-actions .account-button").first().waitFor({ timeout: 5000 });
+    await p
+      .locator(".account-actions .account-button")
+      .first()
+      .waitFor({ timeout: 5000 });
     assert.equal(
       await p
         .locator(
@@ -104,11 +145,18 @@ test("Guest checkout requires email; own-session orders/invoices, cross-session 
   await guest.waitForURL("**/checkout.html");
   await guest.locator("#mau-dong-y").check();
   await guest.locator("#thanh-toan-bieu-mau button[type=submit]").click();
-  assert.equal(m.orders.size, 0, "Browser required email must prevent guest creation");
+  assert.equal(
+    m.orders.size,
+    0,
+    "Browser required email must prevent guest creation",
+  );
   await guest.locator("#khach-email").fill("guest@example.test");
   let sent;
   guest.on("request", (r) => {
-    if (r.method() === "POST" && new URL(r.url()).pathname === "/api/guest/orders")
+    if (
+      r.method() === "POST" &&
+      new URL(r.url()).pathname === "/api/guest/orders"
+    )
       sent = r.postDataJSON();
   });
   await guest.locator("#thanh-toan-bieu-mau button[type=submit]").click();
@@ -118,14 +166,23 @@ test("Guest checkout requires email; own-session orders/invoices, cross-session 
   assert.deepEqual(sent.seatIds, [11]);
   assert.equal(sent.userId, undefined);
   assert.equal(m.orders.get(code).order.userId, null);
-  assert.match(await guest.locator(".order-show").textContent(), /Chuyến phiêu lưu CineSnack/);
+  assert.match(
+    await guest.locator(".order-show").textContent(),
+    /Chuyến phiêu lưu CineSnack/,
+  );
   assert.match(await guest.locator(".order-show").textContent(), /Phòng 01/);
   assert.match(await guest.locator(".order-show").textContent(), /Ghế A1/);
   assert.equal(await guest.locator("#cash-form").count(), 0);
   await csrf(m, other);
   for (const suffix of ["", "/invoices"]) {
-    const res = await other.request.get(new URL(`/api/guest/orders/${code}${suffix}`, m.goc).href);
-    assert.equal(res.status(), 403, "Another browser cannot access guest order using known code");
+    const res = await other.request.get(
+      new URL(`/api/guest/orders/${code}${suffix}`, m.goc).href,
+    );
+    assert.equal(
+      res.status(),
+      403,
+      "Another browser cannot access guest order using known code",
+    );
   }
   const otherToken = await csrf(m, other);
   const forbiddenCancel = await other.request.post(
@@ -137,11 +194,17 @@ test("Guest checkout requires email; own-session orders/invoices, cross-session 
   const userOrder = await taoDon(m, other, "/api/orders", 12);
   await loginDefault(m, staff, "nhanvien@example.test");
   assert.equal((await staff.locator(`[data-don="${code}"]`).count()) > 0, true);
-  assert.equal((await staff.locator(`[data-don="${userOrder.code}"]`).count()) > 0, true);
+  assert.equal(
+    (await staff.locator(`[data-don="${userOrder.code}"]`).count()) > 0,
+    true,
+  );
   await staff.locator(`[data-don="${code}"]`).first().click();
   await staff.locator("#tien-khach-dua").fill("100000");
   await staff.locator("#nhan-tien").click();
-  await staff.locator("#trang-thai-don").filter({ hasText: "Đã thanh toán" }).waitFor();
+  await staff
+    .locator("#trang-thai-don")
+    .filter({ hasText: "Đã thanh toán" })
+    .waitFor();
   await guest.locator("#tai-lai-don").click();
   await guest.locator("#hoa-don article").waitFor({ timeout: 5000 });
   assert.equal(await guest.locator("#huy-don").isEnabled(), false);
@@ -178,8 +241,12 @@ test("Admin movie/show CRUD through forms; staff API cannot mutate, no seat map 
   await admin.locator('[data-edit-movie="2"]').click();
   await form.locator('[name="name"]').fill("Phim đã sửa");
   await form.locator('button[type="submit"]').click();
-  await admin.locator("#quan-tri-phim").filter({ hasText: "Phim đã sửa" }).waitFor();
+  await admin
+    .locator("#quan-tri-phim")
+    .filter({ hasText: "Phim đã sửa" })
+    .waitFor();
   await admin.locator('[data-muc="suat"]').click();
+  await admin.getByRole("button", { name: "Danh sách", exact: true }).click();
   await admin.locator("#them-suat").click();
   const show = admin.locator("#suat-form");
   await show.locator('[name="movieId"]').selectOption("2");
@@ -195,17 +262,22 @@ test("Admin movie/show CRUD through forms; staff API cannot mutate, no seat map 
   await show.locator('button[type="submit"]').click();
   await admin.locator('[data-delete-show="102"]').click();
   await admin.locator("#confirm-delete").click();
-  await admin.locator('[data-edit-show="102"]').waitFor({ state: "detached", timeout: 5000 });
+  await admin
+    .locator('[data-edit-show="102"]')
+    .waitFor({ state: "detached", timeout: 5000 });
   await admin.locator('[data-muc="phim"]').click();
   await admin.locator('[data-delete-movie="2"]').click();
   await admin.locator("#confirm-delete").click();
-  await admin.locator('[data-edit-movie="2"]').waitFor({ state: "detached", timeout: 5000 });
+  await admin
+    .locator('[data-edit-movie="2"]')
+    .waitFor({ state: "detached", timeout: 5000 });
   await loginDefault(m, staff, "nhanvien@example.test");
   const token = await csrf(m, staff);
   for (const resource of ["movies", "showtimes"])
     for (const method of ["POST", "PUT", "DELETE"]) {
       const response = await staff.request.fetch(
-        new URL(`/api/admin/${resource}${method === "POST" ? "" : "/1"}`, m.goc).href,
+        new URL(`/api/admin/${resource}${method === "POST" ? "" : "/1"}`, m.goc)
+          .href,
         {
           method,
           headers: { [token.headerName]: token.token },
@@ -230,6 +302,8 @@ test("Staff tìm mã đơn Guest ở ngoài trang hiện tại bằng truy vấn
   assert.equal(await staff.locator(`[data-don="${oldOrder.code}"]`).count(), 0);
   await staff.locator('[data-muc="don"]').click();
   await staff.locator("#quan-tri-don-tim").fill(oldOrder.code);
-  await staff.locator(`#quan-tri-don [data-don="${oldOrder.code}"]`).waitFor({ timeout: 5000 });
+  await staff
+    .locator(`#quan-tri-don [data-don="${oldOrder.code}"]`)
+    .waitFor({ timeout: 5000 });
   assert.deepEqual(m.loi, []);
 });

@@ -1,22 +1,21 @@
 package com.cinesnack.service;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.cinesnack.account.repository.UserRepository;
 import com.cinesnack.account.service.UserService;
+import com.cinesnack.booking.dto.CreateOrderRequest;
 import com.cinesnack.booking.repository.OrderRepository;
 import com.cinesnack.booking.service.OrderService;
+import com.cinesnack.catalog.dto.AdminCatalog;
 import com.cinesnack.catalog.repository.AdminCatalogRepository;
 import com.cinesnack.catalog.repository.BookingCatalogRepository;
 import com.cinesnack.catalog.service.AdminCatalogService;
+import com.cinesnack.common.support.Sql;
 import com.cinesnack.invoice.repository.InvoiceRepository;
 import com.cinesnack.invoice.service.InvoiceService;
 import com.cinesnack.payment.repository.PaymentRepository;
 import com.cinesnack.payment.service.PaymentService;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import com.cinesnack.catalog.dto.AdminCatalog;
-import com.cinesnack.booking.dto.CreateOrderRequest;
-import com.cinesnack.common.support.Sql;
 import java.math.BigDecimal;
 import java.time.*;
 import java.util.*;
@@ -51,6 +50,8 @@ class SqlServerPaymentIT {
         UserRepository.class,
         AdminCatalogRepository.class,
         AdminCatalogService.class,
+        com.cinesnack.catalog.service.TheaterPolicyService.class,
+        com.cinesnack.catalog.repository.TheaterPolicyRepository.class,
     })
     static class Config {
 
@@ -99,7 +100,10 @@ class SqlServerPaymentIT {
 
     @BeforeEach
     void dungDatabaseVaTuyChonSqlServer() {
-        assertEquals("CineSnack", truyVan.queryForObject("SELECT DB_NAME()", String.class));
+        assertEquals(
+            "CineSnack",
+            truyVan.queryForObject("SELECT DB_NAME()", String.class)
+        );
         truyVan.execute(
             "SET ANSI_NULLS ON; SET ANSI_PADDING ON; SET ANSI_WARNINGS ON; SET ARITHABORT ON; SET CONCAT_NULL_YIELDS_NULL ON; SET QUOTED_IDENTIFIER ON; SET NUMERIC_ROUNDABORT OFF;"
         );
@@ -131,6 +135,8 @@ class SqlServerPaymentIT {
         var movieRequest = new AdminCatalog.MovieRequest(
             "Phim IT " + suffix,
             "Hành động",
+            "Nội dung",
+            "Diễn viên",
             90,
             "T13",
             "",
@@ -173,9 +179,15 @@ class SqlServerPaymentIT {
         var ownedCodes = Set.of(order.ma());
         var details = dichVuDonHang.layChiTietKhach(order.ma(), ownedCodes);
         assertEquals(movie.ten(), details.dsVe().get(0).tenPhim());
-        assertEquals(0, truyVan.queryForObject(
-            "SELECT (SELECT COUNT(*) FROM HOA_DON_VE WHERE don_hang_id=?) + (SELECT COUNT(*) FROM HOA_DON_BONG_NUOC WHERE don_hang_id=?)",
-            Integer.class, order.maSo(), order.maSo()));
+        assertEquals(
+            0,
+            truyVan.queryForObject(
+                "SELECT (SELECT COUNT(*) FROM HOA_DON_VE WHERE don_hang_id=?) + (SELECT COUNT(*) FROM HOA_DON_BONG_NUOC WHERE don_hang_id=?)",
+                Integer.class,
+                order.maSo(),
+                order.maSo()
+            )
+        );
         assertTrue(
             dichVuDonHang
                 .layDanhSachQuanTri(staff, guestEmail, "", 0, 20)
@@ -184,16 +196,18 @@ class SqlServerPaymentIT {
         );
         assertEquals(
             403,
-            assertThrows(org.springframework.web.server.ResponseStatusException.class, () ->
-                dichVuDonHang.layChiTiet(order.ma(), guestEmail)
+            assertThrows(
+                org.springframework.web.server.ResponseStatusException.class,
+                () -> dichVuDonHang.layChiTiet(order.ma(), guestEmail)
             )
                 .getStatusCode()
                 .value()
         );
         assertEquals(
             403,
-            assertThrows(org.springframework.web.server.ResponseStatusException.class, () ->
-                dichVuDonHang.layChiTietKhach(order.ma(), Set.of())
+            assertThrows(
+                org.springframework.web.server.ResponseStatusException.class,
+                () -> dichVuDonHang.layChiTietKhach(order.ma(), Set.of())
             )
                 .getStatusCode()
                 .value()
@@ -201,13 +215,18 @@ class SqlServerPaymentIT {
         long showId = show.maSo();
         assertEquals(
             409,
-            assertThrows(org.springframework.web.server.ResponseStatusException.class, () ->
-                quanLy.deleteShow(showId, admin)
+            assertThrows(
+                org.springframework.web.server.ResponseStatusException.class,
+                () -> quanLy.deleteShow(showId, admin)
             )
                 .getStatusCode()
                 .value()
         );
-        var receipt = dichVuThanhToan.thanhToanTaiQuay(order.ma(), new BigDecimal("150000"), staff);
+        var receipt = dichVuThanhToan.thanhToanTaiQuay(
+            order.ma(),
+            new BigDecimal("150000"),
+            staff
+        );
         assertEquals(0, receipt.tienThua().compareTo(new BigDecimal("1000")));
         assertEquals(
             receipt.giaoDich().maSo(),
@@ -229,7 +248,10 @@ class SqlServerPaymentIT {
                 .orElseThrow()
                 .trangThai()
         );
-        assertEquals(invoices, dichVuHoaDon.layHoaDonKhach(order.ma(), ownedCodes));
+        assertEquals(
+            invoices,
+            dichVuHoaDon.layHoaDonKhach(order.ma(), ownedCodes)
+        );
         var unused = quanLy.saveMovie(null, movieRequest, admin);
         var unusedShow = quanLy.saveShow(
             null,
@@ -274,7 +296,9 @@ class SqlServerPaymentIT {
             OUTPUT INSERTED.phim_id VALUES (N'Phim kiểm thử', N'Hành động', 90, 'T13', 'DANG_CHIEU')
             """
         );
-        LocalDateTime batDau = LocalDateTime.now(dongHo).plusHours(1).withNano(0);
+        LocalDateTime batDau = LocalDateTime.now(dongHo)
+            .plusHours(1)
+            .withNano(0);
         long suatChieu = Sql.themVaLayMa(
             truyVan,
             """
@@ -330,7 +354,10 @@ class SqlServerPaymentIT {
             "UPDATE SAN_PHAM SET gia_ban = 99999, ten_san_pham = N'Đổi tên' WHERE san_pham_id = ?",
             sanPham
         );
-        truyVan.update("UPDATE PHIM SET ten_phim = N'Đổi tên phim' WHERE phim_id = ?", phim);
+        truyVan.update(
+            "UPDATE PHIM SET ten_phim = N'Đổi tên phim' WHERE phim_id = ?",
+            phim
+        );
         assertEquals(hoaDon, dichVuHoaDon.layHoaDon(donHang.ma(), khachHang));
         assertEquals(
             1,

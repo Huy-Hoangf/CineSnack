@@ -1,11 +1,11 @@
 package com.cinesnack.booking.service;
 
-import com.cinesnack.booking.dto.CreateOrderRequest;
-import com.cinesnack.booking.entity.*;
 import com.cinesnack.account.entity.User;
 import com.cinesnack.account.service.UserService;
-import com.cinesnack.catalog.repository.BookingCatalogRepository;
+import com.cinesnack.booking.dto.CreateOrderRequest;
+import com.cinesnack.booking.entity.*;
 import com.cinesnack.booking.repository.OrderRepository;
+import com.cinesnack.catalog.repository.BookingCatalogRepository;
 import com.cinesnack.common.support.Codes;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
@@ -53,30 +53,64 @@ public class OrderService {
     @Transactional
     public Order taoDonHang(CreateOrderRequest yeuCau, String thuDienTu) {
         User nguoiDung = dichVuNguoiDung.layTaiKhoanHoatDong(thuDienTu);
-        return taoDonHang(yeuCau, nguoiDung.maSo());
+        if (!"KHACH_HANG".equals(nguoiDung.vaiTro())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                "Tài khoản quản trị và nhân viên không được đặt vé online");
+        }
+        return taoDonHang(yeuCau, nguoiDung.maSo(), emailBatBuoc(yeuCau), true);
     }
 
     @Transactional
     public Order taoDonKhach(CreateOrderRequest yeuCau) {
-        return taoDonHang(yeuCau, (Long) null);
+        return taoDonHang(yeuCau, null, emailBatBuoc(yeuCau), true);
     }
 
     @Transactional
-    public Order taoDonTaiQuay(CreateOrderRequest yeuCau, String thuDienTuNhanVien) {
-        if (!"NHAN_VIEN".equals(dichVuNguoiDung.layTaiKhoanHoatDong(thuDienTuNhanVien).vaiTro())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Chỉ nhân viên được tạo đơn tại quầy");
+    public Order taoDonTaiQuay(
+        CreateOrderRequest yeuCau,
+        String thuDienTuNhanVien
+    ) {
+        if (
+            !"NHAN_VIEN".equals(
+                dichVuNguoiDung.layTaiKhoanHoatDong(thuDienTuNhanVien).vaiTro()
+            )
+        ) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN,
+                "Chỉ nhân viên được tạo đơn tại quầy"
+            );
         }
-        return taoDonHang(yeuCau, (Long) null);
+        String email = yeuCau.thuDienTu();
+        return taoDonHang(
+            yeuCau,
+            null,
+            email == null || email.isBlank() ? null : email,
+            false
+        );
     }
 
-    private Order taoDonHang(CreateOrderRequest yeuCau, Long maNguoiDung) {
+    private String emailBatBuoc(CreateOrderRequest yeuCau) {
+        if (yeuCau.thuDienTu() == null || yeuCau.thuDienTu().isBlank()) {
+            throw loiDuLieu("Vui lòng nhập email nhận vé");
+        }
+        return yeuCau.thuDienTu();
+    }
+
+    private Order taoDonHang(
+        CreateOrderRequest yeuCau,
+        Long maNguoiDung,
+        String emailNhanVe,
+        boolean laDonOnline
+    ) {
         kiemTraLuaChon(yeuCau);
         var suatChieu = yeuCau.dsMaGhe().isEmpty()
             ? null
             : danhMucDatVe.timVaKhoaSuatChieu(yeuCau.maSuatChieu());
-        LocalDateTime hienTai = LocalDateTime.now(dongHo).truncatedTo(ChronoUnit.SECONDS);
+        LocalDateTime hienTai = LocalDateTime.now(dongHo).truncatedTo(
+            ChronoUnit.SECONDS
+        );
         LocalDateTime hetHan = hienTai.plusMinutes(15);
-        BigDecimal giaVe = BigDecimal.ZERO;
+        Map<Long, BigDecimal> giaTheoGhe = new HashMap<>();
 
         if (!yeuCau.dsMaGhe().isEmpty()) {
             if (
@@ -86,8 +120,9 @@ public class OrderService {
             ) {
                 throw loiXungDot("Suất chiếu không còn nhận đặt vé");
             }
-            if (suatChieu.batDau().isBefore(hetHan)) hetHan = suatChieu.batDau();
-            giaVe = suatChieu.gia();
+            if (suatChieu.batDau().isBefore(hetHan)) hetHan =
+                suatChieu.batDau();
+            BigDecimal giaVe = suatChieu.gia();
             for (long maGhe : yeuCau.dsMaGhe()) {
                 var ghe = danhMucDatVe.timGhe(maGhe);
                 if (
@@ -95,10 +130,20 @@ public class OrderService {
                     ghe.maPhong() != suatChieu.maPhong() ||
                     !"HOAT_DONG".equals(ghe.trangThai())
                 ) {
-                    throw loiDuLieu("Ghế không hợp lệ hoặc không thuộc phòng chiếu");
+                    throw loiDuLieu(
+                        "Ghế không hợp lệ hoặc không thuộc phòng chiếu"
+                    );
                 }
-                if (khoDonHang.gheDaDuocDat(suatChieu.maSo(), maGhe)) throw loiXungDot(
-                    "Ghế đã được giữ hoặc bán"
+                if (
+                    khoDonHang.gheDaDuocDat(suatChieu.maSo(), maGhe)
+                ) throw loiXungDot("Ghế đã được giữ hoặc bán");
+                giaTheoGhe.put(
+                    maGhe,
+                    giaVe.add(
+                        "VIP".equals(ghe.loai())
+                            ? suatChieu.phuThuVip()
+                            : BigDecimal.ZERO
+                    )
                 );
             }
         }
@@ -124,26 +169,41 @@ public class OrderService {
                 )
             );
         }
-        BigDecimal tongTien = giaVe.multiply(BigDecimal.valueOf(yeuCau.dsMaGhe().size()));
+        BigDecimal tongTien = BigDecimal.ZERO;
+        for (BigDecimal giaGhe : giaTheoGhe.values()) {
+            tongTien = tongTien.add(giaGhe);
+        }
         for (var dongChiTiet : dsMatHang)
             tongTien = tongTien.add(
-                dongChiTiet.matHang().gia().multiply(BigDecimal.valueOf(dongChiTiet.soLuong()))
+                dongChiTiet
+                    .matHang()
+                    .gia()
+                    .multiply(BigDecimal.valueOf(dongChiTiet.soLuong()))
             );
-        if (tongTien.compareTo(new BigDecimal("9999999999.99")) > 0) throw loiDuLieu(
-            "Tổng tiền vượt giới hạn"
-        );
+        if (
+            tongTien.compareTo(new BigDecimal("9999999999.99")) > 0
+        ) throw loiDuLieu("Tổng tiền vượt giới hạn");
+
+        if (laDonOnline && tongTien.signum() == 0) {
+            throw loiDuLieu("Tổng tiền đơn online phải lớn hơn 0 đồng.");
+        }
 
         String maDonHang = Codes.taoMa("DH");
         long maSo = khoDonHang.taoDonHang(
             maNguoiDung,
             maDonHang,
-            yeuCau.thuDienTu(),
+            emailNhanVe,
             tongTien,
             hetHan,
             hienTai
         );
         for (long maGhe : yeuCau.dsMaGhe())
-            khoDonHang.themVe(maSo, yeuCau.maSuatChieu(), maGhe, giaVe);
+            khoDonHang.themVe(
+                maSo,
+                yeuCau.maSuatChieu(),
+                maGhe,
+                giaTheoGhe.get(maGhe)
+            );
         for (var dongChiTiet : dsMatHang)
             khoDonHang.themBapNuoc(
                 maSo,
@@ -157,7 +217,7 @@ public class OrderService {
             maSo,
             maNguoiDung,
             maDonHang,
-            yeuCau.thuDienTu(),
+            emailNhanVe,
             tongTien,
             "CHO_THANH_TOAN",
             hetHan,
@@ -179,6 +239,53 @@ public class OrderService {
         );
     }
 
+    @Transactional
+    public Details giaoBapNuoc(
+        String maDon,
+        long chiTietId,
+        String emailNhanVien
+    ) {
+        User nhanVien = dichVuNguoiDung.layTaiKhoanHoatDong(emailNhanVien);
+        if (!nhanVien.laNhanVien()) throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "Chỉ nhân viên được giao bắp nước"
+        );
+        LocalDateTime luc = LocalDateTime.now(dongHo).truncatedTo(
+            ChronoUnit.SECONDS
+        );
+        if (
+            khoDonHang.giaoBapNuoc(maDon, chiTietId, nhanVien.maSo(), luc) != 1
+        ) throw new ResponseStatusException(
+            HttpStatus.CONFLICT,
+            "Món không hợp lệ, chưa thanh toán hoặc đã giao"
+        );
+        return chiTiet(khoDonHang.timTheoMa(maDon));
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderRepository.Pickup> choNhanBapNuoc(String emailNhanVien) {
+        if (
+            !dichVuNguoiDung.layTaiKhoanHoatDong(emailNhanVien).laNhanVien()
+        ) throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN,
+            "Chỉ nhân viên được xem món chờ nhận"
+        );
+        return khoDonHang.choNhanBapNuoc();
+    }
+
+    @Transactional
+    public int giaoTheoHoaDon(String code, String email) {
+        User staff = dichVuNguoiDung.layTaiKhoanHoatDong(email);
+        if (!staff.laNhanVien()) throw new ResponseStatusException(
+            HttpStatus.FORBIDDEN, "Chỉ nhân viên được giao bắp nước"
+        );
+        int count = khoDonHang.giaoTheoHoaDon(code.trim(), staff.maSo(),
+            LocalDateTime.now(dongHo).truncatedTo(ChronoUnit.SECONDS));
+        if (count == 0) throw new ResponseStatusException(HttpStatus.CONFLICT,
+            "Hóa đơn không hợp lệ, chưa thanh toán hoặc đã nhận hết");
+        return count;
+    }
+
     public Order layDonDuocPhepTruyCap(String maDonHang, String thuDienTu) {
         User nguoiDung = dichVuNguoiDung.layTaiKhoanHoatDong(thuDienTu);
         Order donHang = khoDonHang.timTheoMa(maDonHang);
@@ -191,13 +298,20 @@ public class OrderService {
         return chiTiet(layDonKhachDuocPhepTruyCap(ma, maDonTrongPhien));
     }
 
-    public Order layDonKhachDuocPhepTruyCap(String ma, Set<String> maDonTrongPhien) {
+    public Order layDonKhachDuocPhepTruyCap(
+        String ma,
+        Set<String> maDonTrongPhien
+    ) {
         kiemTraMaDonKhach(ma, maDonTrongPhien);
         return kiemTraDonKhach(khoDonHang.timTheoMa(ma));
     }
 
     @Transactional(readOnly = true)
-    public List<Order> layDanhSachKhach(Set<String> maDonTrongPhien, int trang, int kichThuoc) {
+    public List<Order> layDanhSachKhach(
+        Set<String> maDonTrongPhien,
+        int trang,
+        int kichThuoc
+    ) {
         return khoDonHang.layDanhSachKhach(maDonTrongPhien, trang, kichThuoc);
     }
 
@@ -228,7 +342,11 @@ public class OrderService {
         );
     }
 
-    public List<Order> layDanhSachQuanTri(String email, int trang, int kichThuoc) {
+    public List<Order> layDanhSachQuanTri(
+        String email,
+        int trang,
+        int kichThuoc
+    ) {
         return layDanhSachQuanTri(email, "", "", trang, kichThuoc);
     }
 
@@ -263,14 +381,13 @@ public class OrderService {
     }
 
     private Order huyDonDaKhoa(Order donHang) {
-        if (
-            "HUY".equals(donHang.trangThai())
-        ) return donHang;
+        if ("HUY".equals(donHang.trangThai())) return donHang;
         if (!"CHO_THANH_TOAN".equals(donHang.trangThai())) throw loiXungDot(
             "Chỉ được hủy đơn chưa thanh toán"
         );
         if (
-            khoDonHang.doiTrangThai(donHang.maSo(), "CHO_THANH_TOAN", "HUY") != 1
+            khoDonHang.doiTrangThai(donHang.maSo(), "CHO_THANH_TOAN", "HUY") !=
+            1
         ) throw loiXungDot("Đơn hàng đã thay đổi");
         khoDonHang.dongChiTiet(donHang.maSo(), "HUY");
         return new Order(
@@ -287,12 +404,16 @@ public class OrderService {
 
     private void kiemTraLuaChon(CreateOrderRequest yeuCau) {
         if (
-            yeuCau.dsMaGhe().isEmpty() && yeuCau.dsBapNuoc().isEmpty() && yeuCau.dsCombo().isEmpty()
+            yeuCau.dsMaGhe().isEmpty() &&
+            yeuCau.dsBapNuoc().isEmpty() &&
+            yeuCau.dsCombo().isEmpty()
         ) {
             throw loiDuLieu("Đơn hàng phải có vé hoặc bắp nước");
         }
         if (yeuCau.dsMaGhe().isEmpty() != (yeuCau.maSuatChieu() == null)) {
-            throw loiDuLieu("Suất chiếu và danh sách ghế phải được chọn cùng nhau");
+            throw loiDuLieu(
+                "Suất chiếu và danh sách ghế phải được chọn cùng nhau"
+            );
         }
         if (new HashSet<>(yeuCau.dsMaGhe()).size() != yeuCau.dsMaGhe().size()) {
             throw loiDuLieu("Không được gửi ghế trùng nhau");
@@ -321,9 +442,9 @@ public class OrderService {
         BookingCatalogRepository.Food matHang,
         int soLuong
     ) {
-        if (matHang == null || !"HOAT_DONG".equals(matHang.trangThai())) throw loiXungDot(
-            "Sản phẩm hoặc combo không còn bán"
-        );
+        if (
+            matHang == null || !"HOAT_DONG".equals(matHang.trangThai())
+        ) throw loiXungDot("Sản phẩm hoặc combo không còn bán");
         return new FoodLine(maSanPham, maCombo, matHang, soLuong);
     }
 

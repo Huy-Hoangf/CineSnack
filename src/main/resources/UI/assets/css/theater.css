@@ -1,0 +1,137 @@
+.theater-tabs,
+.theater-setup {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  align-items: end;
+}
+.order-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.ung-dung-trang .theater-tabs .account-button[aria-pressed="true"] {
+  background: #16304a;
+  color: #fff;
+}
+.theater-setup label,
+.theater-checkin label {
+  display: grid;
+  gap: 8px;
+  font-weight: 600;
+}
+.theater-setup input,
+.theater-setup select,
+.theater-checkin input {
+  min-height: 44px;
+  padding: 10px;
+  border: 1px solid #a1b1c2;
+  border-radius: 6px;
+  font: inherit;
+  max-width: 100%;
+}
+.theater-setup input {
+  width: 140px;
+}
+.theater-map-scroll {
+  overflow: auto;
+  padding: 12px 0;
+}
+.theater-map {
+  display: grid;
+  gap: 8px;
+  width: max-content;
+  margin: auto;
+}
+.ung-dung-trang .theater-seat {
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid #697f96;
+  border-radius: 6px;
+  background: #fff;
+  color: #16304a;
+  font: inherit;
+  cursor: pointer;
+}
+.theater-seat.vip {
+  border: 3px solid #765313;
+  background: #fff7dc;
+}
+.theater-seat.locked {
+  background: #e6e9ed;
+  color: #44566a;
+  text-decoration: line-through;
+}
+.theater-seat:hover {
+  background: #dceeff;
+}
+.theater-seat:focus-visible,
+.theater-tabs button:focus-visible {
+  outline: 3px solid #0769b1;
+  outline-offset: 3px;
+}
+.theater-screen {
+  border-top: 5px solid #9aabba;
+  text-align: center;
+  padding: 12px;
+  color: #516378;
+  letter-spacing: 3px;
+  margin-top: 28px;
+}
+.workspace-table td .account-button + .account-button {
+  margin-left: 8px;
+}
+.theater-checkin {
+  display: grid;
+  gap: 12px;
+  max-width: 520px;
+  margin: 24px 0;
+}
+.theater-checkin-result:not(:empty) {
+  padding: 20px;
+  border: 2px solid #22754a;
+  border-radius: 8px;
+  background: #effaf3;
+}
+.theater-checkin-result strong {
+  font-size: 22px;
+}
+.ticket-camera {
+  display: grid;
+  gap: 12px;
+  max-width: 520px;
+  margin-bottom: 12px;
+}
+.ticket-camera video {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  background: #122337;
+  border-radius: 8px;
+}
+#theater-workspace [hidden] {
+  display: none;
+}
+@media (max-width: 600px) {
+  .workspace-header {
+    flex-wrap: wrap;
+  }
+  .workspace {
+    padding: 20px 16px;
+  }
+  .theater-setup {
+    display: grid;
+  }
+  .theater-setup input {
+    width: 100%;
+  }
+  #rooms-list td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #516378;
+    margin-bottom: 4px;
+  }
+}

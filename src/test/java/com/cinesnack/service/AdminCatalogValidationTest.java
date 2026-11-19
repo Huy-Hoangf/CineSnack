@@ -1,6 +1,5 @@
 package com.cinesnack.service;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.cinesnack.catalog.dto.AdminCatalog;
@@ -14,7 +13,8 @@ import org.junit.jupiter.api.Test;
 
 class AdminCatalogValidationTest {
 
-    private static final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    private static final ValidatorFactory factory =
+        Validation.buildDefaultValidatorFactory();
     private static final Validator validator = factory.getValidator();
 
     @AfterAll
@@ -27,6 +27,8 @@ class AdminCatalogValidationTest {
         var request = new AdminCatalog.MovieRequest(
             "Phim",
             "Hài",
+            "Nội dung",
+            "Diễn viên",
             100,
             "T13",
             "javascript:alert(1)",
@@ -39,6 +41,27 @@ class AdminCatalogValidationTest {
             .toList();
         assertTrue(fields.contains("posterUrl"));
         assertTrue(fields.contains("status"));
+    }
+
+    @Test
+    void movieRejectsOversizedDescriptionAndActors() {
+        var request = new AdminCatalog.MovieRequest(
+            "Phim",
+            "Hài",
+            "a".repeat(2001),
+            "b".repeat(501),
+            100,
+            "T13",
+            null,
+            "DANG_CHIEU"
+        );
+        var fields = validator
+            .validate(request)
+            .stream()
+            .map(v -> v.getPropertyPath().toString())
+            .toList();
+        assertTrue(fields.contains("description"));
+        assertTrue(fields.contains("actors"));
     }
 
     @Test
@@ -68,6 +91,8 @@ class AdminCatalogValidationTest {
                     new AdminCatalog.MovieRequest(
                         "Phim",
                         "Hài",
+                        "Nội dung",
+                        "Diễn viên",
                         100,
                         "P",
                         "/assets/images/movies/dune.jpg",

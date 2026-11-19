@@ -1,4 +1,8 @@
-param([Parameter(Mandatory = $true)][string]$Server)
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$Server
+)
+
 $ErrorActionPreference = 'Stop'
 $taskRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 $taskConnection = [System.Data.SqlClient.SqlConnection]::new("Server=$Server;Database=CineSnack;Integrated Security=True;TrustServerCertificate=True;Connection Timeout=5")
@@ -10,13 +14,17 @@ function Invoke-Sql([string]$Sql) {
         $taskCommand.CommandText = $Sql
         return $taskCommand.ExecuteScalar()
     }
-    finally { $taskCommand.Dispose() }
+    finally {
+        $taskCommand.Dispose()
+    }
 }
 
 function Invoke-File([string]$Name) {
     $taskText = Get-Content -LiteralPath (Join-Path $taskRoot "database/$Name") -Raw -Encoding utf8
     foreach ($taskBatch in [regex]::Split($taskText, '(?im)^\s*GO\s*\r?$')) {
-        if (![string]::IsNullOrWhiteSpace($taskBatch)) { [void](Invoke-Sql $taskBatch) }
+        if (![string]::IsNullOrWhiteSpace($taskBatch)) {
+            [void](Invoke-Sql $taskBatch)
+        }
     }
 }
 
@@ -44,7 +52,9 @@ try {
     $taskBefore = Get-Snapshot
     foreach ($taskPass in 1..2) {
         Invoke-File 'cinesnack.sql'
-        if ((Get-Snapshot) -ne $taskBefore) { throw "Dữ liệu thay đổi ở lượt chạy $taskPass" }
+        if ((Get-Snapshot) -ne $taskBefore) {
+            throw "Dữ liệu thay đổi ở lượt chạy $taskPass"
+        }
     }
     [void](Invoke-Sql "BEGIN TRANSACTION; UPDATE COMBO SET gia_ban=123456 WHERE ten_combo=N'Combo Một Mình Vui';")
     try {
@@ -53,8 +63,14 @@ try {
             throw 'Seed ghi đè giá combo đã chỉnh'
         }
     }
-    finally { [void](Invoke-Sql 'IF @@TRANCOUNT>0 ROLLBACK;') }
-    if ((Get-Snapshot) -ne $taskBefore) { throw 'Dữ liệu không được khôi phục sau kiểm thử giá' }
+    finally {
+        [void](Invoke-Sql 'IF @@TRANCOUNT>0 ROLLBACK;')
+    }
+    if ((Get-Snapshot) -ne $taskBefore) {
+        throw 'Dữ liệu không được khôi phục sau kiểm thử giá'
+    }
     Write-Output 'PASS: chạy lại không mất/trùng dữ liệu; seed giữ giá đã chỉnh; thử giá đã rollback.'
 }
-finally { $taskConnection.Dispose() }
+finally {
+    $taskConnection.Dispose()
+}
